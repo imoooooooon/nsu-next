@@ -9,7 +9,7 @@ import {
   Share, BookmarkIcon, GraduationCap, DollarSign, SlidersHorizontal,
   Edit, MoreVertical, CheckCheck, Smile, Copy, QrCode, Wifi, 
   Eye, Lightbulb, Shield, Globe, Smartphone, CreditCard, ChevronDown,
-  Compass
+  Compass, Upload
 } from 'lucide-react';
 
 // --- CUSTOM LAYERED ICONS ---
@@ -49,16 +49,13 @@ const JobSlider = ({ jobs, isDark, t, onSelectJob }) => {
   const [isPaused, setIsPaused] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(true);
   
-  // Drag/Touch states
   const [dragStartX, setDragStartX] = useState(null);
   const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Clone the first item and append it to the end for a seamless infinite loop
   const extendedJobs = [...jobs, jobs[0]];
 
   useEffect(() => {
-    // Suspend auto-scroll while paused or dragging
     if (isPaused || dragStartX !== null) return;
     const interval = setInterval(() => {
       setIsTransitioning(true);
@@ -67,22 +64,20 @@ const JobSlider = ({ jobs, isDark, t, onSelectJob }) => {
     return () => clearInterval(interval);
   }, [isPaused, dragStartX]);
 
-  // When the slider reaches the clone, wait for the animation to finish, then instantly snap back to the real first card invisibly
   useEffect(() => {
     if (currentIndex === jobs.length) {
       const timeout = setTimeout(() => {
         setIsTransitioning(false);
         setCurrentIndex(0);
-      }, 700); // 700ms must match the CSS duration
+      }, 700); 
       return () => clearTimeout(timeout);
     }
   }, [currentIndex, jobs.length]);
 
-  // Drag Event Handlers
   const handleDragStart = (clientX) => {
     setIsPaused(true);
     setDragStartX(clientX);
-    setIsTransitioning(false); // disable transition to follow finger exactly
+    setIsTransitioning(false);
     setIsDragging(false);
   };
 
@@ -91,7 +86,6 @@ const JobSlider = ({ jobs, isDark, t, onSelectJob }) => {
     const offset = clientX - dragStartX;
     if (Math.abs(offset) > 10) setIsDragging(true);
     
-    // Add resistance if dragging backwards on the first slide
     if (currentIndex === 0 && offset > 0) {
       setDragOffset(offset * 0.3);
     } else {
@@ -104,7 +98,7 @@ const JobSlider = ({ jobs, isDark, t, onSelectJob }) => {
     setIsTransitioning(true);
     setIsPaused(false);
 
-    const threshold = 50; // pixels needed to count as a swipe
+    const threshold = 50; 
     if (dragOffset < -threshold) {
       setCurrentIndex((prev) => prev + 1);
     } else if (dragOffset > threshold && currentIndex > 0) {
@@ -114,11 +108,9 @@ const JobSlider = ({ jobs, isDark, t, onSelectJob }) => {
     setDragStartX(null);
     setDragOffset(0);
 
-    // Give a slight delay before resetting isDragging to prevent accidental clicks
     setTimeout(() => setIsDragging(false), 50);
   };
 
-  // Determine active dot for pagination (fallback to 0 when currently showing the clone)
   const activeDotIndex = currentIndex === jobs.length ? 0 : currentIndex;
 
   return (
@@ -215,6 +207,8 @@ const JobSlider = ({ jobs, isDark, t, onSelectJob }) => {
 
 export default function App() {
   const [currentView, setCurrentView] = useState('splash');
+  const [authRole, setAuthRole] = useState('student'); // 'student' | 'faculty' | 'alumni'
+  const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
   const [activeTab, setActiveTab] = useState('home'); 
   const [activeOverlay, setActiveOverlay] = useState(null); 
   const [isEmergencyFlowOpen, setIsEmergencyFlowOpen] = useState(false); 
@@ -223,10 +217,11 @@ export default function App() {
   const [isDark, setIsDark] = useState(false); 
   
   const [requestedSet, setRequestedSet] = useState(new Set());
+  const [isPostJobOpen, setIsPostJobOpen] = useState(false);
 
   useEffect(() => {
     if (currentView === 'splash') {
-      const timer = setTimeout(() => setCurrentView('login'), 2500);
+      const timer = setTimeout(() => setCurrentView('welcome'), 2500);
       return () => clearTimeout(timer);
     }
   }, [currentView]);
@@ -241,8 +236,8 @@ export default function App() {
     textMuted: isDark ? 'text-[#71767B]' : 'text-[#6B7280]',
     glass: isDark ? 'bg-[#000000]/70 backdrop-blur-xl border-white/10' : 'bg-[#F2F5F8]/80 backdrop-blur-xl border-white/40',
     overlayGlass: isDark ? 'bg-black/50 backdrop-blur-md' : 'bg-[#F2F5F8]/50 backdrop-blur-md',
-    inputBg: isDark ? 'bg-[#202327]/60 backdrop-blur-md focus:bg-black/80' : 'bg-white/80 backdrop-blur-md focus:bg-white',
-    inputBorder: isDark ? 'border-white/10 focus:border-[#1D9BF0]' : 'border-white focus:border-[#1D9BF0]',
+    inputBg: isDark ? 'bg-[#202327]/60 backdrop-blur-md focus:bg-black/80 focus:ring-2 focus:ring-[#1D9BF0]/50' : 'bg-white/80 backdrop-blur-md focus:bg-white focus:ring-2 focus:ring-[#1D9BF0]/30',
+    inputBorder: isDark ? 'border-white/10 focus:border-transparent' : 'border-white focus:border-transparent',
     cardShadow: isDark ? 'shadow-2xl shadow-black/40' : 'shadow-xl shadow-black/[0.04]', 
   };
 
@@ -252,6 +247,16 @@ export default function App() {
     { id: 1, name: 'Sarah Rahman', role: 'Software Engineer', company: 'Google', dept: 'CSE', skills: ['System Design', 'React', 'Node.js'], batch: 'Batch 19', location: 'Dhaka, BD', followers: '12.4k', blood: 'O+', verified: true, about: "Passionate software engineer with 4+ years of experience building scalable web applications. Always eager to connect with fellow NSUers and mentor juniors.", experience: [{ title: 'Software Engineer', company: 'Google', duration: '2022 - Present' }, { title: 'Frontend Developer', company: 'Pathao', duration: '2020 - 2022' }] },
     { id: 2, name: 'Tahmid Hasan', role: 'Product Lead', company: 'Pathao', dept: 'ECE', skills: ['Product Mgt', 'Growth'], batch: 'Batch 18', location: 'Dhaka, BD', followers: '8.2k', blood: 'B+', verified: true, about: "Building products that move millions. Former engineer turned product manager.", experience: [{ title: 'Product Lead', company: 'Pathao', duration: '2021 - Present' }] },
     { id: 3, name: 'Ayman Sadiq', role: 'CEO & Founder', company: '10 Minute School', dept: 'BBA', skills: ['EdTech', 'Leadership', 'Marketing'], batch: 'Batch 15', location: 'Dhaka, BD', followers: '1.2M', blood: 'A+', verified: true, about: "Making education accessible for everyone in Bangladesh.", experience: [{ title: 'CEO', company: '10 Minute School', duration: '2015 - Present' }] },
+  ];
+
+  const globalFacultyData = [
+    { id: 101, name: 'Dr. Aminul Islam', role: 'Professor', company: 'North South University', dept: 'CSE', skills: ['Machine Learning', 'AI', 'Algorithms'], batch: 'Faculty', location: 'Dhaka, BD', followers: '2.1k', blood: 'A+', verified: true, about: "Ph.D. from MIT. 15+ years of teaching and research experience.", experience: [{ title: 'Professor', company: 'NSU', duration: '2010 - Present' }] },
+    { id: 102, name: 'Dr. Nova Ahmed', role: 'Associate Professor', company: 'North South University', dept: 'ECE', skills: ['HCI', 'IoT', 'Embedded Systems'], batch: 'Faculty', location: 'Dhaka, BD', followers: '1.8k', blood: 'O+', verified: true, about: "Passionate about building technologies for emerging markets.", experience: [{ title: 'Assoc. Professor', company: 'NSU', duration: '2015 - Present' }] }
+  ];
+
+  const globalStudentData = [
+    { id: 201, name: 'Rayan Hossain', role: 'Student', company: 'North South University', dept: 'BBA', skills: ['Marketing', 'Public Speaking', 'Leadership'], batch: 'Batch 231', location: 'Dhaka, BD', followers: '340', blood: 'B+', verified: true, about: "Current BBA student focusing on digital marketing.", experience: [{ title: 'Marketing Intern', company: 'Unilever', duration: 'Summer 2024' }] },
+    { id: 202, name: 'Tanisha Chowdhury', role: 'Student', company: 'North South University', dept: 'Architecture', skills: ['AutoCAD', '3D Modeling', 'Design'], batch: 'Batch 222', location: 'Dhaka, BD', followers: '512', blood: 'AB+', verified: true, about: "Architecture enthusiast, currently working on a thesis regarding sustainable housing.", experience: [{ title: 'Junior Architect', company: 'Design Lab', duration: '2023 - Present' }] }
   ];
 
   const globalJobsData = [
@@ -279,38 +284,7 @@ export default function App() {
     return styles[dept] || (isDark ? 'bg-white/10 text-white border-white/20' : 'bg-[#1D9BF0]/10 text-[#1D9BF0] border-[#1D9BF0]/20');
   };
 
-  const StatusBar = () => (
-    <div className={`w-full h-12 flex justify-between items-center px-6 ${t.text} font-bold text-xs pt-2 bg-transparent z-50 transition-colors duration-500`}>
-      <span>9:41</span>
-      <div className="flex space-x-2 items-center">
-        <div className={`w-4 h-4 rounded-full ${isDark ? 'bg-white' : 'bg-black'}`}></div>
-        <div className={`w-4 h-4 rounded-full ${isDark ? 'bg-white' : 'bg-black'}`}></div>
-        <div className={`w-6 h-3.5 rounded-sm ${isDark ? 'bg-white' : 'bg-black'} relative`}>
-          <div className={`absolute right-[-3px] top-[4px] w-[2px] h-[6px] ${isDark ? 'bg-white' : 'bg-black'} rounded-r-sm`}></div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const Button = ({ text, onClick, variant = 'primary', icon: Icon, fullWidth = true, size = 'normal' }) => {
-    const height = size === 'small' ? 'h-9 text-xs' : 'h-12 text-sm';
-    const baseStyle = `flex items-center justify-center ${height} rounded-lg font-bold transition-all duration-200 active:scale-[0.97] ${fullWidth ? 'w-full' : 'px-5'} relative overflow-hidden`;
-    
-    const variants = {
-      primary: `bg-[#1D9BF0] text-white hover:bg-[#1A8CD8] shadow-lg shadow-[#1D9BF0]/40`,
-      secondary: `${isDark ? 'bg-white/10 text-white' : 'bg-black/5 text-black'} backdrop-blur-md hover:bg-black/10`,
-      outline: `border ${isDark ? 'border-white/20' : 'border-black/10'} ${t.text} bg-transparent hover:${isDark ? 'bg-white/5' : 'bg-black/5'}`,
-      emergency: `bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-colors shadow-sm`,
-    };
-
-    return (
-      <button onClick={onClick} className={`${baseStyle} ${variants[variant]}`}>
-        {Icon && <Icon className={`${size === 'small' ? 'w-3.5 h-3.5 mr-1.5' : 'w-4 h-4 mr-2'}`} strokeWidth={2.5} />}
-        <span className="relative z-10">{text}</span>
-      </button>
-    );
-  };
-
+  // --- NEW AUTHENTICATION SCREENS ---
   const SplashScreen = () => (
     <div className={`flex flex-col items-center justify-center h-full ${t.bg} ${t.text} relative overflow-hidden transition-colors duration-500`}>
       <div className="relative z-10 flex flex-col items-center animate-fade-in-up">
@@ -323,216 +297,497 @@ export default function App() {
     </div>
   );
 
-  const LoginScreen = () => (
-    <div className={`flex flex-col h-full px-6 pt-24 transition-colors duration-500 animate-fade-in relative z-10`}>
-      <div className="w-12 h-12 bg-[#1D9BF0] text-white flex items-center justify-center rounded-xl mb-8 shadow-lg shadow-[#1D9BF0]/30">
-        <div className="w-4 h-4 border-2 border-white rounded-sm rotate-45"></div>
-      </div>
-      <h1 className={`text-3xl font-extrabold ${t.text} mb-2 tracking-tight`}>Welcome back.</h1>
-      <p className={`${t.textMuted} mb-12 text-sm font-bold`}>Enter your university credentials to continue.</p>
-      <div className="space-y-4 mb-8">
-        <div className="relative">
-          <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 ${t.textMuted} w-5 h-5`} strokeWidth={2.5} />
-          <input 
-            type="email" 
-            placeholder="Email address" 
-            className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-lg h-14 pl-12 pr-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`}
-            defaultValue="alex.johnson@northsouth.edu"
-          />
+  const WelcomeScreen = () => (
+    <div className={`flex flex-col items-center justify-center h-full px-6 pt-12 pb-8 transition-colors duration-500 animate-fade-in relative z-10`}>
+      <div className="flex-1 flex flex-col items-center justify-center w-full animate-fade-in-up">
+        <div className="w-20 h-20 bg-[#1D9BF0] text-white flex items-center justify-center rounded-[24px] mb-8 shadow-2xl shadow-[#1D9BF0]/40">
+          <div className="w-8 h-8 border-[3px] border-white rounded-sm rotate-45"></div>
         </div>
+        <h1 className={`text-4xl font-extrabold ${t.text} mb-3 tracking-tight text-center leading-tight`}>Connect. Grow. Support.</h1>
+        <p className={`${t.textMuted} text-sm font-bold text-center px-4`}>North South University Verified Network</p>
       </div>
-      <Button text="Continue" onClick={() => setCurrentView('otp')} />
+      <div className="w-full mt-auto space-y-6 animate-fade-in delay-150">
+        <button onClick={() => setCurrentView('role_select')} className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/40`}>
+          Continue
+        </button>
+        <p className={`text-center text-[10px] font-extrabold uppercase tracking-widest ${t.textMuted}`}>Secure • Verified • Institutional</p>
+      </div>
     </div>
   );
+
+  const RoleGatewayScreen = () => (
+    <div className={`flex flex-col h-full px-5 pt-16 pb-8 transition-colors duration-500 animate-fade-in relative z-10`}>
+      <button onClick={() => setCurrentView('welcome')} className={`w-10 h-10 mb-6 rounded-lg flex items-center justify-center ${t.card} hover:opacity-80 transition-opacity border ${t.border} shadow-sm`}>
+        <ArrowLeft className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} />
+      </button>
+      <h1 className={`text-3xl font-extrabold ${t.text} mb-8 tracking-tight`}>Select Your Role</h1>
+      
+      <div className="space-y-4 animate-fade-in-up">
+        {[
+          { id: 'student', title: 'Student', desc: 'Use official @northsouth.edu email', icon: GraduationCap },
+          { id: 'faculty', title: 'Faculty', desc: 'Use official @northsouth.edu email', icon: Briefcase },
+          { id: 'alumni', title: 'Alumni', desc: 'Verification required', icon: Users },
+        ].map(role => (
+          <div 
+            key={role.id}
+            onClick={() => { setAuthRole(role.id); setAuthMode('login'); setCurrentView('role_auth'); }}
+            className={`p-5 rounded-2xl ${t.card} border ${t.border} ${t.cardShadow} flex items-center cursor-pointer hover:border-[#1D9BF0]/40 transition-all active:scale-[0.98] group`}
+          >
+            <div className={`w-12 h-12 rounded-xl ${isDark ? 'bg-white/5' : 'bg-black/5'} flex items-center justify-center mr-4 group-hover:bg-[#1D9BF0]/10 transition-colors`}>
+              <role.icon className={`w-6 h-6 ${isDark ? 'text-white' : 'text-black'} group-hover:text-[#1D9BF0] transition-colors`} strokeWidth={2} />
+            </div>
+            <div className="flex-1">
+              <h3 className={`text-lg font-extrabold ${t.text} mb-0.5`}>{role.title}</h3>
+              <p className={`text-xs font-bold ${t.textMuted}`}>{role.desc}</p>
+            </div>
+            <ChevronRight className={`w-5 h-5 ${t.textMuted} group-hover:text-[#1D9BF0] transition-colors`} strokeWidth={2.5} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const RoleAuthScreen = () => {
+    const isStudent = authRole === 'student';
+    const isFaculty = authRole === 'faculty';
+    const isAlumni = authRole === 'alumni';
+
+    const handleAction = () => {
+      if (authMode === 'login') {
+        setCurrentView('main');
+      } else {
+        if (isAlumni) {
+          setCurrentView('main'); 
+        } else {
+          setCurrentView('otp');
+        }
+      }
+    };
+
+    return (
+      <div className={`flex flex-col h-full relative z-10 animate-fade-in`}>
+        <div className={`px-5 pt-12 pb-4 ${t.glass} border-b z-20 sticky top-0 shadow-sm`}>
+          <div className="flex items-center mb-6">
+            <button onClick={() => setCurrentView('role_select')} className={`w-10 h-10 mr-4 rounded-lg flex items-center justify-center ${t.card} hover:opacity-80 transition-opacity border ${t.borderSoft} shadow-sm`}>
+              <ArrowLeft className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} />
+            </button>
+            <h1 className={`text-2xl font-extrabold ${t.text} tracking-tight capitalize`}>{authRole} Portal</h1>
+          </div>
+          
+          <div className={`flex p-1 rounded-xl ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft}`}>
+            {['login', 'signup'].map(mode => (
+              <button 
+                key={mode} 
+                onClick={() => setAuthMode(mode)}
+                className={`flex-1 py-2.5 rounded-lg text-sm font-extrabold transition-all capitalize ${authMode === mode ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'} border` : `text-gray-500 hover:${t.text}`}`}
+              >
+                {mode === 'login' ? 'Login' : 'Create Account'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-5 pt-6 pb-32">
+          {authMode === 'login' ? (
+            <div className="space-y-4 animate-fade-in-up">
+              <div>
+                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>
+                  {isAlumni ? 'Email Address' : 'NSU Email'}
+                </label>
+                <div className="relative group">
+                  <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 ${t.textMuted} group-focus-within:text-[#1D9BF0] w-5 h-5 transition-colors`} strokeWidth={2.5} />
+                  <input 
+                    type="email" 
+                    placeholder={isAlumni ? "alex@example.com" : "alex.johnson@northsouth.edu"} 
+                    className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-14 pl-12 pr-4 text-sm font-bold ${t.text} transition-all shadow-sm outline-none`}
+                  />
+                </div>
+                {!isAlumni && <p className="text-[10px] font-bold text-[#1D9BF0] mt-1.5 ml-1">Must be an @northsouth.edu email</p>}
+              </div>
+              
+              <div>
+                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Password</label>
+                <div className="relative group">
+                  <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 ${t.textMuted} group-focus-within:text-[#1D9BF0] w-5 h-5 transition-colors`} strokeWidth={2.5} />
+                  <input 
+                    type="password" 
+                    placeholder="••••••••" 
+                    className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-14 pl-12 pr-4 text-sm font-bold ${t.text} transition-all shadow-sm outline-none`}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-1 mb-4">
+                <span className="text-sm font-extrabold text-[#1D9BF0] cursor-pointer hover:underline">Forgot Password?</span>
+              </div>
+
+              <button onClick={handleAction} className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/40 mt-4`}>
+                Login
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4 animate-fade-in-up">
+              <div>
+                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Full Name</label>
+                <div className="relative group">
+                  <User className={`absolute left-4 top-1/2 -translate-y-1/2 ${t.textMuted} group-focus-within:text-[#1D9BF0] w-5 h-5 transition-colors`} strokeWidth={2.5} />
+                  <input type="text" placeholder="Alex Johnson" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-14 pl-12 pr-4 text-sm font-bold ${t.text} transition-all shadow-sm outline-none`} />
+                </div>
+              </div>
+
+              <div>
+                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>
+                  {isAlumni ? 'Email Address' : 'NSU Email'}
+                </label>
+                <div className="relative group">
+                  <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 ${t.textMuted} group-focus-within:text-[#1D9BF0] w-5 h-5 transition-colors`} strokeWidth={2.5} />
+                  <input type="email" placeholder={isAlumni ? "alex@example.com" : "alex.johnson@northsouth.edu"} className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-14 pl-12 pr-4 text-sm font-bold ${t.text} transition-all shadow-sm outline-none`} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Department</label>
+                  <select className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-14 px-4 text-sm font-bold ${t.text} appearance-none shadow-sm outline-none transition-all`}>
+                    <option>CSE</option>
+                    <option>ECE</option>
+                    <option>BBA</option>
+                    <option>Architecture</option>
+                  </select>
+                </div>
+                
+                {(isStudent || isAlumni) && (
+                  <div>
+                    <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Batch</label>
+                    <select className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-14 px-4 text-sm font-bold ${t.text} appearance-none shadow-sm outline-none transition-all`}>
+                      <option>221</option>
+                      <option>213</option>
+                      <option>212</option>
+                      <option>211</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Password</label>
+                <div className="relative group">
+                  <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 ${t.textMuted} group-focus-within:text-[#1D9BF0] w-5 h-5 transition-colors`} strokeWidth={2.5} />
+                  <input type="password" placeholder="Create a password" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-14 pl-12 pr-4 text-sm font-bold ${t.text} transition-all shadow-sm outline-none`} />
+                </div>
+              </div>
+
+              <div>
+                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Confirm Password</label>
+                <div className="relative group">
+                  <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 ${t.textMuted} group-focus-within:text-[#1D9BF0] w-5 h-5 transition-colors`} strokeWidth={2.5} />
+                  <input type="password" placeholder="Confirm password" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-14 pl-12 pr-4 text-sm font-bold ${t.text} transition-all shadow-sm outline-none`} />
+                </div>
+              </div>
+
+              {isAlumni && (
+                <div className="pt-2">
+                  <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Graduation Certificate</label>
+                  <div className={`w-full border-2 border-dashed ${isDark ? 'border-white/20 bg-white/5' : 'border-black/10 bg-black/[0.02]'} rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:border-[#1D9BF0]/50 transition-colors`}>
+                    <div className="w-12 h-12 rounded-full bg-[#1D9BF0]/10 flex items-center justify-center mb-3">
+                      <Upload className="w-6 h-6 text-[#1D9BF0]" strokeWidth={2.5} />
+                    </div>
+                    <span className={`text-sm font-extrabold ${t.text} mb-1`}>Upload Certificate</span>
+                    <span className={`text-[10px] font-bold ${t.textMuted}`}>PDF, JPG or PNG (Max 5MB)</span>
+                  </div>
+                  <div className="flex items-start mt-3 space-x-2 bg-yellow-500/10 p-3 rounded-lg border border-yellow-500/20">
+                    <AlertTriangle className="w-4 h-4 text-yellow-600 shrink-0 mt-0.5" strokeWidth={2.5} />
+                    <p className="text-[11px] font-bold text-yellow-700 dark:text-yellow-500 leading-tight">
+                      You must upload a valid certificate within 7 days to unlock messaging and job posting.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <button onClick={handleAction} className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/40 mt-6`}>
+                {isAlumni ? 'Submit Registration' : 'Send OTP'}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   const OtpScreen = () => (
     <div className={`flex flex-col h-full px-6 pt-16 transition-colors duration-500 animate-fade-in relative z-10`}>
-      <button onClick={() => setCurrentView('login')} className={`w-10 h-10 mb-8 rounded-lg flex items-center justify-center ${t.card} hover:opacity-80 transition-opacity border ${t.border} shadow-sm`}>
+      <button onClick={() => setCurrentView('role_auth')} className={`w-10 h-10 mb-8 rounded-lg flex items-center justify-center ${t.card} hover:opacity-80 transition-opacity border ${t.border} shadow-sm`}>
         <ArrowLeft className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} />
       </button>
-      <h1 className={`text-3xl font-extrabold ${t.text} mb-2 tracking-tight`}>Verify identity.</h1>
-      <p className={`${t.textMuted} mb-12 text-sm font-bold`}>We sent a secure code to your email.</p>
-      <div className="relative mb-8">
-        <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 ${t.textMuted} w-5 h-5`} strokeWidth={2.5} />
-        <input 
-          type="text" 
-          placeholder="000000" 
-          className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-lg h-14 pl-12 pr-4 text-xl tracking-[0.75em] font-extrabold ${t.text} focus:outline-none transition-all shadow-sm`}
-          defaultValue="123456"
-          maxLength={6}
-        />
+      <h1 className={`text-3xl font-extrabold ${t.text} mb-2 tracking-tight`}>Verify Your Email</h1>
+      <p className={`${t.textMuted} mb-10 text-sm font-bold`}>We sent a 6-digit code to your email.</p>
+      
+      <div className="flex justify-between mb-8 gap-2">
+        {[1,2,3,4,5,6].map((i) => (
+          <input 
+            key={i}
+            type="text" 
+            maxLength={1}
+            defaultValue={i === 1 ? '1' : i === 2 ? '2' : ''}
+            className={`w-12 h-14 rounded-xl text-center text-xl font-extrabold ${t.inputBg} border ${t.inputBorder} ${t.text} outline-none transition-all shadow-sm`}
+          />
+        ))}
       </div>
-      <Button text="Authenticate" onClick={() => setCurrentView('main')} />
+
+      <button onClick={() => setCurrentView('main')} className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/40 mb-6`}>
+        Verify & Create Account
+      </button>
+
+      <p className={`text-center text-sm font-bold ${t.textMuted}`}>
+        Didn't receive code? <span className="text-[#1D9BF0] opacity-50 cursor-not-allowed">Resend (28s)</span>
+      </p>
     </div>
   );
 
-  const HomeTab = () => (
-    <div className="flex flex-col h-full overflow-y-auto pb-36 px-5 pt-8 space-y-6 animate-fade-in relative z-10">
-      <div className="mb-2">
-        <div className="flex justify-between items-start mb-3">
-          <div className="flex flex-col">
-            <div className="flex items-center space-x-1.5 mb-1">
-              <BadgeCheck className="w-3.5 h-3.5 text-[#1D9BF0]" strokeWidth={3} />
-              <span className="text-[10px] font-extrabold text-[#1D9BF0] tracking-wide uppercase">Verified NSU Student</span>
+  const HomeTab = () => {
+    const [notifIndex, setNotifIndex] = useState(0);
+
+    const previewNotifications = [
+      { id: 1, type: 'job', icon: Briefcase, color: 'text-[#1D9BF0]', bg: 'bg-[#1D9BF0]/10', title: 'New Job Match', msg: 'Pathao posted a new Frontend Developer role that matches your skills.', time: '2m ago' },
+      { id: 2, type: 'connection', icon: Users, color: 'text-emerald-500', bg: 'bg-emerald-500/10', title: 'Connection Accepted', msg: 'Sarah Rahman accepted your connection request.', time: '1h ago' },
+      { id: 3, type: 'blood', icon: Droplets, color: 'text-red-500', bg: 'bg-red-500/10', title: 'Emergency Alert', msg: 'Urgent: B+ blood needed at Apollo Hospital.', time: '2h ago' },
+      { id: 4, type: 'system', icon: ShieldCheck, color: 'text-purple-500', bg: 'bg-purple-500/10', title: 'Profile Strength', msg: 'Your profile strength is at 80%. Add a resume to reach 100%.', time: '1d ago' },
+    ];
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setNotifIndex((prev) => (prev + 1) % previewNotifications.length);
+      }, 4000);
+      return () => clearInterval(interval);
+    }, [previewNotifications.length]);
+
+    return (
+      <div className="flex flex-col h-full overflow-y-auto pb-36 px-5 pt-8 space-y-6 animate-fade-in relative z-10">
+        <div className="mb-2">
+          <div className="flex justify-between items-start mb-3">
+            <div className="flex flex-col">
+              <div className="flex items-center space-x-1.5 mb-1">
+                <BadgeCheck className="w-3.5 h-3.5 text-[#1D9BF0]" strokeWidth={3} />
+                <span className="text-[10px] font-extrabold text-[#1D9BF0] tracking-wide uppercase">Verified NSU Student</span>
+              </div>
+              <h1 className={`text-2xl font-extrabold ${t.text} tracking-tight leading-tight`}>
+                Hi, Mahfuz <span className="text-xl inline-block origin-bottom-right animate-wave">👋</span>
+              </h1>
+              <p className={`${t.textMuted} text-xs font-bold mt-0.5`}>CSE • Batch 221</p>
             </div>
-            <h1 className={`text-2xl font-extrabold ${t.text} tracking-tight leading-tight`}>
-              Hi, Mahfuz <span className="text-xl inline-block origin-bottom-right animate-wave">👋</span>
-            </h1>
-            <p className={`${t.textMuted} text-xs font-bold mt-0.5`}>CSE • Batch 221</p>
-          </div>
 
-          <div className="flex space-x-2">
-            <button onClick={toggleTheme} className={`w-8 h-8 rounded-lg ${t.card} border ${t.border} flex items-center justify-center transition-colors shadow-sm`}>
-              {isDark ? <Sun className={`w-4 h-4 ${t.text}`} strokeWidth={2.5} /> : <Moon className={`w-4 h-4 ${t.text}`} strokeWidth={2.5} />}
-            </button>
-            <button className={`w-8 h-8 rounded-lg ${t.card} border ${t.border} flex items-center justify-center transition-colors shadow-sm relative`}>
-              <Bell className={`w-4 h-4 ${t.text}`} strokeWidth={2.5} />
-              <span className={`absolute top-0.5 right-1 w-2 h-2 bg-[#1D9BF0] border border-white/50 rounded-full`}></span>
-            </button>
-          </div>
-        </div>
-
-        <div className="w-full">
-          <div className="flex justify-between items-center mb-1.5">
-            <span className={`text-[10px] font-extrabold ${t.textMuted} uppercase tracking-wider`}>Profile Strength</span>
-            <span className={`text-[10px] font-extrabold text-[#1D9BF0]`}>80%</span>
-          </div>
-          <div className={`h-1.5 w-full ${isDark ? 'bg-white/10' : 'bg-black/5'} rounded-full overflow-hidden`}>
-            <div className="h-full bg-[#1D9BF0] w-[80%] rounded-full shadow-sm shadow-[#1D9BF0]/50"></div>
-          </div>
-        </div>
-      </div>
-
-      {/* Redesigned Quick Actions: Custom Layered Icons + Label */}
-      <div className="w-full pt-4 pb-2 relative z-10">
-        <div className="flex flex-row items-start justify-between w-full px-2">
-          {[
-            { icon: CustomBloodIcon, label: 'Blood', action: () => setActiveTab('emergency') },
-            { icon: CustomJobsIcon, label: 'Jobs', action: () => setActiveTab('jobs') },
-            { icon: CustomAlumniIcon, label: 'Alumni', action: () => setActiveTab('directory') },
-            { icon: CustomMessagesIcon, label: 'Messages', action: () => setActiveTab('messages') },
-          ].map((action, idx) => (
-            <div 
-              key={idx} 
-              onClick={action.action}
-              className="flex-1 flex flex-col items-center justify-center min-h-[72px] cursor-pointer group transition-all duration-200 ease-out active:scale-90"
-            >
-              <action.icon 
-                className={`w-[36px] h-[36px] mb-2 transition-colors duration-200 ${isDark ? 'text-white' : 'text-[#1C1C1E]'}`} 
-              />
-              <span className={`text-[12px] font-bold leading-tight text-center ${t.textMuted} group-hover:${isDark ? 'text-white' : 'text-black'} transition-colors duration-200`}>
-                {action.label}
-              </span>
+            <div className="flex space-x-2">
+              <button onClick={toggleTheme} className={`w-8 h-8 rounded-lg ${t.card} border ${t.border} flex items-center justify-center transition-colors shadow-sm`}>
+                {isDark ? <Sun className={`w-4 h-4 ${t.text}`} strokeWidth={2.5} /> : <Moon className={`w-4 h-4 ${t.text}`} strokeWidth={2.5} />}
+              </button>
+              <button onClick={() => setActiveOverlay('notifications')} className={`w-8 h-8 rounded-lg ${t.card} border ${t.border} flex items-center justify-center transition-colors shadow-sm relative active:scale-95`}>
+                <Bell className={`w-4 h-4 ${t.text}`} strokeWidth={2.5} />
+                <span className={`absolute top-0.5 right-1 w-2 h-2 bg-[#1D9BF0] border border-white/50 rounded-full`}></span>
+              </button>
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
 
-      <div>
-        <div className="flex justify-between items-end mb-1 relative z-10 px-1">
-          <h3 className={`text-lg font-extrabold ${t.text} tracking-tight`}>Latest Jobs For You</h3>
-          <button className="text-[#1D9BF0] font-bold text-sm hover:underline" onClick={() => setActiveTab('jobs')}>See All</button>
+          <div className="w-full">
+            <div className="flex justify-between items-center mb-1.5">
+              <span className={`text-[10px] font-extrabold ${t.textMuted} uppercase tracking-wider`}>Profile Strength</span>
+              <span className={`text-[10px] font-extrabold text-[#1D9BF0]`}>80%</span>
+            </div>
+            <div className={`h-1.5 w-full ${isDark ? 'bg-white/10' : 'bg-black/5'} rounded-full overflow-hidden`}>
+              <div className="h-full bg-[#1D9BF0] w-[80%] rounded-full shadow-sm shadow-[#1D9BF0]/50"></div>
+            </div>
+          </div>
         </div>
-        <JobSlider jobs={globalJobsData} isDark={isDark} t={t} onSelectJob={setSelectedJob} />
-      </div>
 
-      <div>
-        <div className="flex justify-between items-end mb-1 relative z-10 px-1">
-          <h3 className={`text-lg font-extrabold ${t.text} tracking-tight`}>People to Connect With</h3>
-          <button className="text-[#1D9BF0] font-bold text-sm hover:underline" onClick={() => setActiveTab('directory')}>See All</button>
+        {/* Redesigned Quick Actions: Custom Layered Icons + Label */}
+        <div className="w-full pt-4 pb-2 relative z-10">
+          <div className="flex flex-row items-start justify-between w-full px-2">
+            {[
+              { icon: CustomBloodIcon, label: 'Blood', action: () => setActiveTab('emergency') },
+              { icon: CustomJobsIcon, label: 'Jobs', action: () => setActiveTab('jobs') },
+              { icon: CustomAlumniIcon, label: (authRole === 'alumni' || authRole === 'faculty') ? 'Students' : 'Alumni', action: () => setActiveTab('directory') },
+              { icon: CustomMessagesIcon, label: 'Messages', action: () => setActiveTab('messages') },
+            ].map((action, idx) => (
+              <div 
+                key={idx} 
+                onClick={action.action}
+                className="flex-1 flex flex-col items-center justify-center min-h-[72px] cursor-pointer group transition-all duration-200 ease-out active:scale-90"
+              >
+                <action.icon 
+                  className={`w-[36px] h-[36px] mb-2 transition-colors duration-200 ${isDark ? 'text-white' : 'text-[#1C1C1E]'}`} 
+                />
+                <span className={`text-[12px] font-bold leading-tight text-center ${t.textMuted} group-hover:${isDark ? 'text-white' : 'text-black'} transition-colors duration-200`}>
+                  {action.label}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="flex space-x-4 overflow-x-auto hide-scrollbar -mx-5 px-5 pt-4 pb-10 -mb-6 relative z-0">
-          {globalAlumniData.slice(0,3).map((person) => (
-            <div 
-              key={person.id} 
-              className={`w-[260px] shrink-0 p-5 rounded-2xl border ${t.border} ${t.cardShadow} flex flex-col cursor-pointer relative overflow-hidden active:scale-[0.98] transition-all`} 
-              onClick={() => setSelectedUser(person)}
-            >
-              <div className={`absolute inset-0 z-0 ${isDark ? 'bg-gradient-to-br from-[#1A1A1A]/90 to-[#1D9BF0]/10' : 'bg-gradient-to-b from-white to-[#1D9BF0]/10 backdrop-blur-3xl'}`}></div>
-              <div className="relative z-10">
-                <div className="flex items-center space-x-4 mb-4">
-                  <div className={`w-14 h-14 rounded-full shrink-0 ${isDark ? 'bg-white/5' : 'bg-white/60'} border ${isDark ? 'border-white/10' : 'border-white'} flex items-center justify-center shadow-sm`}>
-                    <User className={`w-6 h-6 ${t.text}`} strokeWidth={1.5} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-1.5 mb-0.5">
-                      <h4 className={`font-extrabold text-base tracking-tight truncate ${t.text}`}>{person.name}</h4>
-                      {person.verified && <BadgeCheck className="w-4 h-4 text-[#1D9BF0] shrink-0" strokeWidth={2.5} />}
+
+        <div>
+          {(authRole === 'alumni' || authRole === 'faculty') && (
+            <div className="px-1 mb-5">
+              <button 
+                onClick={() => setIsPostJobOpen(true)}
+                className={`w-full py-3.5 rounded-xl font-extrabold text-sm transition-all active:scale-[0.98] bg-[#1D9BF0]/10 text-[#1D9BF0] border border-[#1D9BF0]/20 flex items-center justify-center shadow-sm`}
+              >
+                <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> Post a Job Opportunity
+              </button>
+            </div>
+          )}
+          <div className="flex justify-between items-end mb-1 relative z-10 px-1">
+            <h3 className={`text-lg font-extrabold ${t.text} tracking-tight`}>
+              {(authRole === 'alumni' || authRole === 'faculty') ? 'Recently Posted Jobs' : 'Latest Jobs For You'}
+            </h3>
+            <button className="text-[#1D9BF0] font-bold text-sm hover:underline" onClick={() => setActiveTab('jobs')}>See All</button>
+          </div>
+          <JobSlider jobs={globalJobsData} isDark={isDark} t={t} onSelectJob={setSelectedJob} />
+        </div>
+
+        <div>
+          <div className="flex justify-between items-end mb-1 relative z-10 px-1">
+            <h3 className={`text-lg font-extrabold ${t.text} tracking-tight`}>People to Connect With</h3>
+            <button className="text-[#1D9BF0] font-bold text-sm hover:underline" onClick={() => setActiveTab('directory')}>See All</button>
+          </div>
+          <div className="flex space-x-4 overflow-x-auto hide-scrollbar -mx-5 px-5 pt-4 pb-10 -mb-6 relative z-0">
+            {globalAlumniData.slice(0,3).map((person) => (
+              <div 
+                key={person.id} 
+                className={`w-[260px] shrink-0 p-5 rounded-2xl border ${t.border} ${t.cardShadow} flex flex-col cursor-pointer relative overflow-hidden active:scale-[0.98] transition-all`} 
+                onClick={() => setSelectedUser(person)}
+              >
+                <div className={`absolute inset-0 z-0 ${isDark ? 'bg-gradient-to-br from-[#1A1A1A]/90 to-[#1D9BF0]/10' : 'bg-gradient-to-b from-white to-[#1D9BF0]/10 backdrop-blur-3xl'}`}></div>
+                <div className="relative z-10">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className={`w-14 h-14 rounded-full shrink-0 ${isDark ? 'bg-white/5' : 'bg-white/60'} border ${isDark ? 'border-white/10' : 'border-white'} flex items-center justify-center shadow-sm`}>
+                      <User className={`w-6 h-6 ${t.text}`} strokeWidth={1.5} />
                     </div>
-                    <p className={`font-bold ${t.textMuted} text-[11px] truncate`}>{person.role}</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-1.5 mb-0.5">
+                        <h4 className={`font-extrabold text-base tracking-tight truncate ${t.text}`}>{person.name}</h4>
+                        {person.verified && <BadgeCheck className="w-4 h-4 text-[#1D9BF0] shrink-0" strokeWidth={2.5} />}
+                      </div>
+                      <p className={`font-bold ${t.textMuted} text-[11px] truncate`}>{person.role}</p>
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold border ${getDeptStyle(person.dept)}`}>
-                    {person.dept}
-                  </span>
-                  {person.skills.slice(0, 1).map(skill => (
-                    <span key={skill} className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold ${isDark ? 'bg-black/20 text-white/70 border border-white/10' : 'bg-white/60 text-black/60 shadow-sm border border-white'} truncate max-w-[100px]`}>
-                      {skill}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold border ${getDeptStyle(person.dept)}`}>
+                      {person.dept}
                     </span>
-                  ))}
-                </div>
+                    {person.skills.slice(0, 1).map(skill => (
+                      <span key={skill} className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold ${isDark ? 'bg-black/20 text-white/70 border border-white/10' : 'bg-white/60 text-black/60 shadow-sm border border-white'} truncate max-w-[100px]`}>
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
 
-                <div onClick={(e) => handleConnectClick(e, person.id)}>
-                  {requestedSet.has(person.id) ? (
-                    <div className={`flex items-center justify-center h-10 rounded-lg font-bold text-[13px] ${isDark ? 'bg-white/10 text-white' : 'bg-white text-black shadow-sm'} border ${t.border} transition-all`}>
-                      <CheckCircle2 className="w-4 h-4 mr-2 text-[#1D9BF0]" strokeWidth={2.5} /> Requested
-                    </div>
-                  ) : (
-                    <button className={`w-full h-10 rounded-lg font-bold text-[13px] transition-all active:scale-[0.97] ${isDark ? 'bg-white/10 text-white border border-white/20' : 'bg-white/60 text-black border border-white shadow-sm backdrop-blur-md hover:bg-white'}`}>
-                      Connect
-                    </button>
-                  )}
+                  <div onClick={(e) => handleConnectClick(e, person.id)}>
+                    {requestedSet.has(person.id) ? (
+                      <div className={`flex items-center justify-center h-10 rounded-lg font-bold text-[13px] ${isDark ? 'bg-white/10 text-white' : 'bg-white text-black shadow-sm'} border ${t.border} transition-all`}>
+                        <CheckCircle2 className="w-4 h-4 mr-2 text-[#1D9BF0]" strokeWidth={2.5} /> Requested
+                      </div>
+                    ) : (
+                      <button className={`w-full h-10 rounded-lg font-bold text-[13px] transition-all active:scale-[0.97] ${isDark ? 'bg-white/10 text-white border border-white/20' : 'bg-white/60 text-black border border-white shadow-sm backdrop-blur-md hover:bg-white'}`}>
+                        Connect
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div className={`shrink-0 ${t.card} border ${t.border} ${t.cardShadow} rounded-2xl p-5 relative overflow-hidden group mt-2`}>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-red-500/20 transition-colors duration-700 -mr-20 -mt-20"></div>
-        <div className="relative z-10">
-          <div className="flex justify-between items-start mb-5">
-             <div className="flex items-center space-x-3">
-               <div className={`w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center border border-red-500/20 ${isDark ? 'shadow-inner' : ''}`}>
-                 <Droplets className="w-6 h-6 text-red-500" strokeWidth={2.5} />
+        {/* Animated Infinite Notification Stack */}
+        <div className="relative w-full h-[88px] shrink-0 overflow-hidden rounded-2xl cursor-pointer group mt-2 mb-4" onClick={() => setActiveOverlay('notifications')}>
+          {previewNotifications.map((notif, index) => {
+            const length = previewNotifications.length;
+            let offset = index - notifIndex;
+            
+            // Circular calculation so cards loop infinitely
+            if (offset < -length / 2) offset += length;
+            if (offset > length / 2) offset -= length;
+
+            const isActive = offset === 0;
+
+            return (
+              <div 
+                key={notif.id}
+                className={`absolute inset-0 w-full h-full p-4 rounded-2xl ${t.card} border ${t.borderSoft} ${t.cardShadow} flex items-center space-x-4 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]`}
+                style={{
+                  transform: `translateY(${offset * 100}%) scale(${isActive ? 1 : 0.95})`,
+                  opacity: isActive ? 1 : 0,
+                  zIndex: isActive ? 20 : 10,
+                  pointerEvents: isActive ? 'auto' : 'none'
+                }}
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#1D9BF0]/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none group-hover:bg-[#1D9BF0]/20 transition-colors duration-500"></div>
+                <div className="relative z-10 flex items-center space-x-4 w-full">
+                  <div className="relative shrink-0">
+                    <div className={`w-12 h-12 rounded-full ${notif.bg} flex items-center justify-center border ${isDark ? 'border-white/5' : 'border-black/5'}`}>
+                      <notif.icon className={`w-5 h-5 ${notif.color}`} strokeWidth={2.5} />
+                    </div>
+                    {notif.id === 1 && (
+                      <div className={`absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 border-2 ${isDark ? 'border-[#121212]' : 'border-white'} rounded-full`}></div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-center mb-0.5">
+                      <h4 className={`text-sm font-extrabold ${t.text} truncate`}>{notif.title}</h4>
+                      <span className={`text-[10px] font-bold ${notif.color}`}>{notif.time}</span>
+                    </div>
+                    <p className={`text-xs font-medium ${t.textMuted} line-clamp-2 leading-tight`}>{notif.msg}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className={`shrink-0 ${t.card} border ${t.border} ${t.cardShadow} rounded-2xl p-5 relative overflow-hidden group`}>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-red-500/20 transition-colors duration-700 -mr-20 -mt-20"></div>
+          <div className="relative z-10">
+            <div className="flex justify-between items-start mb-5">
+               <div className="flex items-center space-x-3">
+                 <div className={`w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center border border-red-500/20 ${isDark ? 'shadow-inner' : ''}`}>
+                   <Droplets className="w-6 h-6 text-red-500" strokeWidth={2.5} />
+                 </div>
+                 <div>
+                   <h3 className={`text-lg font-extrabold ${t.text} tracking-tight leading-tight`}>NSU Blood Bank</h3>
+                   <p className={`${t.textMuted} text-[10px] font-extrabold uppercase tracking-wider mt-1`}>Emergency Support</p>
+                 </div>
                </div>
-               <div>
-                 <h3 className={`text-lg font-extrabold ${t.text} tracking-tight leading-tight`}>NSU Blood Bank</h3>
-                 <p className={`${t.textMuted} text-[10px] font-extrabold uppercase tracking-wider mt-1`}>Emergency Support</p>
+               <div className="flex items-center space-x-1.5 bg-red-500/10 px-2.5 py-1.5 rounded-md border border-red-500/20">
+                 <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+                 <span className="text-red-500 text-[10px] font-extrabold tracking-wide uppercase">Live</span>
                </div>
-             </div>
-             <div className="flex items-center space-x-1.5 bg-red-500/10 px-2.5 py-1.5 rounded-md border border-red-500/20">
-               <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
-               <span className="text-red-500 text-[10px] font-extrabold tracking-wide uppercase">Live</span>
-             </div>
-          </div>
-          <div className={`mb-5 p-4 rounded-xl ${isDark ? 'bg-black/40' : 'bg-white/40'} border ${t.borderSoft} flex items-center justify-between backdrop-blur-md hover:border-red-500/30 transition-colors cursor-pointer shadow-sm`} onClick={() => setActiveTab('emergency')}>
-             <div className="flex items-center space-x-4">
-               <div className="w-12 h-12 rounded-lg bg-red-500 flex items-center justify-center shadow-lg shadow-red-500/40 text-white font-extrabold text-base border border-red-400">
-                 B+
+            </div>
+            <div className={`mb-5 p-4 rounded-xl ${isDark ? 'bg-black/40' : 'bg-white/40'} border ${t.borderSoft} flex items-center justify-between backdrop-blur-md hover:border-red-500/30 transition-colors cursor-pointer shadow-sm`} onClick={() => setActiveTab('emergency')}>
+               <div className="flex items-center space-x-4">
+                 <div className="w-12 h-12 rounded-lg bg-red-500 flex items-center justify-center shadow-lg shadow-red-500/40 text-white font-extrabold text-base border border-red-400">
+                   B+
+                 </div>
+                 <div>
+                   <h4 className={`text-sm font-extrabold ${t.text} leading-tight`}>Apollo Hospital</h4>
+                   <p className={`${t.textMuted} text-xs font-bold mt-1`}>Needed immediately</p>
+                 </div>
                </div>
-               <div>
-                 <h4 className={`text-sm font-extrabold ${t.text} leading-tight`}>Apollo Hospital</h4>
-                 <p className={`${t.textMuted} text-xs font-bold mt-1`}>Needed immediately</p>
+               <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500">
+                 <ChevronRight className="w-4 h-4" strokeWidth={3} />
                </div>
-             </div>
-             <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500">
-               <ChevronRight className="w-4 h-4" strokeWidth={3} />
-             </div>
-          </div>
-          <div className="flex space-x-3">
-            <div className="flex-1"><Button text="Donate" variant="emergency" onClick={() => setActiveTab('emergency')} /></div>
-            <button className={`flex-1 h-12 rounded-lg font-bold text-sm ${t.text} border ${t.borderSoft} ${isDark ? 'bg-white/5' : 'bg-black/5'} hover:opacity-80 transition-all flex items-center justify-center`} onClick={() => setActiveTab('emergency')}>
-               <Search className="w-4 h-4 mr-2" strokeWidth={2.5} /> Find Blood
-            </button>
+            </div>
+            <div className="flex space-x-3">
+              <div className="flex-1"><button onClick={() => setActiveTab('emergency')} className={`w-full flex items-center justify-center h-12 rounded-lg font-bold text-sm bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-colors shadow-sm`}>Donate</button></div>
+              <button className={`flex-1 h-12 rounded-lg font-bold text-sm ${t.text} border ${t.borderSoft} ${isDark ? 'bg-white/5' : 'bg-black/5'} hover:opacity-80 transition-all flex items-center justify-center`} onClick={() => setActiveTab('emergency')}>
+                 <Search className="w-4 h-4 mr-2" strokeWidth={2.5} /> Find Blood
+              </button>
+            </div>
           </div>
         </div>
+
       </div>
-    </div>
-  );
+    );
+  };
 
   const EmergencyTab = () => {
     const [viewMode, setViewMode] = useState('list');
@@ -840,17 +1095,29 @@ export default function App() {
   };
 
   const DirectoryTab = () => {
+    const availableTabs = authRole === 'student' 
+      ? ['Alumni', 'Faculty'] 
+      : authRole === 'alumni' 
+        ? ['Student', 'Faculty'] 
+        : ['Student', 'Alumni'];
+        
+    const [directorySegment, setDirectorySegment] = useState(availableTabs[0]);
+
+    const displayData = directorySegment === 'Alumni' ? globalAlumniData : 
+                        directorySegment === 'Faculty' ? globalFacultyData : 
+                        globalStudentData;
+
     return (
       <div className={`flex flex-col h-full relative animate-fade-in z-10`}>
         <div className={`px-5 pt-8 pb-3 relative z-20 ${t.glass} border-b`}>
           <div className="flex justify-between items-end mb-3">
             <div>
-              <h2 className={`text-2xl font-extrabold ${t.text} tracking-tight leading-tight`}>Alumni Directory</h2>
-              <p className={`${t.textMuted} text-[11px] font-bold tracking-wide mt-0.5`}>3,248 Verified Alumni</p>
+              <h2 className={`text-2xl font-extrabold ${t.text} tracking-tight leading-tight`}>Directory</h2>
+              <p className={`${t.textMuted} text-[11px] font-bold tracking-wide mt-0.5`}>Connect with the NSU Network</p>
             </div>
           </div>
           
-          <div className="flex space-x-3 mb-3">
+          <div className="flex space-x-3 mb-4">
             <div className="relative flex-1">
               <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4`} strokeWidth={2.5} />
               <input 
@@ -863,17 +1130,28 @@ export default function App() {
               <Filter className="w-4 h-4" strokeWidth={2.5} />
             </button>
           </div>
+
+          <div className={`flex p-1 rounded-xl ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft} mb-2`}>
+            {availableTabs.map(seg => (
+              <button 
+                key={seg} 
+                onClick={() => setDirectorySegment(seg)}
+                className={`flex-1 py-2 rounded-lg text-xs font-extrabold transition-all ${directorySegment === seg ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'} border` : `text-gray-500 hover:${t.text}`}`}
+              >
+                {seg}
+              </button>
+            ))}
+          </div>
           
-          <div className="flex items-center text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider">
-             Showing 48 results • CSE • Batch 221
+          <div className="flex items-center text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider mt-1">
+             Showing {displayData.length} results • {directorySegment}
           </div>
         </div>
 
         <div className="flex-1 overflow-y-auto pb-36 px-5 pt-6 relative z-10 space-y-5">
-          {globalAlumniData.map((person) => (
+          {displayData.map((person) => (
             <div 
               key={person.id} 
-              // Fixed: Native Tailwind shadows
               className={`rounded-2xl p-5 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 cursor-pointer shadow-2xl shadow-black/5 dark:shadow-black/40 border ${t.border}`} 
               onClick={() => setSelectedUser(person)}
             >
@@ -914,7 +1192,7 @@ export default function App() {
                   </div>
                   <div className="text-center flex-1 border-r border-dashed border-gray-400/30">
                     <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mb-1`}>Batch</p>
-                    <p className={`text-sm font-extrabold ${t.text}`}>{person.batch.split(' ')[1]}</p>
+                    <p className={`text-sm font-extrabold ${t.text}`}>{person.batch.includes(' ') ? person.batch.split(' ')[1] : person.batch}</p>
                   </div>
                   <div className="text-center flex-1">
                     <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mb-1`}>Network</p>
@@ -1002,7 +1280,6 @@ export default function App() {
           {globalJobsData.map((job) => (
             <div 
               key={job.id} 
-              // Fixed: Native Tailwind shadows
               className={`rounded-2xl p-5 relative overflow-hidden group hover:-translate-y-0.5 transition-transform duration-300 cursor-pointer shadow-2xl shadow-black/5 dark:shadow-black/40 border ${t.border}`}
               onClick={() => setSelectedJob(job)}
             >
@@ -1054,6 +1331,15 @@ export default function App() {
             <SlidersHorizontal className="w-4 h-4 mr-2" strokeWidth={2.5} /> Filter
           </button>
         </div>
+
+        {(authRole === 'alumni' || authRole === 'faculty') && (
+          <button 
+            onClick={() => setIsPostJobOpen(true)}
+            className="absolute bottom-28 right-5 w-14 h-14 bg-[#1D9BF0] text-white rounded-full flex items-center justify-center shadow-lg shadow-[#1D9BF0]/40 active:scale-95 transition-transform z-30"
+          >
+            <Plus className="w-6 h-6" strokeWidth={2.5} />
+          </button>
+        )}
       </div>
     );
   };
@@ -1135,8 +1421,8 @@ export default function App() {
       setTimeout(() => setCopied(false), 2000);
     };
 
-    const SettingsItem = ({ icon: Icon, label, value, isToggle, toggleState, onToggle, isDestructive }) => (
-      <div className={`flex items-center justify-between p-4 border-b ${t.borderSoft} last:border-0 hover:${isDark ? 'bg-white/5' : 'bg-black/5'} transition-colors cursor-pointer group`}>
+    const SettingsItem = ({ icon: Icon, label, value, isToggle, toggleState, onToggle, isDestructive, onClick }) => (
+      <div onClick={onClick} className={`flex items-center justify-between p-4 border-b ${t.borderSoft} last:border-0 hover:${isDark ? 'bg-white/5' : 'bg-black/5'} transition-colors cursor-pointer group`}>
         <div className="flex items-center">
           <Icon className={`w-5 h-5 mr-3 ${isDestructive ? 'text-red-500' : t.textMuted}`} strokeWidth={2} />
           <span className={`text-sm font-bold ${isDestructive ? 'text-red-500' : t.text}`}>{label}</span>
@@ -1166,7 +1452,6 @@ export default function App() {
             
             <div className="relative z-10 flex items-center">
               <div className="relative shrink-0 mr-5">
-                {/* Fixed: Native Tailwind shadows */}
                 <div className="w-20 h-20 rounded-full border-[3px] border-[#1D9BF0] p-1 shadow-lg shadow-[#1D9BF0]/30">
                   <div className={`w-full h-full rounded-full ${isDark ? 'bg-white/10' : 'bg-white/60'} flex items-center justify-center overflow-hidden`}>
                      <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=150&q=80" alt="Profile" className="w-full h-full object-cover" />
@@ -1367,7 +1652,7 @@ export default function App() {
 
               <div className="pt-2">
                 <div className={`rounded-2xl ${t.card} border ${t.border} overflow-hidden ${t.cardShadow}`}>
-                  <SettingsItem icon={LogOut} label="Log Out" isDestructive={true} hasArrow={false} onClick={() => setCurrentView('login')} />
+                  <SettingsItem icon={LogOut} label="Log Out" isDestructive={true} hasArrow={false} onClick={() => setCurrentView('welcome')} />
                 </div>
               </div>
             </div>
@@ -1395,7 +1680,6 @@ export default function App() {
         </div>
 
         <div className="flex-1 overflow-y-auto pb-10 relative z-10">
-          {/* Fixed: Native Tailwind shadows */}
           <div className={`m-5 mt-6 rounded-2xl p-6 relative overflow-hidden shadow-2xl shadow-black/5 dark:shadow-black/40 border ${t.border}`}>
             <div className={`absolute inset-0 z-0 ${isDark ? 'bg-gradient-to-br from-[#1A1A1A]/90 to-[#1D9BF0]/10' : 'bg-gradient-to-b from-white/90 to-[#1D9BF0]/10 backdrop-blur-3xl'}`}></div>
             
@@ -1429,7 +1713,7 @@ export default function App() {
                 </div>
                 <div className="text-center flex-1 border-r border-dashed border-gray-400/30">
                   <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mb-1`}>Batch</p>
-                  <p className={`text-base font-extrabold ${t.text}`}>{user.batch.split(' ')[1]}</p>
+                  <p className={`text-base font-extrabold ${t.text}`}>{user.batch.includes(' ') ? user.batch.split(' ')[1] : user.batch}</p>
                 </div>
                 <div className="text-center flex-1">
                   <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mb-1`}>Network</p>
@@ -1439,7 +1723,6 @@ export default function App() {
 
               <div className="flex space-x-3 w-full">
                 <div className="flex-1">
-                   {/* Fixed: Native Tailwind shadows */}
                    <button className={`w-full h-12 rounded-lg font-bold text-sm transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/40`}>
                      Connect
                    </button>
@@ -1515,7 +1798,6 @@ export default function App() {
         </div>
 
         <div className="flex-1 overflow-y-auto pb-28 relative z-10">
-          {/* Fixed: Native Tailwind shadows */}
           <div className={`m-5 mt-6 rounded-2xl p-6 relative overflow-hidden shadow-2xl shadow-black/5 dark:shadow-black/40 border ${t.border}`}>
             <div className={`absolute inset-0 z-0 ${isDark ? 'bg-gradient-to-br from-[#1A1A1A]/90 to-emerald-500/10' : 'bg-gradient-to-b from-white/90 to-emerald-500/10 backdrop-blur-3xl'}`}></div>
             
@@ -1567,11 +1849,114 @@ export default function App() {
         </div>
 
         <div className={`absolute bottom-0 w-full p-5 pt-4 pb-8 ${t.glass} border-t z-20`}>
-           {/* Fixed: Native Tailwind shadows */}
-           <button className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-emerald-500 text-white shadow-lg shadow-emerald-500/40`}>
-             Apply Now
+           <button 
+             disabled={authRole === 'alumni' || authRole === 'faculty'}
+             className={`w-full h-14 rounded-xl font-extrabold text-base transition-all ${
+               (authRole === 'alumni' || authRole === 'faculty') 
+                 ? `bg-gray-400 dark:bg-gray-700 text-white/80 cursor-not-allowed opacity-60` 
+                 : `active:scale-[0.97] bg-emerald-500 text-white shadow-lg shadow-emerald-500/40`
+             }`}
+           >
+             {(authRole === 'alumni' || authRole === 'faculty') ? 'View Details' : 'Apply Now'}
            </button>
         </div>
+      </div>
+    );
+  };
+
+  const PostJobOverlay = ({ onClose }) => {
+    const [isSubmitted, setIsSubmitted] = useState(false);
+
+    return (
+      <div className={`absolute inset-0 z-50 flex flex-col animate-slide-up ${t.bg}`}>
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden transition-opacity duration-500">
+          <div className={`absolute top-[-5%] right-[-10%] w-[80%] h-[60%] bg-[#1D9BF0] rounded-full mix-blend-screen filter blur-[140px] ${isDark ? 'opacity-10' : 'opacity-[0.15]'}`}></div>
+        </div>
+
+        <div className={`px-4 pt-12 pb-3 flex items-center justify-between ${t.glass} border-b sticky top-0 z-20 shadow-sm`}>
+          <button onClick={onClose} className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors`}>
+            <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
+          </button>
+          <h2 className={`text-base font-extrabold ${t.text} leading-tight`}>
+            {isSubmitted ? 'Status' : 'Post a Job'}
+          </h2>
+          <div className="w-10 h-10"></div>
+        </div>
+
+        {!isSubmitted ? (
+          <>
+            <div className="flex-1 overflow-y-auto pb-32 relative z-10 px-5 pt-6 space-y-5">
+              <div>
+                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Job Title</label>
+                <input type="text" placeholder="e.g. Frontend Developer" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Company</label>
+                  <input type="text" placeholder="e.g. Pathao" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
+                </div>
+                <div>
+                  <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Location</label>
+                  <input type="text" placeholder="e.g. Dhaka, BD" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Job Type</label>
+                  <select className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} appearance-none focus:outline-none transition-all shadow-sm`}>
+                    <option>Full-Time</option>
+                    <option>Part-Time</option>
+                    <option>Internship</option>
+                    <option>Contract</option>
+                  </select>
+                </div>
+                <div>
+                  <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Salary</label>
+                  <input type="text" placeholder="e.g. Negotiable" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
+                </div>
+              </div>
+
+              <div>
+                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Application Deadline</label>
+                <input type="text" placeholder="e.g. 15 Oct 2024" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
+              </div>
+
+              <div>
+                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Job Description</label>
+                <textarea rows="4" placeholder="Describe the role and responsibilities..." className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl p-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm resize-none`}></textarea>
+              </div>
+
+              <div>
+                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Requirements (comma separated)</label>
+                <textarea rows="3" placeholder="e.g. React, Node.js, 2+ years experience" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl p-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm resize-none`}></textarea>
+              </div>
+            </div>
+
+            <div className={`absolute bottom-0 w-full p-5 pt-4 pb-8 ${t.glass} border-t z-20`}>
+               <button onClick={() => setIsSubmitted(true)} className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/40`}>
+                 Submit for Approval
+               </button>
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center px-6 relative z-10 animate-fade-in-up pb-20">
+            <div className="w-24 h-24 bg-yellow-500/10 rounded-full flex items-center justify-center mb-6 border border-yellow-500/20 shadow-xl shadow-yellow-500/10">
+              <Clock className="w-12 h-12 text-yellow-500" strokeWidth={2.5} />
+            </div>
+            <h3 className={`text-2xl font-extrabold ${t.text} tracking-tight mb-2 text-center`}>Pending Approval</h3>
+            <p className={`text-sm font-bold ${t.textMuted} text-center mb-8 max-w-xs leading-relaxed`}>
+              Your job post has been submitted. Our admin team will review it shortly. Once approved, it will be visible to all students.
+            </p>
+            <button 
+              onClick={onClose} 
+              className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] ${isDark ? 'bg-white/10 text-white' : 'bg-black/5 text-black'} border ${t.borderSoft} shadow-sm`}
+            >
+              Back to Jobs
+            </button>
+          </div>
+        )}
       </div>
     );
   };
@@ -1624,7 +2009,6 @@ export default function App() {
         </div>
 
         <div className="self-end max-w-[80%] relative">
-          {/* Fixed: Native Tailwind shadows */}
           <div className="p-3.5 rounded-2xl rounded-tr-sm bg-[#1D9BF0] text-white shadow-md shadow-[#1D9BF0]/30">
             <div className="bg-black/15 rounded-lg p-2.5 mb-2 border-l-[3px] border-white">
               <p className="text-[10px] font-extrabold text-white mb-0.5">Sarah Rahman</p>
@@ -1659,13 +2043,57 @@ export default function App() {
             className={`w-full bg-transparent text-sm font-bold ${t.text} focus:outline-none resize-none py-2.5 max-h-24`}
            />
         </div>
-        {/* Fixed: Native Tailwind shadows */}
         <button className="w-10 h-10 shrink-0 flex items-center justify-center rounded-lg bg-[#1D9BF0] text-white shadow-md shadow-[#1D9BF0]/40 active:scale-95 transition-transform">
           <Send className="w-4 h-4 ml-0.5" strokeWidth={2.5} />
         </button>
       </div>
     </div>
   );
+
+  const NotificationsOverlay = () => {
+    const notifications = [
+      { id: 1, type: 'job', icon: Briefcase, color: 'text-[#1D9BF0]', bg: 'bg-[#1D9BF0]/10', title: 'New Job Match', msg: 'Pathao posted a new Frontend Developer role that matches your skills.', time: '2m ago', unread: true },
+      { id: 2, type: 'connection', icon: Users, color: 'text-emerald-500', bg: 'bg-emerald-500/10', title: 'Connection Accepted', msg: 'Sarah Rahman accepted your connection request.', time: '1h ago', unread: true },
+      { id: 3, type: 'blood', icon: Droplets, color: 'text-red-500', bg: 'bg-red-500/10', title: 'Emergency Blood Request', msg: 'Urgent: B+ blood needed at Apollo Hospital.', time: '2h ago', unread: false },
+      { id: 4, type: 'system', icon: ShieldCheck, color: 'text-purple-500', bg: 'bg-purple-500/10', title: 'Profile Strength', msg: 'Your profile strength is at 80%. Add a resume to reach 100%.', time: '1d ago', unread: false },
+    ];
+
+    return (
+      <div className={`absolute inset-0 z-50 flex flex-col animate-slide-up ${t.bg}`}>
+        <div className={`px-4 pt-12 pb-3 flex items-center justify-between ${t.glass} border-b sticky top-0 z-20 shadow-sm`}>
+          <button onClick={() => setActiveOverlay(null)} className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors`}>
+            <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
+          </button>
+          <h2 className={`text-base font-extrabold ${t.text} leading-tight`}>Notifications</h2>
+          <button className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors hover:text-[#1D9BF0]`}>
+             <CheckCheck className="w-5 h-5" strokeWidth={2.5} />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto pb-32 relative z-10 px-4 pt-4 space-y-2">
+          {notifications.map(notif => (
+            <div key={notif.id} className={`p-4 rounded-2xl ${notif.unread ? (isDark ? 'bg-white/5' : 'bg-black/[0.03]') : 'bg-transparent'} border ${notif.unread ? t.borderSoft : 'border-transparent'} flex space-x-4 transition-all cursor-pointer hover:${isDark ? 'bg-white/10' : 'bg-black/5'} group`}>
+              <div className="relative shrink-0">
+                <div className={`w-12 h-12 rounded-full ${notif.bg} flex items-center justify-center border border-white/5`}>
+                  <notif.icon className={`w-5 h-5 ${notif.color}`} strokeWidth={2.5} />
+                </div>
+                {notif.unread && (
+                  <div className={`absolute -top-1 -right-1 w-3.5 h-3.5 bg-[#1D9BF0] border-2 ${isDark ? 'border-[#121212]' : 'border-white'} rounded-full`}></div>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-start mb-1">
+                  <h4 className={`text-sm ${notif.unread ? `font-extrabold ${t.text}` : `font-bold ${t.textMuted}`}`}>{notif.title}</h4>
+                  <span className={`text-[10px] font-extrabold ${notif.unread ? 'text-[#1D9BF0]' : t.textMuted} shrink-0 ml-2`}>{notif.time}</span>
+                </div>
+                <p className={`text-xs ${notif.unread ? `font-medium ${t.text}` : `font-medium ${t.textMuted}`} line-clamp-2 leading-relaxed`}>{notif.msg}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <>
@@ -1724,7 +2152,9 @@ export default function App() {
 
           <div className="flex-1 relative overflow-hidden">
             {currentView === 'splash' && <SplashScreen />}
-            {currentView === 'login' && <LoginScreen />}
+            {currentView === 'welcome' && <WelcomeScreen />}
+            {currentView === 'role_select' && <RoleGatewayScreen />}
+            {currentView === 'role_auth' && <RoleAuthScreen />}
             {currentView === 'otp' && <OtpScreen />}
             
             {currentView === 'main' && (
@@ -1740,7 +2170,6 @@ export default function App() {
 
                 <div className={`absolute bottom-0 left-0 w-full h-32 pointer-events-none z-40 bg-gradient-to-t ${isDark ? 'from-[#000000] via-[#000000]/80' : 'from-[#F2F5F8] via-[#F2F5F8]/80'} to-transparent`}></div>
 
-                {/* Expanding Pill Bottom Navigation with Liquid Glass Background */}
                 <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 w-[94%] max-w-[400px] h-[76px] ${isDark ? 'nav-capsule-dark' : 'nav-capsule-light'} rounded-[2.5rem] flex justify-between items-center px-2 z-50`}>
                   {[
                     { id: 'home', icon: Home, label: 'Home', canFill: true }, 
@@ -1755,7 +2184,6 @@ export default function App() {
                       <button 
                         key={item.id} 
                         onClick={() => setActiveTab(item.id)}
-                        // Removed active:scale-95 to completely eliminate the bouncy layout glitch
                         className={`relative flex items-center h-[60px] rounded-[2rem] transition-[width,background-color] duration-300 ease-out overflow-hidden ${isActive ? `w-[124px] ${isDark ? 'nav-active-dark text-white' : 'nav-active-light text-black'}` : `w-[60px] bg-transparent ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-black'}`}`}
                       >
                         <div className="w-[60px] h-[60px] shrink-0 flex items-center justify-center">
@@ -1790,7 +2218,9 @@ export default function App() {
             )}
 
             {isEmergencyFlowOpen && <EmergencyFlowOverlay onClose={() => setIsEmergencyFlowOpen(false)} />}
+            {isPostJobOpen && <PostJobOverlay onClose={() => setIsPostJobOpen(false)} />}
             {activeOverlay === 'chat' && <ChatOverlay />}
+            {activeOverlay === 'notifications' && <NotificationsOverlay />}
             
             {selectedUser && (
               <UserProfileView user={selectedUser} onBack={() => setSelectedUser(null)} />
