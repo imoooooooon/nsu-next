@@ -568,12 +568,16 @@ export default function App() {
             <div className="flex flex-col">
               <div className="flex items-center space-x-1.5 mb-1">
                 <BadgeCheck className="w-3.5 h-3.5 text-[#1D9BF0]" strokeWidth={3} />
-                <span className="text-[10px] font-extrabold text-[#1D9BF0] tracking-wide uppercase">Verified NSU Student</span>
+                <span className="text-[10px] font-extrabold text-[#1D9BF0] tracking-wide uppercase">
+                  Verified NSU {authRole.charAt(0).toUpperCase() + authRole.slice(1)}
+                </span>
               </div>
               <h1 className={`text-2xl font-extrabold ${t.text} tracking-tight leading-tight`}>
-                Hi, Mahfuz <span className="text-xl inline-block origin-bottom-right animate-wave">👋</span>
+                Hi, {authRole === 'student' ? 'Hasan' : authRole === 'alumni' ? 'Nusrat' : 'Dr. Hasan'} <span className="text-xl inline-block origin-bottom-right animate-wave">👋</span>
               </h1>
-              <p className={`${t.textMuted} text-xs font-bold mt-0.5`}>CSE • Batch 221</p>
+              <p className={`${t.textMuted} text-xs font-bold mt-0.5`}>
+                {authRole === 'student' ? 'CSE • Batch 221' : authRole === 'alumni' ? 'Software Eng • Batch 19' : 'Professor • CSE'}
+              </p>
             </div>
 
             <div className="flex space-x-2">
@@ -1421,6 +1425,20 @@ export default function App() {
       setTimeout(() => setCopied(false), 2000);
     };
 
+    const fullName = authRole === 'student' ? 'Hasan Tarik' : authRole === 'alumni' ? 'Nusrat Jahan' : 'Dr. Hasan Mahmud';
+    const firstName = authRole === 'student' ? 'Hasan' : authRole === 'alumni' ? 'Nusrat' : 'Dr. Hasan';
+
+    const roleSub = authRole === 'alumni' ? 'Software Engineer @ Google' : authRole === 'faculty' ? 'Professor @ CSE' : 'Final Year CS Student';
+    const idTitle = authRole === 'alumni' ? 'Alumni Access ID' : authRole === 'faculty' ? 'Faculty Access ID' : 'Student Access ID';
+    const idPrefix = authRole === 'student' ? '2024CS1021' : authRole === 'alumni' ? '151XXXXX' : 'FAC-0012';
+    const termLabel = authRole === 'student' ? 'Valid Thru' : authRole === 'alumni' ? 'Class Of' : 'Joined';
+    const termValue = authRole === 'student' ? '12/26' : authRole === 'alumni' ? '2019' : '2012';
+    
+    const stat1Label = authRole === 'student' ? 'Applications' : 'Jobs Posted';
+    const stat1Count = authRole === 'student' ? '12' : '5';
+    const stat2Label = authRole === 'student' ? 'Saved Jobs' : 'Mentored';
+    const stat2Count = authRole === 'student' ? '4' : '18';
+
     const SettingsItem = ({ icon: Icon, label, value, isToggle, toggleState, onToggle, isDestructive, onClick }) => (
       <div onClick={onClick} className={`flex items-center justify-between p-4 border-b ${t.borderSoft} last:border-0 hover:${isDark ? 'bg-white/5' : 'bg-black/5'} transition-colors cursor-pointer group`}>
         <div className="flex items-center">
@@ -1454,7 +1472,7 @@ export default function App() {
               <div className="relative shrink-0 mr-5">
                 <div className="w-20 h-20 rounded-full border-[3px] border-[#1D9BF0] p-1 shadow-lg shadow-[#1D9BF0]/30">
                   <div className={`w-full h-full rounded-full ${isDark ? 'bg-white/10' : 'bg-white/60'} flex items-center justify-center overflow-hidden`}>
-                     <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=150&q=80" alt="Profile" className="w-full h-full object-cover" />
+                     <User className={`w-10 h-10 ${t.text}`} strokeWidth={1.5} />
                   </div>
                 </div>
                 <div className={`absolute -bottom-1 -right-1 w-6 h-6 bg-[#1D9BF0] rounded-full border-2 ${isDark ? 'border-[#121212]' : 'border-white'} flex items-center justify-center shadow-sm`}>
@@ -1465,8 +1483,8 @@ export default function App() {
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h2 className={`font-extrabold text-xl tracking-tight leading-tight ${t.text} truncate`}>Mahfuz</h2>
-                    <p className={`font-bold ${t.textMuted} text-xs mt-0.5 truncate`}>Final Year CS Student</p>
+                    <h2 className={`font-extrabold text-xl tracking-tight leading-tight ${t.text} truncate`}>{fullName}</h2>
+                    <p className={`font-bold ${t.textMuted} text-xs mt-0.5 truncate`}>{roleSub}</p>
                   </div>
                   <button className={`w-8 h-8 rounded-lg flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-white text-black shadow-sm'} border ${t.borderSoft} transition-transform active:scale-95`}>
                     <Edit className="w-3.5 h-3.5" strokeWidth={2.5} />
@@ -1479,7 +1497,7 @@ export default function App() {
                     className={`flex items-center px-2.5 py-1.5 rounded-md ${isDark ? 'bg-black/40 text-white border-white/10' : 'bg-white/60 text-black border-white'} border shadow-sm transition-all active:scale-95`}
                   >
                     <span className="text-[10px] font-extrabold mr-1.5 opacity-80">ID</span>
-                    <span className="text-[11px] font-extrabold font-mono tracking-wider mr-2">2024CS1021</span>
+                    <span className="text-[11px] font-extrabold font-mono tracking-wider mr-2">{idPrefix}</span>
                     {copied ? <CheckCircle2 className="w-3 h-3 text-green-500" strokeWidth={3}/> : <Copy className="w-3 h-3 opacity-60" strokeWidth={2.5}/>}
                   </button>
                   <button className={`w-7 h-7 rounded-md flex items-center justify-center ${isDark ? 'bg-black/40 text-white border-white/10' : 'bg-white/60 text-black border-white'} border shadow-sm transition-transform active:scale-95`}>
@@ -1517,23 +1535,23 @@ export default function App() {
                     <div className="flex justify-between items-start">
                       <div>
                         <h4 className="text-white/80 font-extrabold text-[10px] tracking-widest uppercase mb-1">North South University</h4>
-                        <h3 className="text-white font-extrabold text-lg tracking-tight">Student Access ID</h3>
+                        <h3 className="text-white font-extrabold text-lg tracking-tight">{idTitle}</h3>
                       </div>
                       <Wifi className="w-6 h-6 text-white/60 rotate-90" strokeWidth={2} />
                     </div>
                     
                     <div className="flex justify-between items-end">
                       <div>
-                        <p className="text-white font-extrabold text-xl mb-0.5">Mahfuz</p>
-                        <p className="text-white/70 font-mono text-xs font-bold tracking-widest mb-2">2024CS1021</p>
+                        <p className="text-white font-extrabold text-xl mb-0.5">{firstName}</p>
+                        <p className="text-white/70 font-mono text-xs font-bold tracking-widest mb-2">{idPrefix}</p>
                         <div className="flex space-x-3">
                           <div>
                             <p className="text-white/50 text-[8px] font-bold uppercase tracking-wider mb-0.5">Dept</p>
                             <p className="text-white text-xs font-bold">CSE</p>
                           </div>
                           <div>
-                            <p className="text-white/50 text-[8px] font-bold uppercase tracking-wider mb-0.5">Valid Thru</p>
-                            <p className="text-white text-xs font-bold">12/26</p>
+                            <p className="text-white/50 text-[8px] font-bold uppercase tracking-wider mb-0.5">{termLabel}</p>
+                            <p className="text-white text-xs font-bold">{termValue}</p>
                           </div>
                         </div>
                       </div>
@@ -1549,8 +1567,8 @@ export default function App() {
                 <h3 className={`text-sm font-extrabold ${t.textMuted} uppercase tracking-wider mb-3 px-1`}>Activity</h3>
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { label: 'Applications', count: '12', icon: Briefcase, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-                    { label: 'Saved Jobs', count: '4', icon: BookmarkIcon, color: 'text-purple-500', bg: 'bg-purple-500/10' },
+                    { label: stat1Label, count: stat1Count, icon: Briefcase, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+                    { label: stat2Label, count: stat2Count, icon: BookmarkIcon, color: 'text-purple-500', bg: 'bg-purple-500/10' },
                     { label: 'Connections', count: '124', icon: Users, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
                     { label: 'Profile Views', count: '89', icon: Eye, color: 'text-amber-500', bg: 'bg-amber-500/10' },
                   ].map((stat, i) => (
@@ -1587,7 +1605,7 @@ export default function App() {
               <div>
                 <h3 className={`text-sm font-extrabold ${t.textMuted} uppercase tracking-wider mb-3 px-1`}>Preferences</h3>
                 <div className={`rounded-2xl ${t.card} border ${t.border} overflow-hidden ${t.cardShadow}`}>
-                  <SettingsItem icon={Briefcase} label="Preferred Job Roles" value="Frontend, UI/UX" />
+                  <SettingsItem icon={Briefcase} label={authRole === 'student' ? 'Preferred Job Roles' : 'Industry Expertise'} value={authRole === 'student' ? 'Frontend, UI/UX' : 'Engineering'} />
                   <SettingsItem icon={MapPin} label="Preferred Locations" value="Dhaka, Remote" />
                   <SettingsItem icon={DollarSign} label="Salary Expectation" value="Negotiable" />
                   <SettingsItem icon={Globe} label="Work Mode" value="Hybrid" />
@@ -1596,7 +1614,7 @@ export default function App() {
               <div>
                 <h3 className={`text-sm font-extrabold ${t.textMuted} uppercase tracking-wider mb-3 px-1`}>Documents</h3>
                 <div className={`rounded-2xl ${t.card} border ${t.border} overflow-hidden ${t.cardShadow}`}>
-                  <SettingsItem icon={FileText} label="Manage Resume" value="Updated 2d ago" />
+                  <SettingsItem icon={FileText} label={authRole === 'student' ? 'Manage Resume' : 'Manage Portfolio'} value="Updated 2d ago" />
                   <SettingsItem icon={Share} label="Portfolio Links" value="2 links" />
                 </div>
               </div>
@@ -2188,8 +2206,8 @@ export default function App() {
                       >
                         <div className="w-[60px] h-[60px] shrink-0 flex items-center justify-center">
                           {item.isAvatar ? (
-                            <div className={`w-[28px] h-[28px] rounded-full flex items-center justify-center transition-all duration-300 ${isActive ? `ring-2 ${isDark ? 'ring-white/20' : 'ring-black/10'}` : 'opacity-80 border border-gray-300 dark:border-gray-600'} overflow-hidden shadow-sm backdrop-blur-md`}>
-                              <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=100&q=80" alt="Profile" className="w-full h-full object-cover" />
+                            <div className={`w-[28px] h-[28px] rounded-full flex items-center justify-center transition-all duration-300 ${isActive ? `ring-2 ${isDark ? 'ring-white/20' : 'ring-black/10'}` : 'opacity-80 border border-gray-300 dark:border-gray-600'} overflow-hidden shadow-sm backdrop-blur-md bg-gray-200 dark:bg-gray-800`}>
+                              <User className="w-[16px] h-[16px] text-gray-500 dark:text-gray-400" strokeWidth={2} />
                             </div>
                           ) : (
                             <div className="relative flex items-center justify-center w-full h-full">
