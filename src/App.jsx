@@ -307,49 +307,103 @@ export default function App() {
   const WelcomeScreen = () => (
     <div className={`flex flex-col items-center justify-center h-full px-6 pt-12 pb-8 transition-colors duration-500 animate-fade-in relative z-10`}>
       <div className="flex-1 flex flex-col items-center justify-center w-full animate-fade-in-up">
-        <div className="w-20 h-20 bg-[#1D9BF0] text-white flex items-center justify-center rounded-[24px] mb-8 shadow-2xl shadow-[#1D9BF0]/40">
+        <div className="w-20 h-20 bg-[#1D9BF0] text-white flex items-center justify-center rounded-[24px] mb-6 shadow-lg shadow-[#1D9BF0]/30">
           <div className="w-8 h-8 border-[3px] border-white rounded-sm rotate-45"></div>
         </div>
-        <h1 className={`text-4xl font-extrabold ${t.text} mb-3 tracking-tight text-center leading-tight`}>Connect. Grow. Support.</h1>
-        <p className={`${t.textMuted} text-sm font-bold text-center px-4`}>North South University Verified Network</p>
+        <h1 className={`text-xl font-semibold tracking-tight text-center ${t.text}`}>Connect. Grow. Support.</h1>
+        <p className={`text-sm mt-2 text-center ${isDark ? 'text-gray-400' : 'text-gray-500'} px-4`}>North South University Verified Network</p>
       </div>
-      <div className="w-full mt-auto space-y-6 animate-fade-in delay-150">
-        <button onClick={() => setCurrentView('role_select')} className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/40`}>
+      <div className="w-full mt-auto space-y-5 animate-fade-in delay-150">
+        <button onClick={() => setCurrentView('role_select')} className={`w-full h-14 rounded-xl text-base font-semibold transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-md shadow-[#1D9BF0]/20`}>
           Continue
         </button>
-        <p className={`text-center text-[10px] font-extrabold uppercase tracking-widest ${t.textMuted}`}>Secure • Verified • Institutional</p>
+        <p className={`text-xs tracking-wide text-center ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Secure • Verified • Institutional</p>
       </div>
     </div>
   );
 
   const RoleGatewayScreen = () => (
-    <div className={`flex flex-col h-full px-5 pt-16 pb-8 transition-colors duration-500 animate-fade-in relative z-10`}>
-      <button onClick={() => setCurrentView('welcome')} className={`w-10 h-10 mb-6 rounded-lg flex items-center justify-center ${t.card} hover:opacity-80 transition-opacity border ${t.border} shadow-sm`}>
-        <ArrowLeft className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} />
+    <div className={`absolute inset-0 flex flex-col h-full px-6 pt-8 pb-8 transition-colors duration-500 animate-fade-in z-20 ${isDark ? 'bg-[#0F1419]' : 'bg-[#F8FAFC]'}`}>
+      <button 
+        onClick={() => setCurrentView('welcome')} 
+        className={`w-11 h-11 mb-6 rounded-xl flex items-center justify-center ${isDark ? 'bg-white/5 border-white/10 text-white' : 'bg-white border-gray-200 text-black'} hover:opacity-80 transition-all border shadow-sm active:scale-95 shrink-0 focus-visible:ring-2 focus-visible:ring-[#1D9BF0] outline-none`}
+        aria-label="Go back"
+      >
+        <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
       </button>
-      <h1 className={`text-3xl font-extrabold ${t.text} mb-8 tracking-tight`}>Select Your Role</h1>
       
-      <div className="space-y-4 animate-fade-in-up">
+      <div className="mb-7">
+        <h1 className={`text-[28px] font-bold tracking-tight ${t.text} leading-tight`}>Select Your Role</h1>
+        <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Choose how you want to access NSUNEXT</p>
+      </div>
+      
+      <div className="space-y-4" role="listbox" aria-label="Select user role">
         {[
-          { id: 'student', title: 'Student', desc: 'Use official @northsouth.edu email', icon: GraduationCap },
-          { id: 'faculty', title: 'Faculty', desc: 'Use official @northsouth.edu email', icon: Briefcase },
-          { id: 'alumni', title: 'Alumni', desc: 'Verification required', icon: Users },
-        ].map(role => (
-          <div 
-            key={role.id}
-            onClick={() => { setAuthRole(role.id); setAuthMode('login'); setCurrentView('role_auth'); }}
-            className={`p-5 rounded-2xl ${t.card} border ${t.border} ${t.cardShadow} flex items-center cursor-pointer hover:border-[#1D9BF0]/40 transition-all active:scale-[0.98] group`}
-          >
-            <div className={`w-12 h-12 rounded-xl ${isDark ? 'bg-white/5' : 'bg-black/5'} flex items-center justify-center mr-4 group-hover:bg-[#1D9BF0]/10 transition-colors`}>
-              <role.icon className={`w-6 h-6 ${isDark ? 'text-white' : 'text-black'} group-hover:text-[#1D9BF0] transition-colors`} strokeWidth={2} />
+          { id: 'student', title: 'Student', desc: 'Use your official university email', icon: GraduationCap },
+          { id: 'alumni', title: 'Alumni', desc: 'Verification required before access', icon: Users },
+          { id: 'faculty', title: 'Faculty', desc: 'Sign in with your institutional email', icon: Briefcase },
+        ].map((role, index) => {
+          const isSelected = authRole === role.id;
+          
+          const baseCardStyle = isDark 
+            ? (isSelected 
+                ? 'bg-[#1D9BF0]/10 border-transparent' 
+                : 'bg-[#1A1A1A] border-white/10 hover:border-white/20 shadow-sm')
+            : (isSelected 
+                ? 'bg-[#1D9BF0]/[0.08] border-transparent' 
+                : 'bg-white border-gray-200 hover:border-gray-300 shadow-sm');
+
+          const iconStyle = isSelected
+            ? 'bg-[#1D9BF0]/10 text-[#1D9BF0]'
+            : (isDark ? 'bg-white/5 text-gray-400' : 'bg-[#F1F5F9] text-gray-600');
+
+          return (
+            <div 
+              key={role.id}
+              role="option"
+              aria-selected={isSelected}
+              tabIndex={0}
+              onClick={() => setAuthRole(role.id)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setAuthRole(role.id); } }}
+              className={`p-5 rounded-2xl border flex items-center cursor-pointer transition-all duration-300 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1D9BF0] outline-none group animate-fade-in-up ${baseCardStyle}`}
+              style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'both' }}
+            >
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-4 transition-colors duration-300 shrink-0 ${iconStyle}`}>
+                <role.icon className="w-6 h-6" strokeWidth={2} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className={`text-base font-semibold ${t.text} mb-0.5`}>{role.title}</h3>
+                <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'} line-clamp-2`}>{role.desc}</p>
+              </div>
+              <div className="shrink-0 ml-3">
+                {isSelected ? (
+                   <div className="bg-[#1D9BF0] text-white rounded-full flex items-center justify-center animate-in zoom-in duration-200">
+                     <CheckCircle2 className="w-6 h-6" strokeWidth={2.5} />
+                   </div>
+                ) : (
+                  <CheckCircle2 className={`w-6 h-6 ${isDark ? 'text-gray-600' : 'text-gray-300'} transition-colors duration-300 group-hover:text-gray-400`} strokeWidth={2} />
+                )}
+              </div>
             </div>
-            <div className="flex-1">
-              <h3 className={`text-lg font-extrabold ${t.text} mb-0.5`}>{role.title}</h3>
-              <p className={`text-xs font-bold ${t.textMuted}`}>{role.desc}</p>
-            </div>
-            <ChevronRight className={`w-5 h-5 ${t.textMuted} group-hover:text-[#1D9BF0] transition-colors`} strokeWidth={2.5} />
-          </div>
-        ))}
+          );
+        })}
+      </div>
+
+      <div className="mt-auto pt-6 pb-5 text-center flex flex-col items-center justify-center animate-fade-in" style={{ animationDelay: '200ms', animationFillMode: 'both' }}>
+        <div className={`flex items-center justify-center space-x-1.5 text-xs font-medium ${isDark ? 'text-gray-400' : 'text-[#6B7280]'}`}>
+          <Lock className="w-4 h-4" strokeWidth={2.5} />
+          <span>Secured with university authentication</span>
+        </div>
+      </div>
+
+      <div className="mb-2 animate-fade-in-up" style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+         <button 
+           disabled={!authRole}
+           onClick={() => { setAuthMode('login'); setCurrentView('role_auth'); }}
+           className={`w-full h-[52px] rounded-xl text-base font-semibold transition-all active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1D9BF0] outline-none disabled:opacity-50 disabled:cursor-not-allowed bg-[#1D9BF0] text-white`}
+         >
+           Continue
+         </button>
       </div>
     </div>
   );
@@ -372,146 +426,175 @@ export default function App() {
     };
 
     return (
-      <div className={`flex flex-col h-full relative z-10 animate-fade-in`}>
-        <div className={`px-5 pt-12 pb-4 ${t.glass} border-b z-20 sticky top-0 shadow-sm`}>
-          <div className="flex items-center mb-6">
-            <button onClick={() => setCurrentView('role_select')} className={`w-10 h-10 mr-4 rounded-lg flex items-center justify-center ${t.card} hover:opacity-80 transition-opacity border ${t.borderSoft} shadow-sm`}>
-              <ArrowLeft className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} />
+      <div className={`flex flex-col h-full relative z-10 animate-fade-in ${isDark ? 'bg-[#0F1419]' : 'bg-[#F8FAFC]'}`}>
+        <div className={`px-6 pt-12 pb-0 ${isDark ? 'bg-[#0F1419]' : 'bg-[#F8FAFC]'} z-20 sticky top-0`}>
+          <div className="flex items-center mb-5">
+            <button onClick={() => setCurrentView('role_select')} className={`w-10 h-10 mr-4 rounded-lg flex items-center justify-center ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-white border border-gray-200 text-black'} hover:bg-gray-50 transition-all active:scale-95`}>
+              <ArrowLeft className="w-5 h-5" strokeWidth={2} />
             </button>
-            <h1 className={`text-2xl font-extrabold ${t.text} tracking-tight capitalize`}>{authRole} Portal</h1>
-          </div>
-          
-          <div className={`flex p-1 rounded-xl ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft}`}>
-            {['login', 'signup'].map(mode => (
-              <button 
-                key={mode} 
-                onClick={() => setAuthMode(mode)}
-                className={`flex-1 py-2.5 rounded-lg text-sm font-extrabold transition-all capitalize ${authMode === mode ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'} border` : `text-gray-500 hover:${t.text}`}`}
-              >
-                {mode === 'login' ? 'Login' : 'Create Account'}
-              </button>
-            ))}
+            <h1 className={`text-xl font-semibold tracking-tight capitalize ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              {authRole} Login
+            </h1>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-5 pt-6 pb-32">
+        <div className="flex-1 overflow-y-auto px-6 pt-0 pb-32">
+          {/* Minimal Tabs */}
+          <div className={`flex border-b ${isDark ? 'border-white/10' : 'border-gray-200'} mb-7`}>
+            {['login', 'signup'].map(mode => {
+              const isActive = authMode === mode;
+              return (
+                <button 
+                  key={mode} 
+                  onClick={() => setAuthMode(mode)}
+                  className={`flex-1 pb-3 text-sm transition-all capitalize border-b-2 ${
+                    isActive 
+                      ? `font-semibold ${isDark ? 'text-white border-[#1D9BF0]' : 'text-gray-900 border-blue-500'}` 
+                      : `text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 border-transparent`
+                  }`}
+                >
+                  {mode === 'login' ? 'Login' : 'Create Account'}
+                </button>
+              );
+            })}
+          </div>
+
           {authMode === 'login' ? (
-            <div className="space-y-4 animate-fade-in-up">
-              <div>
-                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>
-                  {isAlumni ? 'Email Address' : 'NSU Email'}
-                </label>
-                <div className="relative group">
-                  <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 ${t.textMuted} group-focus-within:text-[#1D9BF0] w-5 h-5 transition-colors`} strokeWidth={2.5} />
-                  <input 
-                    type="email" 
-                    placeholder={isAlumni ? "alex@example.com" : "alex.johnson@northsouth.edu"} 
-                    className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-14 pl-12 pr-4 text-sm font-bold ${t.text} transition-all shadow-sm outline-none`}
-                  />
+            <div className="animate-fade-in-up">
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">
+                    {isAlumni ? 'Email Address' : 'NSU Email'}
+                  </label>
+                  <div className="relative group">
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 transition-colors" strokeWidth={2} />
+                    <input 
+                      type="email" 
+                      placeholder={isAlumni ? "yourname@example.com" : "yourname@northsouth.edu"} 
+                      className={`w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-white/10 rounded-lg h-12 pl-11 pr-4 text-sm font-medium text-gray-900 dark:text-white transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400`}
+                    />
+                  </div>
+                  {!isAlumni && <p className="mt-1.5 text-xs text-gray-500">Must be an @northsouth.edu email</p>}
                 </div>
-                {!isAlumni && <p className="text-[10px] font-bold text-[#1D9BF0] mt-1.5 ml-1">Must be an @northsouth.edu email</p>}
-              </div>
-              
-              <div>
-                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Password</label>
-                <div className="relative group">
-                  <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 ${t.textMuted} group-focus-within:text-[#1D9BF0] w-5 h-5 transition-colors`} strokeWidth={2.5} />
-                  <input 
-                    type="password" 
-                    placeholder="••••••••" 
-                    className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-14 pl-12 pr-4 text-sm font-bold ${t.text} transition-all shadow-sm outline-none`}
-                  />
+                
+                <div>
+                  <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">Password</label>
+                  <div className="relative group">
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 transition-colors" strokeWidth={2} />
+                    <input 
+                      type="password" 
+                      placeholder="••••••••" 
+                      className={`w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-white/10 rounded-lg h-12 pl-11 pr-4 text-sm font-medium text-gray-900 dark:text-white transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400`}
+                    />
+                  </div>
+                  <div className="text-right mt-2">
+                    <span className="text-sm text-blue-600 dark:text-blue-400 cursor-pointer hover:underline font-medium">Forgot password?</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex justify-end pt-1 mb-4">
-                <span className="text-sm font-extrabold text-[#1D9BF0] cursor-pointer hover:underline">Forgot Password?</span>
-              </div>
-
-              <button onClick={handleAction} className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/40 mt-4`}>
+              <button onClick={handleAction} className="w-full h-12 rounded-lg font-semibold text-[15px] transition-all active:scale-[0.98] bg-[#1D9BF0] text-white mt-8 hover:bg-[#1A8CD8]">
                 Login
+              </button>
+
+              <div className="flex items-center my-6">
+                <div className={`flex-1 border-t ${isDark ? 'border-white/10' : 'border-gray-200'}`}></div>
+                <span className={`px-4 text-xs font-medium uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>OR</span>
+                <div className={`flex-1 border-t ${isDark ? 'border-white/10' : 'border-gray-200'}`}></div>
+              </div>
+
+              <button className={`w-full h-12 rounded-lg font-medium text-[14px] transition-all active:scale-[0.98] ${isDark ? 'bg-transparent border border-white/20 text-white hover:bg-white/5' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'} flex items-center justify-center space-x-3`}>
+                <svg className="w-5 h-5" viewBox="0 0 24 24">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                <span>Continue with Google</span>
               </button>
             </div>
           ) : (
-            <div className="space-y-4 animate-fade-in-up">
-              <div>
-                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Full Name</label>
-                <div className="relative group">
-                  <User className={`absolute left-4 top-1/2 -translate-y-1/2 ${t.textMuted} group-focus-within:text-[#1D9BF0] w-5 h-5 transition-colors`} strokeWidth={2.5} />
-                  <input type="text" placeholder="Alex Johnson" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-14 pl-12 pr-4 text-sm font-bold ${t.text} transition-all shadow-sm outline-none`} />
-                </div>
-              </div>
-
-              <div>
-                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>
-                  {isAlumni ? 'Email Address' : 'NSU Email'}
-                </label>
-                <div className="relative group">
-                  <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 ${t.textMuted} group-focus-within:text-[#1D9BF0] w-5 h-5 transition-colors`} strokeWidth={2.5} />
-                  <input type="email" placeholder={isAlumni ? "alex@example.com" : "alex.johnson@northsouth.edu"} className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-14 pl-12 pr-4 text-sm font-bold ${t.text} transition-all shadow-sm outline-none`} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+            <div className="animate-fade-in-up">
+              <div className="space-y-4">
                 <div>
-                  <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Department</label>
-                  <select className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-14 px-4 text-sm font-bold ${t.text} appearance-none shadow-sm outline-none transition-all`}>
-                    <option>CSE</option>
-                    <option>ECE</option>
-                    <option>BBA</option>
-                    <option>Architecture</option>
-                  </select>
+                  <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">Full Name</label>
+                  <div className="relative group">
+                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 transition-colors" strokeWidth={2} />
+                    <input type="text" placeholder="Alex Johnson" className={`w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-white/10 rounded-lg h-12 pl-11 pr-4 text-sm font-medium text-gray-900 dark:text-white transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400`} />
+                  </div>
                 </div>
-                
-                {(isStudent || isAlumni) && (
+
+                <div>
+                  <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">
+                    {isAlumni ? 'Email Address' : 'NSU Email'}
+                  </label>
+                  <div className="relative group">
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 transition-colors" strokeWidth={2} />
+                    <input type="email" placeholder={isAlumni ? "yourname@example.com" : "yourname@northsouth.edu"} className={`w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-white/10 rounded-lg h-12 pl-11 pr-4 text-sm font-medium text-gray-900 dark:text-white transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400`} />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Batch</label>
-                    <select className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-14 px-4 text-sm font-bold ${t.text} appearance-none shadow-sm outline-none transition-all`}>
-                      <option>221</option>
-                      <option>213</option>
-                      <option>212</option>
-                      <option>211</option>
+                    <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">Department</label>
+                    <select className={`w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-white/10 rounded-lg h-12 px-4 text-sm font-medium text-gray-900 dark:text-white appearance-none outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500`}>
+                      <option>CSE</option>
+                      <option>ECE</option>
+                      <option>BBA</option>
+                      <option>Architecture</option>
                     </select>
+                  </div>
+                  
+                  {(isStudent || isAlumni) && (
+                    <div>
+                      <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">Batch</label>
+                      <select className={`w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-white/10 rounded-lg h-12 px-4 text-sm font-medium text-gray-900 dark:text-white appearance-none outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500`}>
+                        <option>221</option>
+                        <option>213</option>
+                        <option>212</option>
+                        <option>211</option>
+                      </select>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">Password</label>
+                  <div className="relative group">
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 transition-colors" strokeWidth={2} />
+                    <input type="password" placeholder="Create a password" className={`w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-white/10 rounded-lg h-12 pl-11 pr-4 text-sm font-medium text-gray-900 dark:text-white transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400`} />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">Confirm Password</label>
+                  <div className="relative group">
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 transition-colors" strokeWidth={2} />
+                    <input type="password" placeholder="Confirm password" className={`w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-white/10 rounded-lg h-12 pl-11 pr-4 text-sm font-medium text-gray-900 dark:text-white transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400`} />
+                  </div>
+                </div>
+
+                {isAlumni && (
+                  <div className="pt-2">
+                    <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">Graduation Certificate</label>
+                    <div className={`w-full border-2 border-dashed ${isDark ? 'border-white/20 bg-white/5' : 'border-gray-300 bg-gray-50'} rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:border-[#1D9BF0]/50 transition-colors`}>
+                      <div className="w-10 h-10 rounded-full bg-[#1D9BF0]/10 flex items-center justify-center mb-2">
+                        <Upload className="w-5 h-5 text-[#1D9BF0]" strokeWidth={2} />
+                      </div>
+                      <span className={`text-sm font-semibold ${t.text} mb-0.5`}>Upload Certificate</span>
+                      <span className={`text-xs text-gray-500 dark:text-gray-400`}>PDF, JPG or PNG (Max 5MB)</span>
+                    </div>
+                    <div className="flex items-start mt-3 space-x-2 bg-yellow-50 dark:bg-yellow-500/10 p-3 rounded-lg border border-yellow-200 dark:border-yellow-500/20">
+                      <AlertTriangle className="w-4 h-4 text-yellow-600 shrink-0 mt-0.5" strokeWidth={2} />
+                      <p className="text-[11px] font-medium text-yellow-700 dark:text-yellow-500 leading-tight">
+                        You must upload a valid certificate within 7 days to unlock messaging and job posting.
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
 
-              <div>
-                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Password</label>
-                <div className="relative group">
-                  <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 ${t.textMuted} group-focus-within:text-[#1D9BF0] w-5 h-5 transition-colors`} strokeWidth={2.5} />
-                  <input type="password" placeholder="Create a password" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-14 pl-12 pr-4 text-sm font-bold ${t.text} transition-all shadow-sm outline-none`} />
-                </div>
-              </div>
-
-              <div>
-                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Confirm Password</label>
-                <div className="relative group">
-                  <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 ${t.textMuted} group-focus-within:text-[#1D9BF0] w-5 h-5 transition-colors`} strokeWidth={2.5} />
-                  <input type="password" placeholder="Confirm password" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-14 pl-12 pr-4 text-sm font-bold ${t.text} transition-all shadow-sm outline-none`} />
-                </div>
-              </div>
-
-              {isAlumni && (
-                <div className="pt-2">
-                  <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Graduation Certificate</label>
-                  <div className={`w-full border-2 border-dashed ${isDark ? 'border-white/20 bg-white/5' : 'border-black/10 bg-black/[0.02]'} rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:border-[#1D9BF0]/50 transition-colors`}>
-                    <div className="w-12 h-12 rounded-full bg-[#1D9BF0]/10 flex items-center justify-center mb-3">
-                      <Upload className="w-6 h-6 text-[#1D9BF0]" strokeWidth={2.5} />
-                    </div>
-                    <span className={`text-sm font-extrabold ${t.text} mb-1`}>Upload Certificate</span>
-                    <span className={`text-[10px] font-bold ${t.textMuted}`}>PDF, JPG or PNG (Max 5MB)</span>
-                  </div>
-                  <div className="flex items-start mt-3 space-x-2 bg-yellow-500/10 p-3 rounded-lg border border-yellow-500/20">
-                    <AlertTriangle className="w-4 h-4 text-yellow-600 shrink-0 mt-0.5" strokeWidth={2.5} />
-                    <p className="text-[11px] font-bold text-yellow-700 dark:text-yellow-500 leading-tight">
-                      You must upload a valid certificate within 7 days to unlock messaging and job posting.
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              <button onClick={handleAction} className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/40 mt-6`}>
+              <button onClick={handleAction} className="w-full h-12 rounded-lg font-semibold text-[15px] transition-all active:scale-[0.98] bg-[#1D9BF0] text-white mt-8 hover:bg-[#1A8CD8]">
                 {isAlumni ? 'Submit Registration' : 'Send OTP'}
               </button>
             </div>
@@ -2176,11 +2259,11 @@ export default function App() {
           </div>
 
           <div className="flex-1 relative overflow-hidden">
-            {currentView === 'splash' && <SplashScreen />}
-            {currentView === 'welcome' && <WelcomeScreen />}
-            {currentView === 'role_select' && <RoleGatewayScreen />}
-            {currentView === 'role_auth' && <RoleAuthScreen />}
-            {currentView === 'otp' && <OtpScreen />}
+            {currentView === 'splash' && SplashScreen()}
+            {currentView === 'welcome' && WelcomeScreen()}
+            {currentView === 'role_select' && RoleGatewayScreen()}
+            {currentView === 'role_auth' && RoleAuthScreen()}
+            {currentView === 'otp' && OtpScreen()}
             
             {currentView === 'main' && (
               <div className="flex flex-col h-full relative z-10">
