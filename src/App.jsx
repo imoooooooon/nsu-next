@@ -256,7 +256,7 @@ const AdCarousel = ({ ads, isDark }) => {
   };
 
   return (
-    <div className="w-full mt-6 mb-2 animate-fade-in relative z-10">
+    <div className="w-full mt-2 mb-2 animate-fade-in relative z-10">
       <div 
         className={`relative w-full rounded-xl overflow-hidden border ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-white/80'} backdrop-blur-sm touch-pan-y select-none`}
         onMouseEnter={() => setIsPaused(true)}
