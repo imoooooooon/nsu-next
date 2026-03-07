@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Home, Users, Briefcase, MessageSquare, User, 
-  Droplets, Bell, Search, Filter, ChevronRight, 
+  Droplets, Droplet, Bell, Search, Filter, ChevronRight, 
   MapPin, Phone, Send, Paperclip, Settings, 
   LogOut, Bookmark, FileText, ArrowLeft, Plus,
   Info, Lock, Mail, AlertTriangle, CheckCircle2,
@@ -9,7 +9,8 @@ import {
   Share, BookmarkIcon, GraduationCap, DollarSign, SlidersHorizontal,
   Edit, MoreVertical, CheckCheck, Smile, Copy, QrCode, Wifi, 
   Eye, Lightbulb, Shield, Globe, Smartphone, CreditCard, ChevronDown,
-  Compass, Upload, X, Monitor
+  Compass, Upload, X, Monitor, Landmark, Volume2, Archive,
+  Camera, Image as ImageIcon, VolumeX, Pin, Trash2, MailOpen, Reply
 } from 'lucide-react';
 
 // --- CUSTOM LAYERED ICONS ---
@@ -365,7 +366,10 @@ const ProfileTab = ({ authRole, t, isDark, profileSegment, setProfileSegment, se
                   <h2 className={`font-extrabold text-xl tracking-tight leading-tight ${t.text} truncate`}>{fullName}</h2>
                   <p className={`font-bold ${t.textMuted} text-xs mt-0.5 truncate`}>{roleSub}</p>
                 </div>
-                <button className={`w-8 h-8 rounded-lg flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-white text-black shadow-sm'} border ${t.borderSoft} transition-transform active:scale-95`}>
+                <button 
+                  onClick={() => setSettingsOverlay('personal_info')}
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-white text-black shadow-sm'} border ${t.borderSoft} transition-transform active:scale-95`}
+                >
                   <Edit className="w-3.5 h-3.5" strokeWidth={2.5} />
                 </button>
               </div>
@@ -573,6 +577,13 @@ const SettingsFlowOverlay = ({ type, onClose, t, isDark, authRole, appLanguage, 
                 </select>
               </div>
             </div>
+            <div>
+              <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Last Donated Date</label>
+              <div className="relative">
+                <Clock className={`absolute left-3 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4`} strokeWidth={2.5} />
+                <input type="date" defaultValue="2023-08-14" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 pl-8 pr-3 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm [&::-webkit-calendar-picker-indicator]:opacity-50 [&::-webkit-calendar-picker-indicator]:hover:opacity-100`} style={{ colorScheme: isDark ? 'dark' : 'light' }} />
+              </div>
+            </div>
           </>
         )}
 
@@ -722,6 +733,22 @@ const SettingsFlowOverlay = ({ type, onClose, t, isDark, authRole, appLanguage, 
   );
 };
 
+// Added missing Emergency Flow Stub
+const EmergencyFlowOverlay = ({ onClose }) => (
+  <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-6" onClick={onClose}>
+    <div className="bg-white dark:bg-[#1A1A1A] w-full max-w-sm rounded-2xl p-6 shadow-2xl flex flex-col items-center animate-fade-in-up" onClick={e => e.stopPropagation()}>
+      <div className="w-16 h-16 bg-red-100 dark:bg-red-500/20 rounded-full flex items-center justify-center mb-4">
+        <Droplet className="w-8 h-8 text-red-500" strokeWidth={2} />
+      </div>
+      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2 text-center">Emergency Flow Placeholder</h2>
+      <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">This feature flow is under development.</p>
+      <button onClick={onClose} className="w-full py-3 bg-red-500 hover:bg-red-600 transition-colors text-white font-bold rounded-xl active:scale-95">
+        Close
+      </button>
+    </div>
+  </div>
+);
+
 export default function App() {
   const [currentView, setCurrentView] = useState('splash');
   const [authRole, setAuthRole] = useState('student'); // 'student' | 'faculty' | 'alumni'
@@ -731,6 +758,7 @@ export default function App() {
   const [isEmergencyFlowOpen, setIsEmergencyFlowOpen] = useState(false); 
   const [selectedUser, setSelectedUser] = useState(null); 
   const [selectedJob, setSelectedJob] = useState(null); 
+  const [selectedEmergency, setSelectedEmergency] = useState(null);
   const [isDark, setIsDark] = useState(false); 
   
   const [requestedSet, setRequestedSet] = useState(new Set());
@@ -753,6 +781,7 @@ export default function App() {
   const [jobFilter, setJobFilter] = useState(null);
   const [emergencyViewMode, setEmergencyViewMode] = useState('list');
   const [isDonorAvailable, setIsDonorAvailable] = useState(true);
+  const [directoryFilterBg, setDirectoryFilterBg] = useState(null); // Added state for Blood Group filtering
 
   useEffect(() => {
     if (currentView === 'splash') {
@@ -821,6 +850,11 @@ export default function App() {
     { id: 3, title: 'Product Marketing Manager', company: '10 Minute School', type: 'Full-Time', location: 'Dhaka, BD', salary: 'Competitive', deadline: '5 days left', posted: '3d ago', preview: 'Drive the go-to-market strategy for our new flagship educational courses. Work closely with product and sales teams to ensure successful launches.', match: false, urgent: false, reqs: ['Marketing', 'Strategy', 'Copywriting'], postedBy: { userId: 3, name: 'Ayman Sadiq', role: 'CEO & Founder', verified: true, type: 'Alumni' } },
   ];
 
+  const globalEmergencyRequests = [
+    { id: 1, hospital: 'Apollo Hospital', location: 'Bashundhara, Dhaka', bg: 'B+', distance: '2.3km', urgency: 'Critical', units: 2, match: 'Perfect Match', time: '10m ago', description: 'Patient is undergoing open heart surgery. Blood is required immediately.', contact: '01711223344', patientName: 'Rahim Uddin' },
+    { id: 2, hospital: 'Square Hospital', location: 'Panthapath, Dhaka', bg: 'O+', distance: '5.1km', urgency: 'Needed Today', units: 1, match: 'Compatible', time: '1h ago', description: 'Accident patient in ICU. Need O+ blood by tonight.', contact: '01811223344', patientName: 'Karim Hasan' }
+  ];
+
   const handleConnectClick = (e, id) => {
     e.stopPropagation();
     setRequestedSet(prev => {
@@ -860,30 +894,33 @@ export default function App() {
           <div className="w-8 h-8 border-[3px] border-white rounded-sm rotate-45"></div>
         </div>
         <h1 className={`text-xl font-semibold tracking-tight text-center ${t.text}`}>Connect. Grow. Support.</h1>
-        <p className={`text-sm mt-2 text-center ${isDark ? 'text-gray-400' : 'text-gray-500'} px-4`}>North South University Verified Network</p>
+        <p className={`text-sm mt-2 text-center ${t.textMuted} px-4`}>North South University Verified Network</p>
       </div>
-      <div className="w-full mt-auto space-y-5 animate-fade-in delay-150">
-        <button onClick={() => setCurrentView('role_select')} className={`w-full h-14 rounded-xl text-base font-semibold transition-all active:scale-[0.97] bg-[#1D9BF0] text-white`}>
-          Continue
+      <div className="w-full mt-auto space-y-3 animate-fade-in delay-150">
+        <button onClick={() => { setAuthMode('login'); setCurrentView('auth_main'); }} className={`w-full h-14 rounded-xl text-base font-semibold transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/30`}>
+          Log In
         </button>
-        <p className={`text-xs tracking-wide text-center ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Secure • Verified • Institutional</p>
+        <button onClick={() => { setAuthMode('signup'); setCurrentView('role_select'); }} className={`w-full h-14 rounded-xl text-base font-semibold transition-all active:scale-[0.97] ${t.card} border ${t.borderSoft} ${t.text} shadow-sm`}>
+          Create New Account
+        </button>
+        <p className={`text-xs tracking-wide text-center pt-2 font-bold ${t.textMuted}`}>Secure • Verified • Institutional</p>
       </div>
     </div>
   );
 
   const RoleGatewayScreen = () => (
-    <div className={`absolute inset-0 flex flex-col h-full px-6 pt-8 pb-8 transition-colors duration-500 animate-fade-in z-20 ${isDark ? 'bg-[#0F1419]' : 'bg-[#F8FAFC]'}`}>
+    <div className={`absolute inset-0 flex flex-col h-full px-6 pt-8 pb-8 transition-colors duration-500 animate-fade-in z-20`}>
       <button 
         onClick={() => setCurrentView('welcome')} 
-        className={`-ml-2 w-11 h-11 mb-6 rounded-full flex items-center justify-center ${isDark ? 'text-white hover:bg-white/10' : 'text-black hover:bg-black/5'} transition-all active:scale-95 shrink-0 focus-visible:ring-2 focus-visible:ring-[#1D9BF0] outline-none`}
+        className={`-ml-2 w-10 h-10 mb-6 rounded-lg flex items-center justify-center ${t.card} border ${t.borderSoft} transition-colors active:scale-95 shrink-0 outline-none shadow-sm`}
         aria-label="Go back"
       >
-        <ArrowLeft className="w-6 h-6" strokeWidth={2.5} />
+        <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
       </button>
       
       <div className="mb-7">
-        <h1 className={`text-[28px] font-bold tracking-tight ${t.text} leading-tight`}>Select Your Role</h1>
-        <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Choose how you want to access NSUNEXT</p>
+        <h1 className={`text-[28px] font-extrabold tracking-tight ${t.text} leading-tight`}>Select Your Role</h1>
+        <p className={`text-sm mt-1 font-bold ${t.textMuted}`}>Choose how you want to access NSUNEXT</p>
       </div>
       
       <div className="space-y-4" role="listbox" aria-label="Select user role">
@@ -894,17 +931,13 @@ export default function App() {
         ].map((role, index) => {
           const isSelected = authRole === role.id;
           
-          const baseCardStyle = isDark 
-            ? (isSelected 
-                ? 'bg-[#1D9BF0]/10 border-transparent' 
-                : 'bg-[#1A1A1A] border-white/10 hover:border-white/20')
-            : (isSelected 
-                ? 'bg-[#1D9BF0]/[0.08] border-transparent' 
-                : 'bg-white border-gray-200 hover:border-gray-300');
+          const baseCardStyle = isSelected 
+            ? `bg-[#1D9BF0]/10 border-[#1D9BF0]/40 shadow-sm` 
+            : `${t.card} border ${t.borderSoft} shadow-sm hover:border-[#1D9BF0]/30`;
 
           const iconStyle = isSelected
             ? 'bg-[#1D9BF0]/10 text-[#1D9BF0]'
-            : (isDark ? 'bg-white/5 text-gray-400' : 'bg-[#F1F5F9] text-gray-600');
+            : `${isDark ? 'bg-white/5' : 'bg-black/5'} ${t.textMuted}`;
 
           return (
             <div 
@@ -918,19 +951,19 @@ export default function App() {
               style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'both' }}
             >
               <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-4 transition-colors duration-300 shrink-0 ${iconStyle}`}>
-                <role.icon className="w-6 h-6" strokeWidth={2} />
+                <role.icon className="w-6 h-6" strokeWidth={2.5} />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className={`text-base font-semibold ${t.text} mb-0.5`}>{role.title}</h3>
-                <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'} line-clamp-2`}>{role.desc}</p>
+                <h3 className={`text-base font-extrabold ${t.text} mb-0.5`}>{role.title}</h3>
+                <p className={`text-xs font-bold ${t.textMuted} line-clamp-2`}>{role.desc}</p>
               </div>
               <div className="shrink-0 ml-3">
                 {isSelected ? (
-                   <div className="bg-[#1D9BF0] text-white rounded-full flex items-center justify-center animate-in zoom-in duration-200">
+                   <div className="bg-[#1D9BF0] text-white rounded-full flex items-center justify-center animate-in zoom-in duration-200 shadow-sm shadow-[#1D9BF0]/40">
                      <CheckCircle2 className="w-6 h-6" strokeWidth={2.5} />
                    </div>
                 ) : (
-                  <CheckCircle2 className={`w-6 h-6 ${isDark ? 'text-gray-600' : 'text-gray-300'} transition-colors duration-300 group-hover:text-gray-400`} strokeWidth={2} />
+                  <CheckCircle2 className={`w-6 h-6 ${t.textMuted} opacity-40 transition-colors duration-300 group-hover:opacity-70`} strokeWidth={2.5} />
                 )}
               </div>
             </div>
@@ -939,7 +972,7 @@ export default function App() {
       </div>
 
       <div className="mt-auto pt-6 pb-5 text-center flex flex-col items-center justify-center opacity-80 animate-fade-in" style={{ animationDelay: '200ms', animationFillMode: 'both' }}>
-        <div className={`flex items-center justify-center space-x-1.5 text-xs font-medium ${isDark ? 'text-gray-400' : 'text-[#6B7280]'}`}>
+        <div className={`flex items-center justify-center space-x-1.5 text-xs font-extrabold ${t.textMuted}`}>
           <Lock className="w-4 h-4" strokeWidth={2.5} />
           <span>Secured with university authentication</span>
         </div>
@@ -948,8 +981,8 @@ export default function App() {
       <div className="mb-2 animate-fade-in-up" style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
          <button 
            disabled={!authRole}
-           onClick={() => { setAuthMode('login'); setCurrentView('role_auth'); }}
-           className={`w-full h-[52px] rounded-xl text-base font-semibold transition-all active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#1D9BF0] outline-none disabled:opacity-50 disabled:cursor-not-allowed bg-[#1D9BF0] text-white`}
+           onClick={() => setCurrentView('auth_main')}
+           className={`w-full h-14 rounded-xl text-base font-extrabold transition-all active:scale-[0.97] outline-none disabled:opacity-50 disabled:cursor-not-allowed bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/30`}
          >
            Continue
          </button>
@@ -957,7 +990,7 @@ export default function App() {
     </div>
   );
 
-  const RoleAuthScreen = () => {
+  const AuthScreen = () => {
     const isStudent = authRole === 'student';
     const isFaculty = authRole === 'faculty';
     const isAlumni = authRole === 'alumni';
@@ -970,85 +1003,72 @@ export default function App() {
       }
     };
 
+    const handleBack = () => {
+      if (authMode === 'signup') {
+        setCurrentView('role_select');
+      } else {
+        setCurrentView('welcome');
+      }
+    };
+
     return (
-      <div className={`flex flex-col h-full relative z-10 animate-fade-in ${isDark ? 'bg-[#0F1419]' : 'bg-[#F8FAFC]'}`}>
-        <div className={`px-6 pt-12 pb-0 ${isDark ? 'bg-[#0F1419]' : 'bg-[#F8FAFC]'} z-20 sticky top-0`}>
-          <div className="flex items-center mb-5">
-            <button onClick={() => setCurrentView('role_select')} className={`-ml-2 w-11 h-11 mr-2 rounded-full flex items-center justify-center ${isDark ? 'text-white hover:bg-white/10' : 'text-black hover:bg-black/5'} transition-all active:scale-95 shrink-0 outline-none`}>
-              <ArrowLeft className="w-6 h-6" strokeWidth={2.5} />
+      <div className={`flex flex-col h-full relative z-10 animate-fade-in`}>
+        <div className={`px-6 pt-12 pb-3 ${t.glass} border-b z-20 sticky top-0 shadow-sm`}>
+          <div className="flex items-center">
+            <button onClick={handleBack} className={`-ml-2 w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors mr-3 active:scale-95 shrink-0 outline-none`}>
+              <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
             </button>
-            <h1 className={`text-xl font-semibold tracking-tight capitalize ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              {authRole} Login
+            <h1 className={`text-lg font-extrabold tracking-tight capitalize ${t.text}`}>
+              {authMode === 'login' ? 'Log In' : `Create ${authRole.charAt(0).toUpperCase() + authRole.slice(1)} Account`}
             </h1>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 pt-0 pb-32">
-          {/* Minimal Tabs */}
-          <div className={`flex border-b ${isDark ? 'border-white/10' : 'border-gray-200'} mb-7`}>
-            {['login', 'signup'].map(mode => {
-              const isActive = authMode === mode;
-              return (
-                <button 
-                  key={mode} 
-                  onClick={() => setAuthMode(mode)}
-                  className={`flex-1 pb-3 text-sm transition-all capitalize border-b-2 ${
-                    isActive 
-                      ? `font-semibold ${isDark ? 'text-white border-[#1D9BF0]' : 'text-gray-900 border-blue-500'}` 
-                      : `text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 border-transparent bg-transparent`
-                  }`}
-                >
-                  {mode === 'login' ? 'Login' : 'Create Account'}
-                </button>
-              );
-            })}
-          </div>
-
+        <div className="flex-1 overflow-y-auto px-6 pt-6 pb-32 relative z-10">
           {authMode === 'login' ? (
             <div className="animate-fade-in-up">
               <div className="space-y-4">
                 <div>
-                  <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">
-                    {isAlumni ? 'Email Address' : 'NSU Email'}
+                  <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>
+                    Email Address
                   </label>
                   <div className="relative group">
-                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 transition-colors" strokeWidth={2} />
+                    <Mail className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4 transition-colors`} strokeWidth={2.5} />
                     <input 
                       type="email" 
-                      placeholder={isAlumni ? "yourname@example.com" : "yourname@northsouth.edu"} 
-                      className={`w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-white/10 rounded-lg h-12 pl-11 pr-4 text-sm font-medium text-gray-900 dark:text-white transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400`}
+                      placeholder="yourname@northsouth.edu" 
+                      className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 pl-10 pr-4 text-sm font-bold ${t.text} transition-all outline-none focus:ring-2 focus:ring-[#1D9BF0]/30 shadow-sm`}
                     />
                   </div>
-                  {!isAlumni && <p className="mt-1.5 text-xs text-gray-500">Must be an @northsouth.edu email</p>}
                 </div>
                 
                 <div>
-                  <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">Password</label>
+                  <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Password</label>
                   <div className="relative group">
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 transition-colors" strokeWidth={2} />
+                    <Lock className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4 transition-colors`} strokeWidth={2.5} />
                     <input 
                       type="password" 
                       placeholder="••••••••" 
-                      className={`w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-white/10 rounded-lg h-12 pl-11 pr-4 text-sm font-medium text-gray-900 dark:text-white transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400`}
+                      className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 pl-10 pr-4 text-sm font-bold ${t.text} transition-all outline-none focus:ring-2 focus:ring-[#1D9BF0]/30 shadow-sm`}
                     />
                   </div>
                   <div className="text-right mt-2">
-                    <span className="text-sm text-blue-600 dark:text-blue-400 cursor-pointer hover:underline font-medium">Forgot password?</span>
+                    <span className="text-xs text-[#1D9BF0] cursor-pointer hover:underline font-extrabold">Forgot password?</span>
                   </div>
                 </div>
               </div>
 
-              <button onClick={handleAction} className="w-full h-12 rounded-lg font-semibold text-[15px] transition-all active:scale-[0.98] bg-[#1D9BF0] text-white mt-8 hover:bg-[#1A8CD8]">
-                Login
+              <button onClick={handleAction} className="w-full h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.98] bg-[#1D9BF0] text-white mt-8 shadow-lg shadow-[#1D9BF0]/30 hover:bg-[#1A8CD8]">
+                Log In
               </button>
 
               <div className="flex items-center my-6">
-                <div className={`flex-1 border-t ${isDark ? 'border-white/10' : 'border-gray-200'}`}></div>
-                <span className={`px-4 text-xs font-medium uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>OR</span>
-                <div className={`flex-1 border-t ${isDark ? 'border-white/10' : 'border-gray-200'}`}></div>
+                <div className={`flex-1 border-t ${t.borderSoft}`}></div>
+                <span className={`px-4 text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted}`}>OR</span>
+                <div className={`flex-1 border-t ${t.borderSoft}`}></div>
               </div>
 
-              <button className={`w-full h-12 rounded-lg font-medium text-[14px] transition-all active:scale-[0.98] ${isDark ? 'bg-transparent border border-white/20 text-white hover:bg-white/5' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'} flex items-center justify-center space-x-3`}>
+              <button className={`w-full h-14 rounded-xl font-extrabold text-[14px] transition-all active:scale-[0.98] ${t.card} border ${t.border} ${t.text} hover:border-[#1D9BF0]/30 shadow-sm flex items-center justify-center space-x-3 mb-6`}>
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                   <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -1057,32 +1077,36 @@ export default function App() {
                 </svg>
                 <span>Continue with Google</span>
               </button>
+
+              <p className={`text-center text-xs font-bold ${t.textMuted}`}>
+                Don't have an account? <button onClick={() => { setAuthMode('signup'); setCurrentView('role_select'); }} className="text-[#1D9BF0] font-extrabold hover:underline">Sign up</button>
+              </p>
             </div>
           ) : (
             <div className="animate-fade-in-up">
               <div className="space-y-4">
                 <div>
-                  <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">Full Name</label>
+                  <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Full Name</label>
                   <div className="relative group">
-                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 transition-colors" strokeWidth={2} />
-                    <input type="text" placeholder="Alex Johnson" className={`w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-white/10 rounded-lg h-12 pl-11 pr-4 text-sm font-medium text-gray-900 dark:text-white transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400`} />
+                    <User className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4 transition-colors`} strokeWidth={2.5} />
+                    <input type="text" placeholder="Alex Johnson" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 pl-10 pr-4 text-sm font-bold ${t.text} transition-all outline-none focus:ring-2 focus:ring-[#1D9BF0]/30 shadow-sm`} />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">
+                  <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>
                     {isAlumni ? 'Email Address' : 'NSU Email'}
                   </label>
                   <div className="relative group">
-                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 transition-colors" strokeWidth={2} />
-                    <input type="email" placeholder={isAlumni ? "yourname@example.com" : "yourname@northsouth.edu"} className={`w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-white/10 rounded-lg h-12 pl-11 pr-4 text-sm font-medium text-gray-900 dark:text-white transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400`} />
+                    <Mail className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4 transition-colors`} strokeWidth={2.5} />
+                    <input type="email" placeholder={isAlumni ? "yourname@example.com" : "yourname@northsouth.edu"} className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 pl-10 pr-4 text-sm font-bold ${t.text} transition-all outline-none focus:ring-2 focus:ring-[#1D9BF0]/30 shadow-sm`} />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">Department</label>
-                    <select className={`w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-white/10 rounded-lg h-12 px-4 text-sm font-medium text-gray-900 dark:text-white appearance-none outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500`}>
+                    <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Department</label>
+                    <select className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} appearance-none outline-none transition-all focus:ring-2 focus:ring-[#1D9BF0]/30 shadow-sm`}>
                       <option>CSE</option>
                       <option>ECE</option>
                       <option>BBA</option>
@@ -1092,8 +1116,8 @@ export default function App() {
                   
                   {(isStudent || isAlumni) && (
                     <div>
-                      <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">Batch</label>
-                      <select className={`w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-white/10 rounded-lg h-12 px-4 text-sm font-medium text-gray-900 dark:text-white appearance-none outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500`}>
+                      <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Batch</label>
+                      <select className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} appearance-none outline-none transition-all focus:ring-2 focus:ring-[#1D9BF0]/30 shadow-sm`}>
                         <option>221</option>
                         <option>213</option>
                         <option>212</option>
@@ -1104,34 +1128,34 @@ export default function App() {
                 </div>
 
                 <div>
-                  <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">Password</label>
+                  <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Password</label>
                   <div className="relative group">
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 transition-colors" strokeWidth={2} />
-                    <input type="password" placeholder="Create a password" className={`w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-white/10 rounded-lg h-12 pl-11 pr-4 text-sm font-medium text-gray-900 dark:text-white transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400`} />
+                    <Lock className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4 transition-colors`} strokeWidth={2.5} />
+                    <input type="password" placeholder="Create a password" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 pl-10 pr-4 text-sm font-bold ${t.text} transition-all outline-none focus:ring-2 focus:ring-[#1D9BF0]/30 shadow-sm`} />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">Confirm Password</label>
+                  <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Confirm Password</label>
                   <div className="relative group">
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 transition-colors" strokeWidth={2} />
-                    <input type="password" placeholder="Confirm password" className={`w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-white/10 rounded-lg h-12 pl-11 pr-4 text-sm font-medium text-gray-900 dark:text-white transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400`} />
+                    <Lock className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4 transition-colors`} strokeWidth={2.5} />
+                    <input type="password" placeholder="Confirm password" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 pl-10 pr-4 text-sm font-bold ${t.text} transition-all outline-none focus:ring-2 focus:ring-[#1D9BF0]/30 shadow-sm`} />
                   </div>
                 </div>
 
                 {isAlumni && (
                   <div className="pt-2">
-                    <label className="text-xs tracking-wide text-gray-500 dark:text-gray-400 mb-1.5 block font-medium">Graduation Certificate</label>
-                    <div className={`w-full border-2 border-dashed ${isDark ? 'border-white/20 bg-white/5' : 'border-gray-300 bg-gray-50'} rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:border-[#1D9BF0]/50 transition-colors`}>
+                    <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Graduation Certificate</label>
+                    <div className={`w-full border-2 border-dashed ${t.inputBorder} ${t.inputBg} rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:border-[#1D9BF0]/50 transition-colors shadow-sm`}>
                       <div className="w-10 h-10 rounded-full bg-[#1D9BF0]/10 flex items-center justify-center mb-2">
-                        <Upload className="w-5 h-5 text-[#1D9BF0]" strokeWidth={2} />
+                        <Upload className="w-5 h-5 text-[#1D9BF0]" strokeWidth={2.5} />
                       </div>
-                      <span className={`text-sm font-semibold ${t.text} mb-0.5`}>Upload Certificate</span>
-                      <span className={`text-xs text-gray-500 dark:text-gray-400`}>PDF, JPG or PNG (Max 5MB)</span>
+                      <span className={`text-sm font-extrabold ${t.text} mb-0.5`}>Upload Certificate</span>
+                      <span className={`text-[10px] font-bold ${t.textMuted}`}>PDF, JPG or PNG (Max 5MB)</span>
                     </div>
-                    <div className="flex items-start mt-3 space-x-2 bg-yellow-50 dark:bg-yellow-500/10 p-3 rounded-lg border border-yellow-200 dark:border-yellow-500/20">
-                      <AlertTriangle className="w-4 h-4 text-yellow-600 shrink-0 mt-0.5" strokeWidth={2} />
-                      <p className="text-[11px] font-medium text-yellow-700 dark:text-yellow-500 leading-tight">
+                    <div className="flex items-start mt-3 space-x-2 bg-yellow-500/10 p-3 rounded-lg border border-yellow-500/20">
+                      <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" strokeWidth={2} />
+                      <p className="text-[11px] font-bold text-yellow-600 dark:text-yellow-500 leading-tight">
                         You must upload a valid certificate within 7 days to unlock messaging and job posting.
                       </p>
                     </div>
@@ -1139,17 +1163,17 @@ export default function App() {
                 )}
               </div>
 
-              <button onClick={handleAction} className="w-full h-12 rounded-lg font-semibold text-[15px] transition-all active:scale-[0.98] bg-[#1D9BF0] text-white mt-8 hover:bg-[#1A8CD8]">
+              <button onClick={handleAction} className="w-full h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.98] bg-[#1D9BF0] text-white mt-8 shadow-lg shadow-[#1D9BF0]/30 hover:bg-[#1A8CD8]">
                 Send OTP
               </button>
 
               <div className="flex items-center my-6">
-                <div className={`flex-1 border-t ${isDark ? 'border-white/10' : 'border-gray-200'}`}></div>
-                <span className={`px-4 text-xs font-medium uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>OR</span>
-                <div className={`flex-1 border-t ${isDark ? 'border-white/10' : 'border-gray-200'}`}></div>
+                <div className={`flex-1 border-t ${t.borderSoft}`}></div>
+                <span className={`px-4 text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted}`}>OR</span>
+                <div className={`flex-1 border-t ${t.borderSoft}`}></div>
               </div>
 
-              <button className={`w-full h-12 rounded-lg font-medium text-[14px] transition-all active:scale-[0.98] ${isDark ? 'bg-transparent border border-white/20 text-white hover:bg-white/5' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'} flex items-center justify-center space-x-3`}>
+              <button className={`w-full h-14 rounded-xl font-extrabold text-[14px] transition-all active:scale-[0.98] ${t.card} border ${t.border} ${t.text} hover:border-[#1D9BF0]/30 shadow-sm flex items-center justify-center space-x-3 mb-6`}>
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                   <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -1158,6 +1182,10 @@ export default function App() {
                 </svg>
                 <span>Sign up with Google</span>
               </button>
+
+              <p className={`text-center text-xs font-bold ${t.textMuted}`}>
+                Already have an account? <button onClick={() => { setAuthMode('login'); setCurrentView('auth_main'); }} className="text-[#1D9BF0] font-extrabold hover:underline">Log in</button>
+              </p>
             </div>
           )}
         </div>
@@ -1166,16 +1194,16 @@ export default function App() {
   };
 
   const OtpScreen = () => (
-    <div className={`flex flex-col h-full relative z-10 animate-fade-in ${isDark ? 'bg-[#0F1419]' : 'bg-[#F8FAFC]'}`}>
-      <div className="px-6 pt-12 pb-0 z-20 sticky top-0">
-        <button onClick={() => setCurrentView('role_auth')} className={`-ml-2 w-11 h-11 mb-6 rounded-full flex items-center justify-center ${isDark ? 'text-white hover:bg-white/10' : 'text-black hover:bg-black/5'} transition-all active:scale-95 shrink-0 outline-none`}>
-          <ArrowLeft className="w-6 h-6" strokeWidth={2.5} />
+    <div className={`flex flex-col h-full relative z-10 animate-fade-in`}>
+      <div className={`px-6 pt-12 pb-3 ${t.glass} border-b z-20 sticky top-0 shadow-sm`}>
+        <button onClick={() => setCurrentView('auth_main')} className={`-ml-2 w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors active:scale-95 shrink-0 outline-none`}>
+          <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
         </button>
       </div>
 
-      <div className="flex-1 px-6 pt-2">
-        <h1 className={`text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>Verify Your Email</h1>
-        <p className={`text-sm mt-2 font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Enter the 6-digit code sent to your email.</p>
+      <div className="flex-1 px-6 pt-6 relative z-10">
+        <h1 className={`text-2xl font-extrabold tracking-tight ${t.text}`}>Verify Your Email</h1>
+        <p className={`text-xs mt-2 font-bold ${t.textMuted}`}>Enter the 6-digit code sent to your email.</p>
         
         <div className="flex justify-between mt-7 mb-8 gap-2">
           {[1,2,3,4,5,6].map((i) => (
@@ -1184,16 +1212,16 @@ export default function App() {
               type="text" 
               maxLength={1}
               defaultValue={i === 1 ? '1' : i === 2 ? '2' : ''}
-              className={`w-12 h-14 rounded-xl text-center text-xl font-bold transition-all outline-none ${isDark ? 'bg-[#1A1A1A] border-white/10 text-white' : 'bg-white border border-gray-200 text-gray-900'} focus:border-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]/20`}
+              className={`w-12 h-14 rounded-xl text-center text-xl font-extrabold transition-all outline-none ${t.inputBg} border ${t.inputBorder} ${t.text} focus:ring-2 focus:ring-[#1D9BF0]/30 shadow-sm`}
             />
           ))}
         </div>
 
-        <button onClick={() => setCurrentView('main')} className="w-full h-12 rounded-xl font-semibold text-[15px] transition-all active:scale-[0.98] bg-[#1D9BF0] text-white hover:bg-[#1A8CD8]">
+        <button onClick={() => setCurrentView('main')} className="w-full h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/30 hover:bg-[#1A8CD8]">
           Verify & Create Account
         </button>
 
-        <p className={`text-center text-sm font-medium mt-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+        <p className={`text-center text-xs font-bold mt-5 ${t.textMuted}`}>
           Didn't receive the code? <span className="text-[#1D9BF0] opacity-50 cursor-not-allowed ml-1">Resend in 28s</span>
         </p>
       </div>
@@ -1458,12 +1486,15 @@ export default function App() {
           })}
         </div>
 
-        <div className={`shrink-0 ${t.card} border ${t.border} ${t.cardShadow} rounded-2xl p-4 relative overflow-hidden group`}>
+        <div 
+          onClick={() => setActiveTab('emergency')}
+          className={`shrink-0 ${t.card} border ${t.border} ${t.cardShadow} rounded-2xl p-4 relative overflow-hidden group cursor-pointer hover:border-red-500/30 transition-colors`}
+        >
           <div className="absolute top-0 right-0 w-48 h-48 bg-red-500/10 rounded-full blur-[60px] pointer-events-none group-hover:bg-red-500/20 transition-colors duration-700 -mr-10 -mt-10"></div>
           <div className="relative z-10">
-            <div className="flex justify-between items-center mb-3">
+            <div className="flex justify-between items-center mb-3.5">
                <div className="flex items-center space-x-2">
-                 <Droplets className="w-4 h-4 text-red-500" strokeWidth={2.5} />
+                 <Droplet className="w-4 h-4 text-red-500" strokeWidth={2.5} />
                  <h3 className={`text-sm font-extrabold ${t.text} tracking-tight leading-tight`}>Emergency Support</h3>
                </div>
                <div className="flex items-center space-x-1.5 bg-red-500/10 px-2 py-1 rounded-md border border-red-500/20">
@@ -1471,22 +1502,21 @@ export default function App() {
                  <span className="text-red-500 text-[9px] font-extrabold tracking-wide uppercase">Live</span>
                </div>
             </div>
-            <div className={`mb-3 p-3 rounded-xl ${isDark ? 'bg-black/20' : 'bg-white/40'} border ${t.borderSoft} flex items-center space-x-3 backdrop-blur-md cursor-pointer hover:border-red-500/30 transition-colors`} onClick={() => setActiveTab('emergency')}>
-               <div className="w-10 h-10 shrink-0 rounded-lg bg-red-500 flex items-center justify-center shadow-sm text-white font-extrabold text-sm border border-red-400">
+            
+            <div className="flex items-center space-x-3">
+               <div className="w-11 h-11 shrink-0 rounded-xl bg-red-500 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.3)] text-white font-extrabold text-base border border-red-400">
                  B+
                </div>
                <div className="flex-1 min-w-0">
-                 <h4 className={`text-sm font-extrabold ${t.text} leading-tight truncate`}>Apollo Hospital</h4>
+                 <h4 className={`text-sm font-extrabold ${t.text} leading-tight truncate`}>Urgent Blood Required</h4>
                  <div className="flex items-center mt-1 space-x-1.5">
                    <p className={`${t.textMuted} text-[10px] font-bold truncate`}>Needed immediately</p>
-                   <span className="w-1 h-1 rounded-full bg-gray-400/50"></span>
+                   <span className="w-1 h-1 rounded-full bg-gray-400/50 shrink-0"></span>
                    <p className={`${t.textMuted} text-[10px] font-extrabold shrink-0`}>2.3 km away</p>
                  </div>
                </div>
+               <ChevronRight className="w-5 h-5 text-red-500/50 group-hover:text-red-500 transition-colors shrink-0" strokeWidth={2.5} />
             </div>
-            <button onClick={() => setActiveTab('emergency')} className={`w-full h-10 rounded-lg font-bold text-xs bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-colors`}>
-              View Request
-            </button>
           </div>
         </div>
 
@@ -1500,10 +1530,7 @@ export default function App() {
     const isAvailable = isDonorAvailable;
     const setIsAvailable = setIsDonorAvailable;
 
-    const activeRequests = [
-      { hospital: 'Apollo Hospital', bg: 'B+', distance: '2.3km', urgency: 'Critical', units: 2, match: 'Perfect Match', time: '10m ago' },
-      { hospital: 'Square Hospital', bg: 'O+', distance: '5.1km', urgency: 'Needed Today', units: 1, match: 'Compatible', time: '1h ago' }
-    ];
+    const activeRequests = globalEmergencyRequests;
 
     return (
       <div className={`flex flex-col h-full relative animate-fade-in z-10`}>
@@ -1517,14 +1544,6 @@ export default function App() {
               <Info className={`w-4 h-4 ${t.text}`} strokeWidth={2.5} />
             </button>
           </div>
-
-          <div className={`mt-4 inline-flex flex-col items-start px-3 py-2 rounded-lg ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/70 border-gray-200'} border cursor-pointer hover:opacity-80 transition-opacity`}>
-            <div className="flex items-center space-x-1.5">
-              <MapPin className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" strokeWidth={2.5} />
-              <span className={`text-sm font-semibold ${t.text}`}>Bashundhara, Dhaka</span>
-            </div>
-            <span className={`text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5 ml-5`}>5km radius</span>
-          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto pb-28 px-5 pt-6 relative z-10">
@@ -1537,13 +1556,15 @@ export default function App() {
                 { bg: 'A+', count: 42 }, { bg: 'B+', count: 85 }, { bg: 'O+', count: 64 }, { bg: 'AB+', count: 18 },
                 { bg: 'A-', count: 12 }, { bg: 'B-', count: 23 }, { bg: 'O-', count: 15 }, { bg: 'AB-', count: 5 }
               ].map(item => {
-                const dotColor = item.count > 30 ? 'bg-green-500' : item.count >= 10 ? 'bg-yellow-500' : 'bg-red-500';
                 return (
                   <div 
                     key={item.bg} 
+                    onClick={() => {
+                      setDirectoryFilterBg(item.bg);
+                      setActiveTab('emergency_directory');
+                    }}
                     className={`relative flex flex-col items-center justify-center py-3 px-1 rounded-xl ${isDark ? 'bg-[#1A1A1A] border-white/10' : 'bg-white border-gray-200'} border cursor-pointer hover:border-gray-300 dark:hover:border-white/20 transition-all active:scale-95`}
                   >
-                    <div className={`absolute top-2 right-2 w-1.5 h-1.5 rounded-full ${dotColor}`}></div>
                     <span className={`text-xl font-semibold ${t.text} mb-0.5`}>{item.bg}</span>
                     <span className={`text-xs text-gray-500 dark:text-gray-400 font-medium`}>{item.count} donors</span>
                   </div>
@@ -1553,25 +1574,37 @@ export default function App() {
           </div>
 
           {/* Donor Status Section */}
-          <div className={`rounded-xl p-5 ${isDark ? 'bg-[#1A1A1A] border-white/10' : 'bg-white border-gray-200'} border mt-6 relative overflow-hidden`}>
-             <div className="flex justify-between items-start">
-                <div>
-                   <h3 className={`text-base font-semibold ${t.text}`}>Donor Status</h3>
-                   <p className={`text-sm font-medium ${isAvailable ? 'text-green-600 dark:text-green-500' : t.textMuted} mt-0.5`}>
-                     {isAvailable ? 'Available to donate' : 'Not available'}
-                   </p>
-                </div>
-                <div 
-                  onClick={() => setIsAvailable(!isAvailable)} 
-                  className={`w-12 h-7 rounded-full flex items-center px-1 transition-colors cursor-pointer border ${isAvailable ? 'bg-green-500 border-green-400' : (isDark ? 'bg-white/10 border-white/20' : 'bg-gray-200 border-gray-300')}`}
-                >
-                   <div className={`w-5 h-5 bg-white rounded-full shadow-sm transform transition-transform ${isAvailable ? 'translate-x-5' : 'translate-x-0'}`}></div>
-                </div>
-             </div>
-             <div className={`pt-4 mt-4 border-t ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
-                <span className={`text-sm font-medium ${t.textMuted} block mb-0.5`}>Your impact</span>
-                <span className={`text-sm font-semibold text-green-600 dark:text-green-500`}>3 lives helped</span>
-             </div>
+          <div className={`rounded-2xl p-5 ${t.card} shadow-sm border ${t.border} mt-6 relative overflow-hidden`}>
+            <div className="relative z-10">
+              <div className="flex justify-between items-center mb-5">
+                 <div className="flex items-center space-x-3">
+                   <Droplet className={`w-6 h-6 ${isAvailable ? 'text-green-500' : 'text-gray-400'} transition-colors`} strokeWidth={2.5} />
+                   <div>
+                     <h3 className={`text-base font-extrabold ${t.text} leading-tight`}>Donor Status</h3>
+                     <p className={`text-xs font-bold ${isAvailable ? 'text-green-500' : t.textMuted} mt-0.5 transition-colors`}>
+                       {isAvailable ? 'Ready to donate' : 'Currently unavailable'}
+                     </p>
+                   </div>
+                 </div>
+                 <div 
+                   onClick={() => setIsAvailable(!isAvailable)} 
+                   className={`w-12 h-7 rounded-full flex items-center px-1 transition-colors cursor-pointer border ${isAvailable ? 'bg-green-500 border-green-500' : (isDark ? 'bg-white/10 border-white/20' : 'bg-gray-200 border-gray-300')}`}
+                 >
+                    <div className={`w-5 h-5 bg-white rounded-full shadow-sm transform transition-transform ${isAvailable ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                 </div>
+              </div>
+
+              <div className="flex justify-between items-center pt-2">
+                 <div className="flex flex-col items-start text-left">
+                    <span className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mb-1`}>Your Impact</span>
+                    <span className={`text-lg font-extrabold ${isDark ? 'text-red-400' : 'text-red-600'} drop-shadow-sm`}>3 Lives</span>
+                 </div>
+                 <div className="flex flex-col items-end text-right">
+                    <span className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mb-1`}>Last Donated</span>
+                    <span className={`text-lg font-extrabold ${t.text}`}>14 Aug, '23</span>
+                 </div>
+              </div>
+            </div>
           </div>
 
           {/* Requests Near You */}
@@ -1591,7 +1624,10 @@ export default function App() {
                     <p className={`text-sm font-medium ${t.textMuted} mt-1`}>{req.units} units needed</p>
                     <p className={`text-sm font-medium ${t.textMuted}`}>{req.distance} away</p>
                   </div>
-                  <button className={`w-full py-2.5 rounded-lg font-semibold text-sm transition-all active:scale-[0.98] ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'} border border-transparent`}>
+                  <button 
+                    onClick={() => setSelectedEmergency(req)}
+                    className={`w-full py-2.5 rounded-lg font-semibold text-sm transition-all active:scale-[0.98] ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'} border border-transparent`}
+                  >
                     View Request
                   </button>
                 </div>
@@ -1618,175 +1654,116 @@ export default function App() {
     );
   };
 
-  const EmergencyFlowOverlay = ({ onClose }) => {
-    const [step, setStep] = useState('form'); 
-    const [selectedBg, setSelectedBg] = useState('B+');
+  const EmergencyDirectoryTab = () => {
+    const allUsers = [...globalAlumniData, ...globalFacultyData, ...globalStudentData];
+    const displayData = allUsers.filter(u => u.blood === directoryFilterBg);
+
+    const getRoleStyles = (person) => {
+      const type = person.batch === 'Faculty' ? 'Faculty' : person.role === 'Student' ? 'Student' : 'Alumni';
+      switch (type) {
+        case 'Student':
+          return { type, icon: GraduationCap, colorClass: 'text-[#1D9BF0]', bgClass: 'bg-[#1D9BF0]/10' };
+        case 'Alumni':
+          return { type, icon: Briefcase, colorClass: 'text-amber-500', bgClass: 'bg-amber-500/10' };
+        case 'Faculty':
+          return { type, icon: Landmark, colorClass: isDark ? 'text-rose-400' : 'text-[#800000]', bgClass: isDark ? 'bg-rose-400/10' : 'bg-[#800000]/10' };
+        default:
+          return { type, icon: User, colorClass: 'text-gray-500', bgClass: 'bg-gray-500/10' };
+      }
+    };
 
     return (
-      <div className={`absolute inset-0 z-50 flex flex-col animate-slide-up ${t.bg}`}>
-        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden transition-opacity duration-500">
-          <div className={`absolute top-[-5%] right-[-10%] w-[80%] h-[60%] bg-red-500 rounded-full mix-blend-screen filter blur-[150px] ${isDark ? 'opacity-20' : 'opacity-[0.15]'}`}></div>
+      <div className={`flex flex-col h-full relative animate-fade-in z-10`}>
+        <div className={`px-5 pt-8 pb-3 relative z-20 ${t.glass} border-b`}>
+          <div className="flex items-center mb-4 mt-1">
+            <button 
+              onClick={() => {
+                setDirectoryFilterBg(null);
+                setActiveTab('emergency');
+              }}
+              className={`mr-3 w-10 h-10 rounded-lg ${t.card} border ${t.borderSoft} flex items-center justify-center transition-colors active:scale-95 shrink-0`}
+            >
+              <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
+            </button>
+            <div>
+              <h2 className={`text-2xl font-extrabold ${isDark ? 'text-red-400' : 'text-red-600'} tracking-tight leading-tight`}>
+                {directoryFilterBg} Donors
+              </h2>
+              <p className={`${t.textMuted} text-[11px] font-bold tracking-wide mt-0.5`}>Emergency Blood Directory</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider mt-1">
+             Showing {displayData.length} results • {directoryFilterBg} Blood Group
+          </div>
         </div>
 
-        <div className={`px-4 pt-12 pb-3 flex items-center justify-between ${t.glass} border-b sticky top-0 z-20 shadow-sm`}>
-          <button onClick={onClose} className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors`}>
-            <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
-          </button>
-          <h2 className={`text-base font-extrabold ${t.text} leading-tight drop-shadow-sm`}>
-            {step === 'form' ? 'Request Blood' : step === 'confirm' ? 'Confirm Broadcast' : 'Live Tracking'}
-          </h2>
-          <div className="w-10 h-10"></div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto pb-10 relative z-10 px-5 pt-6">
-          {step === 'form' && (
-            <div className="space-y-6 animate-fade-in">
-              <div className={`p-5 rounded-2xl ${t.cardShadow} border ${t.border} relative overflow-hidden`}>
-                 <div className={`absolute inset-0 z-0 ${t.card}`}></div>
-                 <div className="relative z-10 space-y-5">
-                    <div>
-                      <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Blood Group Needed</label>
-                      <div className="grid grid-cols-4 gap-2">
-                        {['A+', 'B+', 'O+', 'AB+', 'A-', 'B-', 'O-', 'AB-'].map(bg => (
-                          <div 
-                            key={bg} 
-                            onClick={() => setSelectedBg(bg)}
-                            className={`py-2.5 rounded-xl text-center font-extrabold text-sm border shadow-sm transition-all cursor-pointer ${selectedBg === bg ? 'bg-red-500 text-white border-red-500 shadow-[0_4px_14px_rgba(239,68,68,0.4)]' : `${isDark ? 'bg-white/5 text-gray-300 border-white/10' : 'bg-white/50 text-gray-700 border-black/5'} hover:border-red-500/50`}`}>{bg}</div>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Hospital Name & Location</label>
-                      <div className="relative">
-                        <MapPin className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4`} strokeWidth={2.5} />
-                        <input type="text" placeholder="E.g. Apollo Hospital, Dhaka" defaultValue="Apollo Hospital" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 pl-10 pr-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                       <div>
-                         <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Units</label>
-                         <select defaultValue="2 Units" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none appearance-none shadow-sm`}>
-                            <option value="1 Unit">1 Unit</option>
-                            <option value="2 Units">2 Units</option>
-                            <option value="3+ Units">3+ Units</option>
-                         </select>
-                       </div>
-                       <div>
-                         <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Urgency</label>
-                         <select defaultValue="Critical (Now)" className={`w-full bg-red-500/10 border border-red-500/30 text-red-500 rounded-xl h-12 px-4 text-sm font-bold focus:outline-none appearance-none shadow-sm`}>
-                            <option value="Critical (Now)">Critical (Now)</option>
-                            <option value="Today">Today</option>
-                            <option value="Within 48h">Within 48h</option>
-                         </select>
-                       </div>
-                    </div>
-                    <div>
-                      <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Contact Number</label>
-                      <div className="relative">
-                        <Phone className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4`} strokeWidth={2.5} />
-                        <input type="tel" placeholder="01XXXXXXXXX" defaultValue="01712345678" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 pl-10 pr-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
-                      </div>
-                    </div>
-                 </div>
-              </div>
-              <button 
-                onClick={() => setStep('confirm')}
-                className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-red-500 text-white shadow-lg shadow-red-500/40 border border-red-400`}
+        <div className="flex-1 overflow-y-auto pb-36 px-5 pt-6 relative z-10 space-y-4">
+          {displayData.map((person) => {
+            const { type: roleType, icon: RoleIcon, colorClass, bgClass } = getRoleStyles(person);
+            
+            return (
+              <div 
+                key={person.id} 
+                className={`rounded-2xl p-4 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 cursor-pointer shadow-sm border ${t.borderSoft} ${isDark ? 'bg-[#1A1A1A]/60' : 'bg-white/60'} backdrop-blur-md`} 
+                onClick={() => setSelectedUser(person)}
               >
-                Review Alert
-              </button>
-            </div>
-          )}
-
-          {step === 'confirm' && (
-            <div className="flex flex-col items-center pt-8 animate-fade-in">
-               <div className="relative w-48 h-48 flex items-center justify-center mb-8">
-                  <div className="absolute inset-0 rounded-full border-2 border-red-500/30 animate-ping" style={{ animationDuration: '2s' }}></div>
-                  <div className="absolute inset-4 rounded-full border-2 border-red-500/40 animate-ping" style={{ animationDuration: '2s', animationDelay: '0.5s' }}></div>
-                  <div className="absolute inset-8 rounded-full border-2 border-red-500/50 animate-ping" style={{ animationDuration: '2s', animationDelay: '1s' }}></div>
-                  <div className="w-20 h-20 bg-red-500 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(239,68,68,0.8)] z-10">
-                    <Droplets className="text-white w-10 h-10" strokeWidth={2.5} />
-                  </div>
-               </div>
-               
-               <h3 className={`text-3xl font-extrabold ${t.text} mb-2 tracking-tight text-center drop-shadow-md`}>248 Donors Found</h3>
-               <p className={`text-sm font-bold ${t.textMuted} text-center mb-8 px-4`}>There are 248 verified {selectedBg} and compatible donors within a 5km radius of Apollo Hospital.</p>
-               
-               <div className={`w-full p-4 rounded-2xl ${t.cardShadow} border ${t.border} relative overflow-hidden mb-8`}>
-                  <div className={`absolute inset-0 z-0 ${t.card}`}></div>
-                  <div className="relative z-10 flex justify-between items-center">
-                     <div>
-                        <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mb-1`}>Request Summary</p>
-                        <p className={`text-base font-extrabold ${t.text}`}>2 Units • {selectedBg} • Critical</p>
-                     </div>
-                     <button onClick={() => setStep('form')} className={`text-xs font-bold text-[#1D9BF0] hover:underline`}>Edit</button>
-                  </div>
-               </div>
-
-               <button 
-                onClick={() => setStep('tracking')}
-                className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-red-500 text-white shadow-lg shadow-red-500/40 border border-red-400 flex items-center justify-center space-x-2`}
-               >
-                 <AlertTriangle className="w-5 h-5" strokeWidth={2.5}/>
-                 <span>Send Emergency Alert</span>
-               </button>
-            </div>
-          )}
-
-          {step === 'tracking' && (
-             <div className="animate-fade-in space-y-6">
-                <div className="text-center mb-2">
-                   <div className="inline-flex items-center space-x-2 bg-red-500/10 border border-red-500/30 px-3 py-1.5 rounded-full mb-4 shadow-sm">
-                      <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,1)]"></span>
-                      <span className="text-[10px] font-extrabold text-red-500 uppercase tracking-widest">Broadcast Active</span>
-                   </div>
-                   <h3 className={`text-2xl font-extrabold ${t.text} tracking-tight drop-shadow-md`}>Awaiting Responses...</h3>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3 mb-6">
-                  <div className={`p-4 rounded-2xl ${t.card} border ${t.border} text-center shadow-sm backdrop-blur-md`}>
-                    <span className={`block text-2xl font-extrabold ${t.text} drop-shadow-sm`}>248</span>
-                    <span className={`text-[9px] font-extrabold ${t.textMuted} uppercase tracking-wider`}>Notified</span>
-                  </div>
-                  <div className={`p-4 rounded-2xl ${t.card} border ${t.border} text-center shadow-sm backdrop-blur-md`}>
-                    <span className={`block text-2xl font-extrabold ${t.text} drop-shadow-sm`}>45</span>
-                    <span className={`text-[9px] font-extrabold ${t.textMuted} uppercase tracking-wider`}>Viewed</span>
-                  </div>
-                  <div className={`p-4 rounded-2xl bg-green-500/10 border border-green-500/30 text-center shadow-sm backdrop-blur-md`}>
-                    <span className={`block text-2xl font-extrabold text-green-500 drop-shadow-sm`}>1</span>
-                    <span className={`text-[9px] font-extrabold text-green-600 dark:text-green-400 uppercase tracking-wider`}>Accepted</span>
-                  </div>
-                </div>
-
-                <div>
-                   <h3 className={`text-sm font-extrabold ${t.textMuted} uppercase tracking-wider mb-4 drop-shadow-sm`}>Accepted Donors</h3>
-                   <div className={`rounded-2xl p-5 ${t.cardShadow} border border-green-500/30 relative overflow-hidden`}>
-                     <div className={`absolute inset-0 z-0 ${isDark ? 'bg-green-500/5' : 'bg-green-50'}`}></div>
-                     <div className="absolute top-0 left-0 w-full h-1 bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)]"></div>
-                     <div className="relative z-10 flex flex-col">
-                        <div className="flex justify-between items-start mb-3">
-                           <span className="text-[10px] font-extrabold text-green-600 bg-green-500/20 px-2.5 py-1 rounded-md border border-green-500/30 shadow-sm uppercase tracking-wide">Donor Found</span>
-                           <span className={`text-xs font-bold ${t.textMuted}`}>1.2 km away</span>
+                <div className="relative z-10">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-12 h-12 rounded-full shrink-0 ${bgClass} border ${isDark ? 'border-white/5' : 'border-black/5'} flex items-center justify-center shadow-sm`}>
+                        <User className={`w-6 h-6 ${colorClass}`} strokeWidth={1.5} />
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-1.5 mb-0.5">
+                          <h3 className={`font-extrabold text-base tracking-tight leading-tight truncate ${t.text}`}>{person.name}</h3>
+                          {person.verified && <BadgeCheck className="w-4 h-4 text-[#1D9BF0] shrink-0" strokeWidth={2.5} />}
                         </div>
-                        <div className="flex items-center space-x-4 mb-4">
-                           <div className={`w-12 h-12 rounded-full ${isDark ? 'bg-white/10' : 'bg-white/60'} border border-green-500/30 flex items-center justify-center shadow-sm backdrop-blur-md overflow-hidden shrink-0`}>
-                             <User className={`w-6 h-6 text-green-600 dark:text-green-400`} strokeWidth={1.5} />
-                           </div>
-                           <div>
-                             <h4 className={`font-extrabold text-lg leading-tight ${t.text} drop-shadow-sm`}>Sarah Rahman</h4>
-                             <p className={`text-[10px] font-bold ${t.textMuted} mt-0.5`}>Gold Donor • Perfect Match (B+)</p>
-                           </div>
+                        <div className="flex items-center space-x-1.5 mt-0.5">
+                          <RoleIcon className={`w-3.5 h-3.5 ${colorClass}`} strokeWidth={2.5} />
+                          <span className={`text-[11px] font-bold ${colorClass}`}>{roleType}</span>
                         </div>
-                        <button className={`w-full py-3 rounded-xl font-extrabold text-sm transition-all active:scale-[0.97] bg-green-500 text-white shadow-lg shadow-green-500/40 border border-green-400 flex items-center justify-center space-x-2`}>
-                           <MessageSquare className="w-4 h-4" strokeWidth={2.5}/>
-                           <span>Open Private Chat</span>
+                      </div>
+                    </div>
+                    
+                    <div className="shrink-0 ml-2 mt-1">
+                      <span className={`text-[22px] font-black leading-none ${isDark ? 'text-red-400' : 'text-red-600'}`}>{person.blood}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 mb-5">
+                    <span className={`px-2.5 py-1.5 rounded-md text-[10px] font-extrabold flex items-center ${isDark ? 'bg-white/10 text-white/80' : 'bg-black/5 text-black/70'}`}>
+                      <MapPin className="w-3 h-3 mr-1.5" strokeWidth={2.5} /> {person.location}
+                    </span>
+                    <span className={`px-2.5 py-1.5 rounded-md text-[10px] font-extrabold flex items-center bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20`}>
+                      <CheckCircle2 className="w-3 h-3 mr-1.5" strokeWidth={2.5} /> Eligible to Donate
+                    </span>
+                  </div>
+
+                  <div className="flex space-x-2 w-full">
+                    <div className="flex-1" onClick={(e) => handleConnectClick(e, person.id)}>
+                      {requestedSet.has(person.id) ? (
+                        <div className={`flex items-center justify-center h-10 rounded-lg font-bold text-[13px] ${isDark ? 'bg-white/10 text-white' : 'bg-white text-black shadow-sm'} border ${t.border} transition-all`}>
+                          <CheckCircle2 className="w-4 h-4 mr-2 text-red-500" strokeWidth={2.5} /> Request Sent
+                        </div>
+                      ) : (
+                        <button className={`w-full h-10 rounded-lg font-bold text-[13px] transition-all active:scale-[0.97] bg-red-500 hover:bg-red-600 text-white shadow-sm flex items-center justify-center`}>
+                          <AlertTriangle className="w-4 h-4 mr-1.5" strokeWidth={2.5} /> Request Blood
                         </button>
-                     </div>
-                   </div>
+                      )}
+                    </div>
+                    <button 
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-black/5 text-black hover:bg-black/10'} transition-colors active:scale-95 shrink-0`} 
+                      onClick={(e) => { e.stopPropagation(); }}
+                    >
+                      <MessageSquare className="w-4 h-4" strokeWidth={2.5} />
+                    </button>
+                  </div>
                 </div>
-
-             </div>
-          )}
+              </div>
+            );
+          })}
         </div>
       </div>
     );
@@ -1795,9 +1772,9 @@ export default function App() {
   const DirectoryTab = () => {
     const availableTabs = ['Alumni', 'Student', 'Faculty'];
 
-    const displayData = directorySegment === 'Alumni' ? globalAlumniData : 
-                        directorySegment === 'Faculty' ? globalFacultyData : 
-                        globalStudentData;
+    let displayData = directorySegment === 'Alumni' ? globalAlumniData : 
+                      directorySegment === 'Faculty' ? globalFacultyData : 
+                      globalStudentData;
 
     return (
       <div className={`flex flex-col h-full relative animate-fade-in z-10`}>
@@ -1968,13 +1945,13 @@ export default function App() {
                        </button>
                      ))}
                      <div className={`my-1 border-t ${t.borderSoft}`}></div>
-                     <button 
-                         onClick={() => { setJobFilter(null); setIsFilterOpen(false); }}
-                         className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-colors text-red-500 hover:${isDark ? 'bg-white/10' : 'bg-red-50'}`}
-                       >
-                         Clear Filter
-                       </button>
-                  </div>
+        <button 
+            onClick={() => { setJobFilter(null); setIsFilterOpen(false); }}
+            className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-colors text-red-500 hover:${isDark ? 'bg-white/10' : 'bg-red-50'}`}
+          >
+            Clear Filter
+          </button>
+      </div>
                 </>
               )}
             </div>
@@ -2095,26 +2072,127 @@ export default function App() {
   };
 
   const MessagesTab = () => {
+    const [chatSegment, setChatSegment] = useState('All Chats');
+    const [chatFilter, setChatFilter] = useState(null);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [contextMenuChat, setContextMenuChat] = useState(null);
+    const timerRef = React.useRef(null);
+    const isLongPress = React.useRef(false);
+
+    const handleTouchStart = (chat) => {
+      isLongPress.current = false;
+      timerRef.current = setTimeout(() => {
+        isLongPress.current = true;
+        setContextMenuChat(chat);
+      }, 500);
+    };
+
+    const handleTouchEnd = () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+
+    const handleContextMenu = (e, chat) => {
+      e.preventDefault();
+      setContextMenuChat(chat);
+      isLongPress.current = true;
+    };
+
+    const handleClick = (e, chat) => {
+      if (isLongPress.current) {
+        e.preventDefault();
+        return;
+      }
+      setActiveOverlay('chat');
+    };
+
     const conversations = [
-      { id: 1, name: 'Sarah Rahman', dept: 'CSE', msg: 'The project files are attached, let\'s sync...', time: '2m ago', unread: true },
-      { id: 2, name: 'Tahmid Hasan', dept: 'ECE', msg: 'Thanks for the update! Looking forward to it.', time: '1h ago', unread: false },
-      { id: 3, name: 'Dr. Aminul Islam', dept: 'Faculty', msg: 'Can we schedule a meeting tomorrow at 3 PM?', time: 'Yesterday', unread: false },
-      { id: 4, name: 'Nabila Islam', dept: 'CSE', msg: 'Did you check out the new design system files?', time: 'Tuesday', unread: false },
+      { id: 1, name: 'Sarah Rahman', role: 'Alumni', msg: 'The project files are attached, let\'s sync...', time: '2m ago', unread: true, isRequest: false, online: true },
+      { id: 2, name: 'Tahmid Hasan', role: 'Student', msg: 'Thanks for the update! Looking forward to it.', time: '1h ago', unread: false, isRequest: false, online: true },
+      { id: 3, name: 'Dr. Aminul Islam', role: 'Faculty', msg: 'Can we schedule a meeting tomorrow at 3 PM?', time: 'Yesterday', unread: false, isRequest: false, online: false },
+      { id: 4, name: 'Nabila Islam', role: 'Faculty', msg: 'Did you check out the new design system files?', time: 'Tuesday', unread: false, isRequest: false, online: false },
+      { id: 5, name: 'Fahim Shahriar', role: 'Alumni', msg: 'Hi, I saw your portfolio and wanted to connect.', time: '3d ago', unread: true, isRequest: true, online: true },
     ];
+
+    const getRoleStyles = (role) => {
+      switch (role) {
+        case 'Student':
+          return { icon: GraduationCap, colorClass: 'text-[#1D9BF0]', bgClass: 'bg-[#1D9BF0]/10' };
+        case 'Alumni':
+          return { icon: Briefcase, colorClass: 'text-amber-500', bgClass: 'bg-amber-500/10' };
+        case 'Faculty':
+          return { icon: Landmark, colorClass: isDark ? 'text-rose-400' : 'text-[#800000]', bgClass: isDark ? 'bg-rose-400/10' : 'bg-[#800000]/10' };
+        default:
+          return { icon: User, colorClass: 'text-gray-500', bgClass: 'bg-gray-500/10' };
+      }
+    };
+
+    let displayedChats = conversations.filter(c => chatSegment === 'All Chats' ? !c.isRequest : c.isRequest);
+    
+    if (chatFilter) {
+      if (chatFilter === 'Unread') {
+        displayedChats = displayedChats.filter(c => c.unread);
+      } else {
+        displayedChats = displayedChats.filter(c => c.role === chatFilter);
+      }
+    }
 
     return (
       <div className={`flex flex-col h-full relative animate-fade-in z-10`}>
         <div className={`px-5 pt-8 pb-3 relative z-20 ${t.glass} border-b shadow-sm`}>
           <div className="flex justify-between items-center mb-5">
             <h2 className={`text-2xl font-extrabold ${t.text} tracking-tight leading-tight`}>Messages</h2>
-            <div className="flex space-x-2">
-              <button className={`w-9 h-9 rounded-lg ${t.card} border ${t.border} flex items-center justify-center transition-colors shadow-sm hover:border-[#1D9BF0]/50`}>
-                <Filter className={`w-4 h-4 ${t.text}`} strokeWidth={2.5} />
+            <div className="flex space-x-2 relative z-50">
+              {chatFilter && (
+                <div className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg ${isDark ? 'bg-white/10' : 'bg-[#1D9BF0]/10'} border ${t.borderSoft} animate-fade-in`}>
+                  <span className={`text-[10px] font-extrabold ${isDark ? 'text-white' : 'text-[#1D9BF0]'} uppercase tracking-wider`}>{chatFilter}</span>
+                  <button onClick={() => setChatFilter(null)} className={`opacity-70 hover:opacity-100 ${isDark ? 'text-white' : 'text-[#1D9BF0]'}`}>
+                    <X className="w-3 h-3" strokeWidth={3} />
+                  </button>
+                </div>
+              )}
+              <button 
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                className={`w-9 h-9 rounded-lg ${t.card} border ${t.border} flex items-center justify-center transition-colors shadow-sm hover:border-[#1D9BF0]/50 ${chatFilter || isFilterOpen ? 'border-[#1D9BF0]/50 text-[#1D9BF0]' : ''}`}
+              >
+                <Filter className={`w-4 h-4 ${chatFilter || isFilterOpen ? 'text-[#1D9BF0]' : t.text}`} strokeWidth={2.5} />
+              </button>
+
+              {isFilterOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsFilterOpen(false)}></div>
+                  <div className={`absolute top-11 right-11 w-44 rounded-xl ${isDark ? 'bg-[#1A1A1A] border-white/10' : 'bg-white border-gray-200'} shadow-2xl z-50 p-2 animate-fade-in`}>
+                     <h4 className={`text-[10px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 px-2 pt-1`}>Filter By</h4>
+                     {['Unread', 'Student', 'Alumni', 'Faculty'].map(f => (
+                       <button 
+                         key={f} 
+                         onClick={() => { setChatFilter(f); setIsFilterOpen(false); }}
+                         className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-bold transition-colors ${chatFilter === f ? 'bg-[#1D9BF0] text-white' : `hover:${isDark ? 'bg-white/10' : 'bg-gray-100'} ${t.text}`}`}
+                       >
+                         <span>{f}</span>
+                         {chatFilter === f && <CheckCircle2 className="w-3.5 h-3.5" strokeWidth={3} />}
+                       </button>
+                     ))}
+                     <div className={`my-1 border-t ${t.borderSoft}`}></div>
+                     <button 
+                         onClick={() => { setChatFilter(null); setIsFilterOpen(false); }}
+                         className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-colors text-red-500 hover:${isDark ? 'bg-white/10' : 'bg-red-50'}`}
+                       >
+                         Clear Filter
+                       </button>
+                  </div>
+                </>
+              )}
+
+              <button 
+                onClick={() => setActiveOverlay('message_settings')}
+                className={`w-9 h-9 rounded-lg ${t.card} border ${t.border} flex items-center justify-center transition-colors shadow-sm hover:border-[#1D9BF0]/50`}
+              >
+                <Settings className={`w-4 h-4 ${t.text}`} strokeWidth={2.5} />
               </button>
             </div>
           </div>
           
-          <div className="relative w-full">
+          <div className="relative w-full mb-4">
             <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4`} strokeWidth={2.5} />
             <input 
               type="text" 
@@ -2122,39 +2200,108 @@ export default function App() {
               className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-lg h-11 pl-10 pr-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm placeholder:font-bold`}
             />
           </div>
+
+          <div className={`flex p-1 rounded-xl ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft}`}>
+            {['All Chats', 'Requests'].map(seg => (
+              <button 
+                key={seg} 
+                onClick={() => setChatSegment(seg)}
+                className={`flex-1 py-2 rounded-lg text-xs font-extrabold transition-all flex items-center justify-center ${chatSegment === seg ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'} border` : `text-gray-500 hover:${t.text}`}`}
+              >
+                {seg}
+                {seg === 'Requests' && (
+                  <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-black ${chatSegment === seg ? 'bg-[#1D9BF0] text-white' : 'bg-[#1D9BF0]/20 text-[#1D9BF0]'}`}>
+                    1
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto pb-36 px-4 pt-3 relative z-10">
-          {conversations.map((chat) => (
-            <div 
-              key={chat.id} 
-              className={`flex items-center p-4 rounded-xl border border-transparent hover:${isDark ? 'bg-white/5' : 'bg-black/5'} hover:border-white/10 transition-all cursor-pointer mb-1 group`} 
-              onClick={() => setActiveOverlay('chat')}
-            >
-              <div className="relative shrink-0">
-                <div className={`w-14 h-14 rounded-full ${t.card} border ${t.borderSoft} flex items-center justify-center shadow-sm`}>
-                  <User className={`w-6 h-6 ${t.text}`} strokeWidth={2} />
-                </div>
-                {chat.unread && (
-                  <div className={`absolute top-0 right-0 w-3.5 h-3.5 bg-[#1D9BF0] border-2 ${isDark ? 'border-[#000000]' : 'border-[#F2F5F8] group-hover:border-[#E5E8EB]'} rounded-full transition-colors`}></div>
-                )}
-              </div>
-              
-              <div className="flex-1 min-w-0 ml-4">
-                <div className="flex justify-between items-center mb-0.5">
-                  <div className="flex items-center space-x-2 truncate pr-2">
-                    <h4 className={`text-sm ${chat.unread ? `font-extrabold ${t.text}` : `font-bold ${t.text}`}`}>{chat.name}</h4>
-                    <span className={`text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded-md ${isDark ? 'bg-white/10 text-white/70' : 'bg-black/5 text-black/50'}`}>{chat.dept}</span>
+          {displayedChats.length > 0 ? displayedChats.map((chat) => {
+            const { icon: RoleIcon, colorClass, bgClass } = getRoleStyles(chat.role);
+
+            return (
+              <div 
+                key={chat.id} 
+                className={`flex items-center p-4 rounded-xl border border-transparent hover:${isDark ? 'bg-white/5' : 'bg-black/5'} hover:border-white/10 transition-all cursor-pointer mb-1 group select-none`} 
+                onTouchStart={() => handleTouchStart(chat)}
+                onTouchEnd={handleTouchEnd}
+                onTouchMove={handleTouchEnd}
+                onMouseDown={() => handleTouchStart(chat)}
+                onMouseUp={handleTouchEnd}
+                onMouseLeave={handleTouchEnd}
+                onContextMenu={(e) => handleContextMenu(e, chat)}
+                onClick={(e) => handleClick(e, chat)}
+              >
+                <div className="relative shrink-0">
+                  <div className={`w-14 h-14 rounded-full ${bgClass} border ${isDark ? 'border-white/5' : 'border-black/5'} flex items-center justify-center shadow-sm`}>
+                    <User className={`w-6 h-6 ${colorClass}`} strokeWidth={1.5} />
                   </div>
-                  <span className={`${chat.unread ? 'text-[#1D9BF0] font-extrabold' : t.textMuted + ' font-bold'} text-[10px] shrink-0`}>{chat.time}</span>
+                  {chat.online && (
+                    <div className={`absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 ${isDark ? 'border-[#000000]' : 'border-[#F2F5F8] group-hover:border-[#E5E8EB]'} rounded-full transition-colors`}></div>
+                  )}
                 </div>
-                <p className={`text-xs truncate ${chat.unread ? `font-bold ${t.text}` : `${t.textMuted} font-medium`}`}>
-                  {chat.msg}
-                </p>
+                
+                <div className="flex-1 min-w-0 ml-4">
+                  <div className="flex justify-between items-center mb-0.5">
+                    <div className="flex items-center space-x-1.5 truncate pr-2">
+                      <h4 className={`text-sm ${chat.unread ? `font-extrabold ${t.text}` : `font-bold ${t.text}`}`}>{chat.name}</h4>
+                      <RoleIcon className={`w-3.5 h-3.5 ${colorClass}`} strokeWidth={2.5} />
+                    </div>
+                    <span className={`${chat.unread ? 'text-[#1D9BF0] font-extrabold' : t.textMuted + ' font-bold'} text-[10px] shrink-0`}>{chat.time}</span>
+                  </div>
+                  <p className={`text-xs truncate ${chat.unread ? `font-bold ${t.text}` : `${t.textMuted} font-medium`}`}>
+                    {chat.msg}
+                  </p>
+                </div>
+              </div>
+            );
+          }) : (
+            <div className="flex flex-col items-center justify-center py-16 opacity-50 animate-fade-in">
+              <MessageSquare className="w-12 h-12 mb-3" strokeWidth={1.5} />
+              <p className="text-sm font-bold">No messages found</p>
+            </div>
+          )}
+        </div>
+
+        {contextMenuChat && (
+          <>
+            <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]" onClick={() => setContextMenuChat(null)}></div>
+            <div className={`absolute bottom-0 left-0 w-full p-4 pt-3 rounded-t-3xl ${isDark ? 'bg-[#1E1E1E]' : 'bg-white'} shadow-2xl z-50 animate-slide-up border-t ${t.borderSoft}`}>
+              <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-5"></div>
+              <div className="px-2 mb-4 flex items-center space-x-3">
+                <div className={`w-10 h-10 rounded-full ${isDark ? 'bg-white/10' : 'bg-black/5'} flex items-center justify-center`}>
+                   <User className={`w-5 h-5 ${t.text}`} strokeWidth={1.5} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className={`text-base font-extrabold ${t.text} truncate`}>{contextMenuChat.name}</h4>
+                  <p className={`text-[11px] font-bold ${t.textMuted} truncate`}>{contextMenuChat.msg}</p>
+                </div>
+              </div>
+              <div className="space-y-1 pb-32">
+                {[
+                  { icon: Archive, label: 'Archive' },
+                  { icon: VolumeX, label: 'Mute Notifications' },
+                  { icon: Pin, label: 'Pin Chat' },
+                  { icon: MailOpen, label: contextMenuChat.unread ? 'Mark as Read' : 'Mark as Unread' },
+                  { icon: Trash2, label: 'Delete', isDestructive: true }
+                ].map((item, i) => (
+                  <button 
+                    key={i} 
+                    className={`w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl hover:${isDark ? 'bg-white/10' : 'bg-black/5'} active:scale-[0.98] transition-all`}
+                    onClick={() => setContextMenuChat(null)}
+                  >
+                    <item.icon className={`w-5 h-5 ${item.isDestructive ? 'text-red-500' : t.textMuted}`} strokeWidth={2.5} />
+                    <span className={`text-sm font-bold ${item.isDestructive ? 'text-red-500' : t.text}`}>{item.label}</span>
+                  </button>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
+          </>
+        )}
       </div>
     );
   };
@@ -2388,6 +2535,93 @@ export default function App() {
     );
   };
 
+  const EmergencyRequestView = ({ req, onBack }) => {
+    return (
+      <div className={`absolute inset-0 z-50 flex flex-col animate-slide-up ${t.bg}`}>
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden transition-opacity duration-500">
+          <div className={`absolute top-[-5%] right-[-10%] w-[80%] h-[60%] bg-red-500 rounded-full mix-blend-screen filter blur-[140px] ${isDark ? 'opacity-10' : 'opacity-[0.15]'}`}></div>
+        </div>
+
+        <div className={`px-4 pt-12 pb-3 flex items-center justify-between ${t.glass} border-b sticky top-0 z-20 shadow-sm`}>
+          <button onClick={onBack} className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors`}>
+            <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
+          </button>
+          <h2 className={`text-base font-extrabold ${t.text} leading-tight`}>Request Details</h2>
+          <button className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors`}>
+             <Share className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto pb-28 relative z-10">
+          <div className={`m-5 mt-6 rounded-2xl p-6 relative overflow-hidden shadow-2xl shadow-black/5 dark:shadow-black/40 border ${t.border}`}>
+            <div className={`absolute inset-0 z-0 ${isDark ? 'bg-gradient-to-br from-[#1A1A1A]/90 to-red-500/10' : 'bg-gradient-to-b from-white/90 to-red-500/10 backdrop-blur-3xl'}`}></div>
+            
+            <div className="relative z-10 flex flex-col items-center text-center">
+              <div className={`w-20 h-20 rounded-2xl ${isDark ? 'bg-red-500/20' : 'bg-red-100'} border-2 ${isDark ? 'border-red-500/30' : 'border-red-200'} flex items-center justify-center mb-4 shadow-lg shadow-red-500/20`}>
+                <span className={`text-4xl font-black ${isDark ? 'text-red-400' : 'text-red-600'}`}>{req.bg}</span>
+              </div>
+              
+              <h2 className={`font-extrabold text-2xl tracking-tight leading-tight ${t.text} mb-3`}>{req.hospital}</h2>
+              
+              <div className="flex items-center space-x-2 mb-6">
+                 <span className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wide border ${req.urgency === 'Critical' ? 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'}`}>
+                    {req.urgency}
+                 </span>
+                 <span className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wide border bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20`}>
+                    {req.match}
+                 </span>
+              </div>
+              
+              <div className={`w-full grid grid-cols-2 gap-3 pt-6 border-t ${isDark ? 'border-white/10' : 'border-black/[0.04]'}`}>
+                <div className={`p-3 rounded-xl ${isDark ? 'bg-black/30' : 'bg-white/50 border border-white'} flex flex-col items-center shadow-sm`}>
+                   <MapPin className={`w-4 h-4 ${t.textMuted} mb-1.5`} strokeWidth={2.5} />
+                   <span className={`text-xs font-extrabold ${t.text}`}>{req.distance} Away</span>
+                </div>
+                <div className={`p-3 rounded-xl ${isDark ? 'bg-black/30' : 'bg-white/50 border border-white'} flex flex-col items-center shadow-sm`}>
+                   <Droplets className={`w-4 h-4 ${t.textMuted} mb-1.5`} strokeWidth={2.5} />
+                   <span className={`text-xs font-extrabold ${t.text}`}>{req.units} Units Needed</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="px-5 space-y-5">
+            <div className={`${t.card} border ${t.border} ${t.cardShadow} rounded-2xl p-6`}>
+              <h3 className={`text-lg font-extrabold ${t.text} tracking-tight mb-4`}>Details</h3>
+              <p className={`${t.text} text-sm font-medium leading-relaxed opacity-90 mb-6`}>
+                {req.description}
+              </p>
+              
+              <div className={`pt-4 border-t ${isDark ? 'border-white/10' : 'border-gray-200'} space-y-4`}>
+                 <div className="flex justify-between items-center">
+                    <span className={`text-xs font-bold ${t.textMuted}`}>Patient Name</span>
+                    <span className={`text-xs font-extrabold ${t.text}`}>{req.patientName}</span>
+                 </div>
+                 <div className="flex justify-between items-center">
+                    <span className={`text-xs font-bold ${t.textMuted}`}>Exact Location</span>
+                    <span className={`text-xs font-extrabold ${t.text}`}>{req.location}</span>
+                 </div>
+                 <div className="flex justify-between items-center">
+                    <span className={`text-xs font-bold ${t.textMuted}`}>Posted</span>
+                    <span className={`text-xs font-extrabold ${t.text}`}>{req.time}</span>
+                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className={`absolute bottom-0 w-full p-5 pt-4 pb-8 ${t.glass} border-t z-20`}>
+           <button 
+             className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-red-600 text-white shadow-lg shadow-red-600/40 flex items-center justify-center space-x-2`}
+           >
+             <Phone className="w-5 h-5" strokeWidth={2.5} />
+             <span>Contact Family</span>
+           </button>
+        </div>
+      </div>
+    );
+  };
+
   const PostJobOverlay = ({ onClose }) => {
     const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -2485,94 +2719,334 @@ export default function App() {
     );
   };
 
-  const ChatOverlay = () => (
-    <div className={`absolute inset-0 z-50 flex flex-col animate-slide-up ${t.bg}`}>
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-30">
-        <div className={`absolute top-[20%] left-[-20%] w-[60%] h-[50%] bg-[#1D9BF0] rounded-full mix-blend-screen filter blur-[140px] ${isDark ? 'opacity-20' : 'opacity-30'}`}></div>
-      </div>
+  const ChatOverlay = () => {
+    const [isAttachmentOpen, setIsAttachmentOpen] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [reactingTo, setReactingTo] = useState(null);
+    const [reactions, setReactions] = useState({
+      'msg-1': '👍',
+      'msg-2': '👍',
+      'msg-3': '❤️'
+    });
+    const timerRef = React.useRef(null);
+    const menuRef = React.useRef(null);
+    const attachmentContainerRef = React.useRef(null);
 
-      <div className={`px-4 pt-12 pb-3 flex items-center justify-between ${t.glass} border-b sticky top-0 z-10 shadow-sm`}>
-        <div className="flex items-center">
-          <button onClick={() => setActiveOverlay(null)} className={`mr-2 w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors hover:opacity-80`}>
-            <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (menuRef.current && !menuRef.current.contains(event.target)) {
+          setIsMenuOpen(false);
+        }
+        if (attachmentContainerRef.current && !attachmentContainerRef.current.contains(event.target)) {
+          setIsAttachmentOpen(false);
+        }
+      };
+
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+      
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('touchstart', handleClickOutside);
+      };
+    }, []);
+    
+    // Sarah Rahman is Alumni
+    const { icon: RoleIcon, colorClass, bgClass } = { icon: Briefcase, colorClass: 'text-amber-500', bgClass: 'bg-amber-500/10' };
+
+    const handlePressStart = (msgId) => {
+      timerRef.current = setTimeout(() => {
+        setReactingTo(msgId);
+      }, 500);
+    };
+
+    const handlePressEnd = () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+
+    const handleMsgContextMenu = (e, msgId) => {
+      e.preventDefault();
+      setReactingTo(msgId);
+    };
+
+    const handleReaction = (msgId, emoji) => {
+      setReactions(prev => {
+        const newReactions = { ...prev };
+        if (newReactions[msgId] === emoji) {
+          delete newReactions[msgId]; // toggle off
+        } else {
+          newReactions[msgId] = emoji; // toggle on or change
+        }
+        return newReactions;
+      });
+      setReactingTo(null);
+    };
+
+    const ReactionMenu = ({ align, msgId }) => (
+      <div className={`absolute bottom-full mb-2 ${align === 'right' ? 'right-0 origin-bottom-right' : 'left-0 origin-bottom-left'} ${isDark ? 'bg-[#2A2A2A] border-white/10 shadow-black/50' : 'bg-white border-gray-200 shadow-black/5'} border shadow-xl rounded-full px-3 py-2 flex items-center space-x-3 z-[60] animate-fade-in-up`}>
+        {['❤️', '👍', '😂', '😮', '😢', '🙏'].map(emoji => (
+          <button 
+            key={emoji} 
+            className={`text-[24px] hover:scale-125 hover:-translate-y-1 active:scale-95 transition-all drop-shadow-sm ${reactions[msgId] === emoji ? 'scale-125 -translate-y-1' : ''}`} 
+            onClick={(e) => { e.stopPropagation(); handleReaction(msgId, emoji); }}
+          >
+            {emoji}
           </button>
-          <div className={`w-10 h-10 rounded-full ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft} flex items-center justify-center mr-3 relative shadow-inner shrink-0`}>
-            <User className={`w-5 h-5 ${t.text}`} strokeWidth={2} />
-          </div>
-          <div className="flex flex-col">
-            <h2 className={`text-base font-extrabold ${t.text} leading-tight`}>Sarah Rahman</h2>
-            <div className="flex items-center space-x-1.5 mt-0.5">
-              <span className={`text-[10px] font-bold ${t.textMuted}`}>Software Eng • CSE</span>
-              <span className="w-1 h-1 rounded-full bg-gray-400"></span>
-              <span className="text-[10px] font-extrabold text-[#1D9BF0]">Active now</span>
+        ))}
+      </div>
+    );
+
+    const MessageActionsMenu = ({ align, isOwn, msgId }) => (
+      <div className={`absolute top-full mt-2 ${align === 'right' ? 'right-0 origin-top-right' : 'left-0 origin-top-left'} ${isDark ? 'bg-[#2A2A2A] border-white/10 shadow-black/50' : 'bg-white border-gray-200 shadow-black/5'} border shadow-xl rounded-2xl p-1.5 flex flex-col z-[60] min-w-[140px] animate-fade-in-up`}>
+        <button onClick={(e) => { e.stopPropagation(); setReactingTo(null); }} className={`w-full flex items-center space-x-3 px-3 py-2 rounded-xl hover:${isDark ? 'bg-white/10' : 'bg-black/5'} transition-colors active:scale-[0.98]`}>
+          <Reply className={`w-4 h-4 ${t.textMuted}`} strokeWidth={2.5} />
+          <span className={`text-xs font-bold ${t.text}`}>Reply</span>
+        </button>
+        <button onClick={(e) => { e.stopPropagation(); setReactingTo(null); }} className={`w-full flex items-center space-x-3 px-3 py-2 rounded-xl hover:${isDark ? 'bg-white/10' : 'bg-black/5'} transition-colors active:scale-[0.98]`}>
+          <Copy className={`w-4 h-4 ${t.textMuted}`} strokeWidth={2.5} />
+          <span className={`text-xs font-bold ${t.text}`}>Copy</span>
+        </button>
+        {isOwn && (
+          <>
+            <button onClick={(e) => { e.stopPropagation(); setReactingTo(null); }} className={`w-full flex items-center space-x-3 px-3 py-2 rounded-xl hover:${isDark ? 'bg-white/10' : 'bg-black/5'} transition-colors active:scale-[0.98]`}>
+              <Edit className={`w-4 h-4 ${t.textMuted}`} strokeWidth={2.5} />
+              <span className={`text-xs font-bold ${t.text}`}>Edit</span>
+            </button>
+            <button onClick={(e) => { e.stopPropagation(); setReactingTo(null); }} className={`w-full flex items-center space-x-3 px-3 py-2 rounded-xl hover:${isDark ? 'bg-red-500/10' : 'bg-red-50'} transition-colors active:scale-[0.98] group`}>
+              <Trash2 className={`w-4 h-4 text-red-500`} strokeWidth={2.5} />
+              <span className={`text-xs font-bold text-red-500`}>Unsend</span>
+            </button>
+          </>
+        )}
+      </div>
+    );
+
+    return (
+      <div className={`absolute inset-0 z-50 flex flex-col animate-slide-up ${t.bg}`}>
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-30">
+          <div className={`absolute top-[20%] left-[-20%] w-[60%] h-[50%] bg-[#1D9BF0] rounded-full mix-blend-screen filter blur-[140px] ${isDark ? 'opacity-20' : 'opacity-30'}`}></div>
+        </div>
+
+        <div className={`px-4 pt-12 pb-3 flex items-center justify-between ${t.glass} border-b sticky top-0 z-30 shadow-sm`}>
+          <div className="flex items-center">
+            <button onClick={() => setActiveOverlay(null)} className={`mr-2 w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors hover:opacity-80`}>
+              <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
+            </button>
+            <div className={`w-10 h-10 rounded-full ${bgClass} border ${isDark ? 'border-white/5' : 'border-black/5'} flex items-center justify-center mr-3 relative shrink-0 shadow-sm`}>
+              <User className={`w-5 h-5 ${colorClass}`} strokeWidth={1.5} />
+            </div>
+            <div className="flex flex-col">
+              <div className="flex items-center space-x-1.5">
+                <h2 className={`text-base font-extrabold ${t.text} leading-tight`}>Sarah Rahman</h2>
+                <RoleIcon className={`w-3.5 h-3.5 ${colorClass}`} strokeWidth={2.5} />
+              </div>
+              <div className="flex items-center space-x-1.5 mt-0.5">
+                <span className={`text-[10px] font-bold ${t.textMuted}`}>Software Engineer</span>
+                <span className="w-1 h-1 rounded-full bg-gray-400"></span>
+                <span className="text-[10px] font-extrabold text-[#1D9BF0]">Active now</span>
+              </div>
             </div>
           </div>
-        </div>
-        <button className={`w-10 h-10 flex items-center justify-center rounded-lg hover:${t.card.split(' ')[0]} transition-colors`}>
-          <MoreVertical className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} />
-        </button>
-      </div>
+          <div className="relative" ref={menuRef}>
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className={`w-10 h-10 flex items-center justify-center rounded-lg hover:${t.card.split(' ')[0]} transition-colors relative z-50`}
+            >
+              <MoreVertical className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} />
+            </button>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col relative z-10 pb-6">
-        
-        <div className="flex items-center justify-center my-2 space-x-4 opacity-70">
-          <div className={`h-px w-8 ${isDark ? 'bg-white/20' : 'bg-black/10'}`}></div>
-          <span className={`text-[10px] font-extrabold uppercase tracking-widest ${t.textMuted}`}>Today</span>
-          <div className={`h-px w-8 ${isDark ? 'bg-white/20' : 'bg-black/10'}`}></div>
-        </div>
-
-        <div className="self-start max-w-[80%] relative group mb-2">
-          <div className={`p-3.5 rounded-2xl rounded-tl-sm ${isDark ? 'bg-white/10' : 'bg-black/5'} border ${t.borderSoft} shadow-sm backdrop-blur-md`}>
-            <p className={`text-sm font-medium ${t.text} leading-relaxed`}>I reviewed the architectural proposals you sent over. Let's sync on the database schema before the sprint starts.</p>
+            {isMenuOpen && (
+              <div className={`absolute top-full right-0 mt-2 p-2 rounded-2xl ${isDark ? 'bg-[#1E1E1E]/95 shadow-black/40' : 'bg-white/95 shadow-black/5'} backdrop-blur-xl border ${t.borderSoft} shadow-xl z-50 flex flex-col space-y-1 animate-fade-in-up origin-top-right min-w-[180px]`}>
+                {[
+                  { icon: Archive, label: 'Archive Chat' },
+                  { icon: VolumeX, label: 'Mute Notifications' },
+                  { icon: Pin, label: 'Pin Chat' },
+                  { icon: Trash2, label: 'Delete Chat', isDestructive: true }
+                ].map((item, i) => (
+                  <button 
+                    key={i} 
+                    className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:${isDark ? 'bg-white/10' : 'bg-black/5'} transition-colors w-full text-left active:scale-[0.98]`} 
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <item.icon className={`w-4 h-4 ${item.isDestructive ? 'text-red-500' : t.textMuted}`} strokeWidth={2.5} />
+                    <span className={`text-sm font-bold ${item.isDestructive ? 'text-red-500' : t.text}`}>{item.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          <div className={`absolute -bottom-2 -right-2 ${isDark ? 'bg-[#1A1A1A] border-white/20' : 'bg-white border-gray-200'} border rounded-full px-1.5 py-0.5 shadow-sm flex items-center`}>
-            <span className="text-[11px]">👍</span>
-            <span className={`text-[9px] font-extrabold ml-1 ${t.text}`}>1</span>
-          </div>
-          <span className={`text-[10px] font-bold ${t.textMuted} mt-2.5 ml-1 block`}>10:30 AM</span>
         </div>
 
-        <div className="self-end max-w-[80%] relative">
-          <div className="p-3.5 rounded-2xl rounded-tr-sm bg-[#1D9BF0] text-white shadow-md shadow-[#1D9BF0]/30">
-            <div className="bg-black/15 rounded-lg p-2.5 mb-2 border-l-[3px] border-white">
-              <p className="text-[10px] font-extrabold text-white mb-0.5">Sarah Rahman</p>
-              <p className="text-[11px] text-white/90 line-clamp-1 font-medium">I reviewed the architectural proposals you sent...</p>
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col relative z-10 pb-6">
+          {reactingTo && (
+            <div className="fixed inset-0 z-40 bg-black/5 dark:bg-black/20 backdrop-blur-[1px] transition-all" onClick={() => setReactingTo(null)}></div>
+          )}
+
+          <div className="flex items-center justify-center my-2 space-x-4 opacity-70">
+            <div className={`h-px w-8 ${isDark ? 'bg-white/20' : 'bg-black/10'}`}></div>
+            <span className={`text-[10px] font-extrabold uppercase tracking-widest ${t.textMuted}`}>Today</span>
+            <div className={`h-px w-8 ${isDark ? 'bg-white/20' : 'bg-black/10'}`}></div>
+          </div>
+
+          {/* Image Message Block */}
+          <div 
+            className={`self-start max-w-[80%] relative group mb-2 select-none ${reactingTo === 'msg-1' ? 'z-50' : ''}`}
+            onTouchStart={() => handlePressStart('msg-1')}
+            onTouchEnd={handlePressEnd}
+            onTouchMove={handlePressEnd}
+            onMouseDown={() => handlePressStart('msg-1')}
+            onMouseUp={handlePressEnd}
+            onMouseLeave={handlePressEnd}
+            onContextMenu={(e) => handleMsgContextMenu(e, 'msg-1')}
+          >
+            {reactingTo === 'msg-1' && <ReactionMenu align="left" msgId="msg-1" />}
+            {reactingTo === 'msg-1' && <MessageActionsMenu align="left" isOwn={false} msgId="msg-1" />}
+            <div className="relative w-fit">
+              <div className={`relative rounded-[24px] rounded-tl-sm overflow-hidden shadow-sm border ${t.borderSoft} w-[220px] h-[220px] bg-[#F3E5F5] dark:bg-[#2A1B30] flex items-center justify-center`}>
+                <img 
+                  src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop" 
+                  alt="Sent attachment" 
+                  className="w-full h-full object-cover z-10 relative"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+                <ImageIcon className={`w-8 h-8 opacity-20 absolute`} />
+              </div>
+              
+              {/* Reaction Pill */}
+              {reactions['msg-1'] && (
+                <div 
+                  onClick={(e) => { e.stopPropagation(); setReactingTo('msg-1'); }}
+                  className={`absolute -bottom-3 right-0 px-2.5 py-1 min-w-[36px] ${isDark ? 'bg-[#1E1E1E] border-white/20' : 'bg-white border-gray-200'} border rounded-full shadow-sm flex items-center justify-center z-20 cursor-pointer hover:scale-110 active:scale-95 transition-all`}
+                >
+                  <span className="text-[13px] leading-none drop-shadow-sm">{reactions['msg-1']}</span>
+                </div>
+              )}
             </div>
-            <p className="text-sm font-medium leading-relaxed">Perfect. I'll prepare the diagrams. Are you free at 2 PM?</p>
+
+            <span className={`text-[10px] font-bold ${t.textMuted} mt-4 ml-1 block`}>11:30 AM</span>
           </div>
-          <div className="flex justify-end items-center mt-1.5 space-x-1 mr-1">
-            <span className={`text-[10px] font-bold ${t.textMuted}`}>10:42 AM</span>
-            <CheckCheck className="w-3.5 h-3.5 text-[#1D9BF0]" strokeWidth={2.5} />
+
+          {/* Grouped Text Message */}
+          <div 
+            className={`self-start max-w-[80%] relative group mb-2 select-none ${reactingTo === 'msg-2' ? 'z-50' : ''}`}
+            onTouchStart={() => handlePressStart('msg-2')}
+            onTouchEnd={handlePressEnd}
+            onTouchMove={handlePressEnd}
+            onMouseDown={() => handlePressStart('msg-2')}
+            onMouseUp={handlePressEnd}
+            onMouseLeave={handlePressEnd}
+            onContextMenu={(e) => handleMsgContextMenu(e, 'msg-2')}
+          >
+            {reactingTo === 'msg-2' && <ReactionMenu align="left" msgId="msg-2" />}
+            {reactingTo === 'msg-2' && <MessageActionsMenu align="left" isOwn={false} msgId="msg-2" />}
+            <div className="relative w-fit">
+              <div className={`p-3.5 rounded-2xl rounded-tl-sm ${isDark ? 'bg-white/10' : 'bg-black/5'} border ${t.borderSoft} shadow-sm backdrop-blur-md`}>
+                <p className={`text-sm font-medium ${t.text} leading-relaxed`}>I reviewed the architectural proposals you sent over. Let's sync on the database schema before the sprint starts.</p>
+              </div>
+              {reactions['msg-2'] && (
+                <div 
+                  onClick={(e) => { e.stopPropagation(); setReactingTo('msg-2'); }}
+                  className={`absolute -bottom-3 right-0 px-2.5 py-1 min-w-[36px] ${isDark ? 'bg-[#1E1E1E] border-white/20' : 'bg-white border-gray-200'} border rounded-full shadow-sm flex items-center justify-center z-20 cursor-pointer hover:scale-110 active:scale-95 transition-all`}
+                >
+                  <span className="text-[13px] leading-none drop-shadow-sm">{reactions['msg-2']}</span>
+                </div>
+              )}
+            </div>
+            <span className={`text-[10px] font-bold ${t.textMuted} mt-4 ml-1 block`}>11:32 AM</span>
           </div>
+
+          <div 
+            className={`self-end max-w-[80%] relative mt-4 select-none ${reactingTo === 'msg-3' ? 'z-50' : ''}`}
+            onTouchStart={() => handlePressStart('msg-3')}
+            onTouchEnd={handlePressEnd}
+            onTouchMove={handlePressEnd}
+            onMouseDown={() => handlePressStart('msg-3')}
+            onMouseUp={handlePressEnd}
+            onMouseLeave={handlePressEnd}
+            onContextMenu={(e) => handleMsgContextMenu(e, 'msg-3')}
+          >
+            {reactingTo === 'msg-3' && <ReactionMenu align="right" msgId="msg-3" />}
+            {reactingTo === 'msg-3' && <MessageActionsMenu align="right" isOwn={true} msgId="msg-3" />}
+            <div className="relative w-fit ml-auto">
+              <div className="p-3.5 rounded-2xl rounded-tr-sm bg-[#1D9BF0] text-white shadow-md shadow-[#1D9BF0]/30 text-left">
+                <div className="bg-black/15 rounded-lg p-2.5 mb-2 border-l-[3px] border-white">
+                  <p className="text-[10px] font-extrabold text-white mb-0.5">Sarah Rahman</p>
+                  <p className="text-[11px] text-white/90 line-clamp-1 font-medium">I reviewed the architectural proposals you sent...</p>
+                </div>
+                <p className="text-sm font-medium leading-relaxed">Perfect. I'll prepare the diagrams. Are you free at 2 PM?</p>
+              </div>
+              {reactions['msg-3'] && (
+                <div 
+                  onClick={(e) => { e.stopPropagation(); setReactingTo('msg-3'); }}
+                  className={`absolute -bottom-3 left-0 px-2.5 py-1 min-w-[36px] ${isDark ? 'bg-[#1E1E1E] border-white/20' : 'bg-white border-gray-200'} border rounded-full shadow-sm flex items-center justify-center z-20 cursor-pointer hover:scale-110 active:scale-95 transition-all`}
+                >
+                  <span className="text-[13px] leading-none drop-shadow-sm">{reactions['msg-3']}</span>
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end items-center mt-4 space-x-1 mr-1">
+              <span className={`text-[10px] font-bold ${t.textMuted}`}>11:42 AM</span>
+              <CheckCheck className="w-3.5 h-3.5 text-[#1D9BF0]" strokeWidth={2.5} />
+            </div>
+          </div>
+
+          <div className="self-start max-w-[80%] mt-2">
+            <div className={`px-4 py-3 rounded-2xl rounded-tl-sm ${isDark ? 'bg-white/10' : 'bg-black/5'} border ${t.borderSoft} flex items-center space-x-1 w-fit`}>
+              <div className="w-1.5 h-1.5 bg-[#1D9BF0] rounded-full animate-bounce"></div>
+              <div className="w-1.5 h-1.5 bg-[#1D9BF0] rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+              <div className="w-1.5 h-1.5 bg-[#1D9BF0] rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+            </div>
+          </div>
+
         </div>
 
-        <div className="self-start max-w-[80%] mt-2">
-          <div className={`px-4 py-3 rounded-2xl rounded-tl-sm ${isDark ? 'bg-white/10' : 'bg-black/5'} border ${t.borderSoft} flex items-center space-x-1 w-fit`}>
-            <div className="w-1.5 h-1.5 bg-[#1D9BF0] rounded-full animate-bounce"></div>
-            <div className="w-1.5 h-1.5 bg-[#1D9BF0] rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
-            <div className="w-1.5 h-1.5 bg-[#1D9BF0] rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+        <div className={`p-4 ${t.glass} border-t relative z-20`} ref={attachmentContainerRef}>
+          {isAttachmentOpen && (
+            <div className={`absolute bottom-full left-4 mb-3 p-2 rounded-2xl ${isDark ? 'bg-[#1E1E1E]/95 shadow-black/40' : 'bg-white/95 shadow-black/5'} backdrop-blur-xl border ${t.borderSoft} shadow-xl z-40 flex flex-col space-y-1 animate-fade-in-up origin-bottom-left min-w-[160px]`}>
+              {[
+                { icon: Camera, label: 'Camera' },
+                { icon: ImageIcon, label: 'Photo' },
+                { icon: FileText, label: 'Document' },
+                { icon: MapPin, label: 'Location' }
+              ].map((item, i) => (
+                <button 
+                  key={i} 
+                  className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:${isDark ? 'bg-white/10' : 'bg-black/5'} transition-colors w-full text-left active:scale-[0.98]`} 
+                  onClick={() => setIsAttachmentOpen(false)}
+                >
+                  <item.icon className={`w-5 h-5 ${t.text}`} strokeWidth={2} />
+                  <span className={`text-sm font-bold ${t.text}`}>{item.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div className="flex items-end space-x-2 relative z-40">
+            <button 
+              onClick={() => setIsAttachmentOpen(!isAttachmentOpen)}
+              className={`w-10 h-10 shrink-0 flex items-center justify-center rounded-lg shadow-sm active:scale-95 transition-all duration-300 ${
+                isAttachmentOpen 
+                  ? 'bg-[#1D9BF0] text-white border-transparent' 
+                  : `${t.card} border ${t.border} ${t.text} hover:opacity-80`
+              }`}
+            >
+              <Plus className={`w-5 h-5 transition-transform duration-300 ${isAttachmentOpen ? 'rotate-45' : ''}`} strokeWidth={2.5} />
+            </button>
+            <div className={`flex-1 ${t.card} border ${t.border} rounded-lg flex items-center px-3 min-h-[40px] shadow-inner`}>
+               <textarea 
+                placeholder="Message..." 
+                rows="1"
+                className={`w-full bg-transparent text-sm font-bold ${t.text} focus:outline-none resize-none py-2.5 max-h-24`}
+               />
+            </div>
+            <button className="w-10 h-10 shrink-0 flex items-center justify-center rounded-lg bg-[#1D9BF0] text-white shadow-md shadow-[#1D9BF0]/40 active:scale-95 transition-transform">
+              <Send className="w-4 h-4 ml-0.5" strokeWidth={2.5} />
+            </button>
           </div>
         </div>
-
       </div>
-
-      <div className={`p-4 ${t.glass} border-t pb-6 flex items-end space-x-2 relative z-10`}>
-        <button className={`w-10 h-10 shrink-0 flex items-center justify-center rounded-lg ${t.card} border ${t.border} shadow-sm active:scale-95 transition-transform hover:opacity-80`}>
-          <Plus className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} />
-        </button>
-        <div className={`flex-1 ${t.card} border ${t.border} rounded-lg flex items-center px-3 min-h-[40px] shadow-inner`}>
-           <textarea 
-            placeholder="Message..." 
-            rows="1"
-            className={`w-full bg-transparent text-sm font-bold ${t.text} focus:outline-none resize-none py-2.5 max-h-24`}
-           />
-        </div>
-        <button className="w-10 h-10 shrink-0 flex items-center justify-center rounded-lg bg-[#1D9BF0] text-white shadow-md shadow-[#1D9BF0]/40 active:scale-95 transition-transform">
-          <Send className="w-4 h-4 ml-0.5" strokeWidth={2.5} />
-        </button>
-      </div>
-    </div>
-  );
+    );
+  };
 
   const NotificationsOverlay = () => {
     const notifications = [
@@ -2614,6 +3088,51 @@ export default function App() {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+    );
+  };
+
+  const MessageSettingsOverlay = ({ onClose }) => {
+    const [soundEnabled, setSoundEnabled] = useState(true);
+
+    return (
+      <div className={`absolute inset-0 z-50 flex flex-col animate-slide-up ${t.bg}`}>
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden transition-opacity duration-500">
+          <div className={`absolute top-[-5%] left-[-10%] w-[80%] h-[60%] bg-[#1D9BF0] rounded-full mix-blend-screen filter blur-[140px] ${isDark ? 'opacity-10' : 'opacity-[0.15]'}`}></div>
+        </div>
+
+        <div className={`px-4 pt-12 pb-3 flex items-center justify-between ${t.glass} border-b sticky top-0 z-20 shadow-sm`}>
+          <button onClick={onClose} className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors`}>
+            <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
+          </button>
+          <h2 className={`text-base font-extrabold ${t.text} leading-tight`}>Message Settings</h2>
+          <div className="w-10 h-10"></div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto pb-32 relative z-10 px-5 pt-6 space-y-6">
+          <div>
+            <div className={`rounded-2xl ${t.card} border ${t.border} overflow-hidden ${t.cardShadow}`}>
+              <SettingsItem 
+                icon={Volume2} 
+                label="Notification Sound" 
+                isToggle={true} 
+                toggleState={soundEnabled} 
+                onToggle={() => setSoundEnabled(!soundEnabled)} 
+                t={t} isDark={isDark} 
+              />
+              <SettingsItem icon={Archive} label="Archived Chats" t={t} isDark={isDark} />
+            </div>
+          </div>
+
+          <div>
+            <h3 className={`text-sm font-extrabold ${t.textMuted} uppercase tracking-wider mb-3 px-1`}>Support & Legal</h3>
+            <div className={`rounded-2xl ${t.card} border ${t.border} overflow-hidden ${t.cardShadow}`}>
+              <SettingsItem icon={AlertTriangle} label="Report Technical Problem" t={t} isDark={isDark} />
+              <SettingsItem icon={Info} label="Help" t={t} isDark={isDark} />
+              <SettingsItem icon={FileText} label="Legal & Policies" t={t} isDark={isDark} />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -2678,7 +3197,7 @@ export default function App() {
             {currentView === 'splash' && SplashScreen()}
             {currentView === 'welcome' && WelcomeScreen()}
             {currentView === 'role_select' && RoleGatewayScreen()}
-            {currentView === 'role_auth' && RoleAuthScreen()}
+            {currentView === 'auth_main' && AuthScreen()}
             {currentView === 'otp' && OtpScreen()}
             
             {currentView === 'main' && (
@@ -2688,6 +3207,7 @@ export default function App() {
                   {activeTab === 'directory' && <DirectoryTab />}
                   {activeTab === 'jobs' && <JobsTab />}
                   {activeTab === 'emergency' && <EmergencyTab />}
+                  {activeTab === 'emergency_directory' && <EmergencyDirectoryTab />}
                   {activeTab === 'messages' && <MessagesTab />}
                   {activeTab === 'profile' && <ProfileTab 
                     authRole={authRole} t={t} isDark={isDark} 
@@ -2715,7 +3235,10 @@ export default function App() {
                     return (
                       <button 
                         key={item.id} 
-                        onClick={() => setActiveTab(item.id)}
+                        onClick={() => {
+                          setActiveTab(item.id);
+                          if (item.id === 'directory') setDirectoryFilterBg(null);
+                        }}
                         className={`relative flex items-center h-[60px] rounded-[2rem] transition-[width,background-color] duration-300 ease-out overflow-hidden ${isActive ? `w-[124px] ${isDark ? 'nav-active-dark text-white' : 'nav-active-light text-black'}` : `w-[60px] bg-transparent ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-black'}`}`}
                       >
                         <div className="w-[60px] h-[60px] shrink-0 flex items-center justify-center">
@@ -2758,11 +3281,16 @@ export default function App() {
               profileVisibility={profileVisibility} setProfileVisibility={setProfileVisibility}
               activeSessions={activeSessions} setActiveSessions={setActiveSessions}
             />}
+            {activeOverlay === 'message_settings' && <MessageSettingsOverlay onClose={() => setActiveOverlay(null)} />}
             {activeOverlay === 'chat' && <ChatOverlay />}
             {activeOverlay === 'notifications' && <NotificationsOverlay />}
             
             {selectedJob && (
               <JobDetailView job={selectedJob} onBack={() => setSelectedJob(null)} />
+            )}
+            
+            {selectedEmergency && (
+              <EmergencyRequestView req={selectedEmergency} onBack={() => setSelectedEmergency(null)} />
             )}
             
             {selectedUser && (
