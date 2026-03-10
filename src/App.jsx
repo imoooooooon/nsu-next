@@ -721,7 +721,7 @@ const SettingsFlowOverlay = ({ type, onClose, t, isDark, authRole, appLanguage, 
       </div>
 
       <div className={`absolute bottom-0 w-full p-5 pt-4 pb-8 ${t.glass} border-t z-20`}>
-         <button onClick={handleSave} disabled={isSaving} className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/40 flex items-center justify-center`}>
+         <button onClick={handleSave} disabled={isSaving} className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-sm flex items-center justify-center`}>
            {isSaving ? (
              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
            ) : (
@@ -733,7 +733,6 @@ const SettingsFlowOverlay = ({ type, onClose, t, isDark, authRole, appLanguage, 
   );
 };
 
-// Added missing Emergency Flow Stub
 const EmergencyFlowOverlay = ({ onClose }) => (
   <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-6" onClick={onClose}>
     <div className="bg-white dark:bg-[#1A1A1A] w-full max-w-sm rounded-2xl p-6 shadow-2xl flex flex-col items-center animate-fade-in-up" onClick={e => e.stopPropagation()}>
@@ -781,7 +780,7 @@ export default function App() {
   const [jobFilter, setJobFilter] = useState(null);
   const [emergencyViewMode, setEmergencyViewMode] = useState('list');
   const [isDonorAvailable, setIsDonorAvailable] = useState(true);
-  const [directoryFilterBg, setDirectoryFilterBg] = useState(null); // Added state for Blood Group filtering
+  const [directoryFilterBg, setDirectoryFilterBg] = useState(null); 
 
   useEffect(() => {
     if (currentView === 'splash') {
@@ -897,7 +896,7 @@ export default function App() {
         <p className={`text-sm mt-2 text-center ${t.textMuted} px-4`}>North South University Verified Network</p>
       </div>
       <div className="w-full mt-auto space-y-3 animate-fade-in delay-150">
-        <button onClick={() => { setAuthMode('login'); setCurrentView('auth_main'); }} className={`w-full h-14 rounded-xl text-base font-semibold transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/30`}>
+        <button onClick={() => { setAuthMode('login'); setCurrentView('auth_main'); }} className={`w-full h-14 rounded-xl text-base font-semibold transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-sm`}>
           Log In
         </button>
         <button onClick={() => { setAuthMode('signup'); setCurrentView('role_select'); }} className={`w-full h-14 rounded-xl text-base font-semibold transition-all active:scale-[0.97] ${t.card} border ${t.borderSoft} ${t.text} shadow-sm`}>
@@ -959,7 +958,7 @@ export default function App() {
               </div>
               <div className="shrink-0 ml-3">
                 {isSelected ? (
-                   <div className="bg-[#1D9BF0] text-white rounded-full flex items-center justify-center animate-in zoom-in duration-200 shadow-sm shadow-[#1D9BF0]/40">
+                   <div className="bg-[#1D9BF0] text-white rounded-full flex items-center justify-center animate-in zoom-in duration-200 shadow-sm">
                      <CheckCircle2 className="w-6 h-6" strokeWidth={2.5} />
                    </div>
                 ) : (
@@ -982,7 +981,7 @@ export default function App() {
          <button 
            disabled={!authRole}
            onClick={() => setCurrentView('auth_main')}
-           className={`w-full h-14 rounded-xl text-base font-extrabold transition-all active:scale-[0.97] outline-none disabled:opacity-50 disabled:cursor-not-allowed bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/30`}
+           className={`w-full h-14 rounded-xl text-base font-extrabold transition-all active:scale-[0.97] outline-none disabled:opacity-50 disabled:cursor-not-allowed bg-[#1D9BF0] text-white shadow-sm`}
          >
            Continue
          </button>
@@ -1058,7 +1057,7 @@ export default function App() {
                 </div>
               </div>
 
-              <button onClick={handleAction} className="w-full h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.98] bg-[#1D9BF0] text-white mt-8 shadow-lg shadow-[#1D9BF0]/30 hover:bg-[#1A8CD8]">
+              <button onClick={handleAction} className="w-full h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.98] bg-[#1D9BF0] text-white mt-8 shadow-sm hover:bg-[#1A8CD8]">
                 Log In
               </button>
 
@@ -1163,7 +1162,7 @@ export default function App() {
                 )}
               </div>
 
-              <button onClick={handleAction} className="w-full h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.98] bg-[#1D9BF0] text-white mt-8 shadow-lg shadow-[#1D9BF0]/30 hover:bg-[#1A8CD8]">
+              <button onClick={handleAction} className="w-full h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.98] bg-[#1D9BF0] text-white mt-8 shadow-sm hover:bg-[#1A8CD8]">
                 Send OTP
               </button>
 
@@ -1217,7 +1216,7 @@ export default function App() {
           ))}
         </div>
 
-        <button onClick={() => setCurrentView('main')} className="w-full h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/30 hover:bg-[#1A8CD8]">
+        <button onClick={() => setCurrentView('main')} className="w-full h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-sm hover:bg-[#1A8CD8]">
           Verify & Create Account
         </button>
 
@@ -1230,6 +1229,11 @@ export default function App() {
 
   const HomeTab = () => {
     const [notifIndex, setNotifIndex] = useState(0);
+
+    // Set your different image URLs for light and dark mode here
+    const headerBgImageLight = 'https://res.cloudinary.com/ddgxqqe6t/image/upload/v1773175854/NSU_BUILDING_LINE_ART_F2_y7e2az.svg';
+    const headerBgImageDark = 'https://res.cloudinary.com/ddgxqqe6t/image/upload/v1773175855/NSU_BUILDING_LINE_ART_F_pk87bc.svg'; // Replace with dark version URL
+    const currentBgImage = isDark ? headerBgImageDark : headerBgImageLight;
 
     const previewNotifications = [
       { id: 1, type: 'job', icon: Briefcase, color: 'text-[#1D9BF0]', bg: 'bg-[#1D9BF0]/10', title: 'New Job Match', msg: 'Pathao posted a new Frontend Developer role that matches your skills.', time: '2m ago' },
@@ -1300,48 +1304,63 @@ export default function App() {
     }, [previewNotifications.length]);
 
     return (
-      <div className="flex flex-col h-full overflow-y-auto pb-36 px-5 pt-8 space-y-6 animate-fade-in relative z-10">
-        <div className="mb-2">
-          <div className="flex justify-between items-start mb-3">
-            <div className="flex flex-col">
-              <div className="flex items-center space-x-1.5 mb-1">
-                <BadgeCheck className="w-3.5 h-3.5 text-[#1D9BF0]" strokeWidth={3} />
-                <span className="text-[10px] font-extrabold text-[#1D9BF0] tracking-wide uppercase">
-                  Verified NSU {authRole.charAt(0).toUpperCase() + authRole.slice(1)}
-                </span>
+      <div className="flex flex-col h-full overflow-y-auto pb-36 px-5 pt-0 space-y-6 animate-fade-in relative z-10">
+        
+        {/* Top Header Banner with SVG Background */}
+        <div className="relative -mx-5 px-5 pt-12 pb-6 rounded-b-[2.5rem]">
+          {/* SVG Background */}
+          <div 
+            className="absolute inset-0 z-0 pointer-events-none opacity-100"
+            style={{
+              backgroundImage: `url('${currentBgImage}')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center -15px',
+              backgroundRepeat: 'no-repeat'
+            }}
+          />
+          
+          <div className="relative z-10">
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex flex-col">
+                <div className="flex items-center space-x-1.5 mb-1.5">
+                  <BadgeCheck className="w-3.5 h-3.5 text-[#1D9BF0]" strokeWidth={3} />
+                  <span className="text-[10px] font-extrabold text-[#1D9BF0] tracking-wide uppercase drop-shadow-sm">
+                    Verified NSU {authRole.charAt(0).toUpperCase() + authRole.slice(1)}
+                  </span>
+                </div>
+                <h1 className={`text-3xl font-extrabold ${t.text} tracking-tight leading-tight drop-shadow-sm`}>
+                  Hi, {authRole === 'student' ? 'Hasan' : authRole === 'alumni' ? 'Nusrat' : 'Dr. Hasan'} <span className="text-2xl inline-block origin-bottom-right animate-wave">👋</span>
+                </h1>
+                <p className={`${t.textMuted} text-xs font-bold mt-1 drop-shadow-sm`}>
+                  {authRole === 'student' ? 'CSE • Batch 221' : authRole === 'alumni' ? 'Software Eng • Batch 19' : 'Professor • CSE'}
+                </p>
               </div>
-              <h1 className={`text-2xl font-extrabold ${t.text} tracking-tight leading-tight`}>
-                Hi, {authRole === 'student' ? 'Hasan' : authRole === 'alumni' ? 'Nusrat' : 'Dr. Hasan'} <span className="text-xl inline-block origin-bottom-right animate-wave">👋</span>
-              </h1>
-              <p className={`${t.textMuted} text-xs font-bold mt-0.5`}>
-                {authRole === 'student' ? 'CSE • Batch 221' : authRole === 'alumni' ? 'Software Eng • Batch 19' : 'Professor • CSE'}
-              </p>
+
+              <div className="flex space-x-2 mt-1">
+                <button onClick={toggleTheme} className={`w-9 h-9 rounded-xl ${isDark ? 'bg-white/10 border-white/10' : 'bg-white/80 border-white'} border flex items-center justify-center transition-colors shadow-sm backdrop-blur-md`}>
+                  {isDark ? <Sun className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} /> : <Moon className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} />}
+                </button>
+                <button onClick={() => setActiveOverlay('notifications')} className={`w-9 h-9 rounded-xl ${isDark ? 'bg-white/10 border-white/10' : 'bg-white/80 border-white'} border flex items-center justify-center transition-colors shadow-sm backdrop-blur-md relative active:scale-95`}>
+                  <Bell className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} />
+                  <span className={`absolute top-1 right-1 w-2.5 h-2.5 bg-[#1D9BF0] border-[2px] ${isDark ? 'border-[#1E1E1E]' : 'border-white'} rounded-full`}></span>
+                </button>
+              </div>
             </div>
 
-            <div className="flex space-x-2">
-              <button onClick={toggleTheme} className={`w-8 h-8 rounded-lg ${t.card} border ${t.border} flex items-center justify-center transition-colors shadow-sm`}>
-                {isDark ? <Sun className={`w-4 h-4 ${t.text}`} strokeWidth={2.5} /> : <Moon className={`w-4 h-4 ${t.text}`} strokeWidth={2.5} />}
-              </button>
-              <button onClick={() => setActiveOverlay('notifications')} className={`w-8 h-8 rounded-lg ${t.card} border ${t.border} flex items-center justify-center transition-colors shadow-sm relative active:scale-95`}>
-                <Bell className={`w-4 h-4 ${t.text}`} strokeWidth={2.5} />
-                <span className={`absolute top-0.5 right-1 w-2 h-2 bg-[#1D9BF0] border border-white/50 rounded-full`}></span>
-              </button>
-            </div>
-          </div>
-
-          <div className="w-full">
-            <div className="flex justify-between items-center mb-1.5">
-              <span className={`text-[10px] font-extrabold ${t.textMuted} uppercase tracking-wider`}>Profile Strength</span>
-              <span className={`text-[10px] font-extrabold text-[#1D9BF0]`}>80%</span>
-            </div>
-            <div className={`h-1.5 w-full ${isDark ? 'bg-white/10' : 'bg-black/5'} rounded-full overflow-hidden`}>
-              <div className="h-full bg-[#1D9BF0] w-[80%] rounded-full shadow-sm shadow-[#1D9BF0]/50"></div>
+            <div className="w-full mt-2">
+              <div className="flex justify-between items-center mb-1.5">
+                <span className={`text-[10px] font-extrabold ${t.textMuted} uppercase tracking-wider drop-shadow-sm`}>Profile Strength</span>
+                <span className={`text-[10px] font-extrabold text-[#1D9BF0] drop-shadow-sm`}>80%</span>
+              </div>
+              <div className={`h-1.5 w-full ${isDark ? 'bg-white/10' : 'bg-black/10'} rounded-full overflow-hidden shadow-inner`}>
+                <div className="h-full bg-[#1D9BF0] w-[80%] rounded-full shadow-sm"></div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Redesigned Quick Actions: Custom Layered Icons + Label */}
-        <div className="w-full pt-4 pb-2 relative z-10">
+        <div className="w-full pt-0 pb-2 relative z-10">
           <div className="flex flex-row items-start justify-between w-full px-2">
             {[
               { icon: CustomAlumniIcon, label: 'Network', action: () => setActiveTab('directory') },
