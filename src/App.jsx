@@ -10,7 +10,7 @@ import {
   Edit, MoreVertical, CheckCheck, Smile, Copy, QrCode, Wifi, 
   Eye, Lightbulb, Shield, Globe, Smartphone, CreditCard, ChevronDown,
   Compass, Upload, X, Monitor, Landmark, Volume2, Archive,
-  Camera, Image as ImageIcon, VolumeX, Pin, Trash2, MailOpen, Reply
+  Camera, Image as ImageIcon, VolumeX, Pin, Trash2, MailOpen, Reply, Heart, Type
 } from 'lucide-react';
 
 // --- CUSTOM LAYERED ICONS ---
@@ -748,6 +748,505 @@ const EmergencyFlowOverlay = ({ onClose }) => (
   </div>
 );
 
+// --- DEMO MOMENTS DATA ---
+const globalMomentsData = [
+  {
+    id: 'user-1',
+    user: { name: 'Maliha', role: 'Student', verified: true, avatar: null },
+    seen: false,
+    items: [
+      { id: 'm1', type: 'image', url: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&auto=format&fit=crop', duration: 5000, reactions: 20 },
+      { id: 'm2', type: 'image', url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&auto=format&fit=crop', duration: 5000, reactions: 45 },
+      { id: 'm3', type: 'image', url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&auto=format&fit=crop', duration: 5000, reactions: 88 }
+    ]
+  },
+  {
+    id: 'user-2',
+    user: { name: 'Dr. Aminul', role: 'Faculty', verified: true, avatar: null },
+    seen: false,
+    items: [
+      { id: 'm4', type: 'image', url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&auto=format&fit=crop', duration: 5000, reactions: 88 }
+    ]
+  },
+  {
+    id: 'user-3',
+    user: { name: 'Tahmid Hasan', role: 'Student', verified: false, avatar: null },
+    seen: true,
+    items: [
+      { id: 'm5', type: 'note', content: 'Need a study partner!', duration: 5000, reactions: 2 }
+    ]
+  },
+  {
+    id: 'user-4',
+    user: { name: 'Ayman Sadiq', role: 'Alumni', verified: true, avatar: null },
+    seen: false,
+    items: [
+      { id: 'm6', type: 'image', url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&auto=format&fit=crop', duration: 5000, reactions: 1204 }
+    ]
+  },
+  {
+    id: 'user-5',
+    user: { name: 'Fahim', role: 'Student', verified: false, avatar: null },
+    seen: false,
+    items: [
+      { id: 'm7', type: 'note', content: 'Just finished my thesis 🎓', duration: 5000, reactions: 34 }
+    ]
+  },
+  {
+    id: 'user-6',
+    user: { name: 'Sadia', role: 'Alumni', verified: true, avatar: null },
+    seen: true,
+    items: [
+      { id: 'm8', type: 'image', url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop', duration: 5000, reactions: 56 }
+    ]
+  },
+  {
+    id: 'user-7',
+    user: { name: 'Rayan', role: 'Student', verified: false, avatar: null },
+    seen: false,
+    items: [
+      { id: 'm9', type: 'note', content: 'Hackathon team needed', duration: 5000, reactions: 5 },
+      { id: 'm10', type: 'image', url: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&auto=format&fit=crop', duration: 5000, reactions: 12 }
+    ]
+  },
+  {
+    id: 'user-8',
+    user: { name: 'Nabila', role: 'Faculty', verified: true, avatar: null },
+    seen: true,
+    items: [
+      { id: 'm11', type: 'image', url: 'https://images.unsplash.com/photo-1544717302-de2939b7ef71?w=800&auto=format&fit=crop', duration: 5000, reactions: 112 }
+    ]
+  }
+];
+
+// --- COMPONENTS ---
+
+const MomentsRow = ({ moments, isDark, t, onOpenViewer, onOpenNote, onCreateClick }) => {
+  const scrollRef = React.useRef(null);
+  const [isDragging, setIsDragging] = React.useState(false);
+  const [startX, setStartX] = React.useState(0);
+  const [scrollLeft, setScrollLeft] = React.useState(0);
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => setIsDragging(false);
+  const handleMouseUp = () => setIsDragging(false);
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  return (
+    <div className="w-full relative z-20">
+      <div 
+        ref={scrollRef}
+        className={`flex space-x-4 overflow-x-auto hide-scrollbar px-5 pt-6 pb-2 items-start h-[125px] touch-pan-x select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeave}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+      >
+        <div className="flex flex-col items-center shrink-0 w-[68px] cursor-pointer group active:scale-95 transition-transform" onClick={onCreateClick}>
+          <div className="relative mb-1.5 pointer-events-none">
+            <div className={`absolute -top-5 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-2xl ${isDark ? 'bg-white text-black' : 'bg-white text-black border border-gray-200'} shadow-sm z-20 w-max max-w-[80px] flex items-center justify-center`}>
+              <span className="text-[10px] font-semibold truncate w-full text-center">Share thoug...</span>
+              <div className={`absolute -bottom-1 left-4 w-2 h-2 rotate-45 ${isDark ? 'bg-white' : 'bg-white border-b border-r border-gray-200'}`}></div>
+            </div>
+            <div className={`w-[68px] h-[68px] rounded-full relative`}>
+              <div className={`w-full h-full rounded-full ${isDark ? 'bg-[#2A2A2A]' : 'bg-gray-100'} border-[2px] ${isDark ? 'border-[#121212]' : 'border-white'} flex items-center justify-center overflow-hidden`}>
+                <User className={`w-8 h-8 ${t.textMuted}`} strokeWidth={1.5} />
+              </div>
+              <div className={`absolute -bottom-0.5 -right-0.5 w-6 h-6 bg-[#1D9BF0] rounded-full border-[2.5px] ${isDark ? 'border-black' : 'border-white'} flex items-center justify-center z-10`}>
+                <Plus className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+              </div>
+            </div>
+          </div>
+          <span className={`text-[11px] font-semibold ${t.text} truncate w-full text-center pointer-events-none`}>Your Moment</span>
+        </div>
+
+        {moments.map((momentGroup, index) => {
+          const firstNote = momentGroup.items.find(i => i.type === 'note');
+          const unseenRing = `border-[#1D9BF0]`;
+          const seenRing = isDark ? `border-gray-600` : `border-gray-300`;
+          
+          return (
+            <div key={momentGroup.id} className="flex flex-col items-center shrink-0 w-[68px] cursor-pointer group active:scale-95 transition-transform">
+              <div className="relative mb-1.5">
+                {firstNote && (
+                  <div 
+                    onClick={(e) => { if(!isDragging) { e.stopPropagation(); onOpenNote(momentGroup); } }}
+                    className={`absolute -top-5 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-2xl ${isDark ? 'bg-white text-black' : 'bg-white text-black border border-gray-200'} shadow-sm z-20 w-max max-w-[80px] flex items-center justify-center active:scale-95 transition-transform`}
+                  >
+                    <span className="text-[10px] font-semibold truncate w-full text-center">{firstNote.content}</span>
+                    <div className={`absolute -bottom-1 left-4 w-2 h-2 rotate-45 ${isDark ? 'bg-white' : 'bg-white border-b border-r border-gray-200'}`}></div>
+                  </div>
+                )}
+                <div 
+                  onClick={() => { if(!isDragging) onOpenViewer(index); }}
+                  className={`w-[68px] h-[68px] rounded-full border-[2.5px] p-[2.5px] pointer-events-auto ${momentGroup.seen ? seenRing : unseenRing}`}
+                >
+                  <div className={`w-full h-full rounded-full ${isDark ? 'bg-[#1A1A1A]' : 'bg-gray-100'} flex items-center justify-center overflow-hidden`}>
+                    <User className={`w-8 h-8 ${t.textMuted}`} strokeWidth={1.5} />
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-center w-full space-x-0.5 pointer-events-none">
+                <span className={`text-[11px] font-semibold ${momentGroup.seen ? t.textMuted : t.text} truncate text-center`}>{momentGroup.user.name.split(' ')[0]}</span>
+                {momentGroup.user.verified && <BadgeCheck className={`w-3 h-3 ${momentGroup.seen ? 'text-gray-400' : 'text-[#1D9BF0]'} shrink-0`} strokeWidth={3} />}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const NoteViewerOverlay = ({ data, onClose, t, isDark }) => {
+  const note = data.items.find(i => i.type === 'note');
+  const [replyText, setReplyText] = React.useState('');
+
+  return (
+    <div className="absolute inset-0 z-[100] flex flex-col justify-between bg-black/60 backdrop-blur-xl animate-fade-in" onClick={onClose}>
+      <div className="pt-12 px-4 flex justify-end">
+        <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center active:scale-95 transition-transform backdrop-blur-md">
+          <X className="w-6 h-6 text-white" />
+        </button>
+      </div>
+
+      <div className="flex-1 flex flex-col items-center justify-center pb-20 px-6" onClick={(e) => e.stopPropagation()}>
+        <div className="relative mb-6 animate-fade-in-up">
+          <div className="bg-white text-black px-6 py-5 rounded-3xl shadow-2xl max-w-[280px] text-center text-xl font-light leading-snug">
+            {note?.content}
+          </div>
+          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-white rotate-45 rounded-sm"></div>
+        </div>
+        
+        <div className={`w-28 h-28 rounded-full bg-gray-200 border-4 ${isDark ? 'border-[#2A2A2A]' : 'border-white'} flex items-center justify-center shadow-2xl overflow-hidden animate-scale-up`}>
+          <User className="w-14 h-14 text-gray-500" strokeWidth={1.5} />
+        </div>
+        
+        <div className="mt-5 text-center">
+          <div className="flex items-center justify-center space-x-1.5">
+            <h2 className="text-white font-semibold text-2xl drop-shadow-md">{data.user.name}</h2>
+            {data.user.verified && <BadgeCheck className="w-5 h-5 text-[#1D9BF0] drop-shadow-md" strokeWidth={3} />}
+          </div>
+          <p className="text-white/80 text-sm font-medium mt-1 drop-shadow-md">{data.user.role} • 4h</p>
+        </div>
+      </div>
+
+      <div className="p-5 pb-8 bg-black/20 backdrop-blur-md border-t border-white/10" onClick={(e) => e.stopPropagation()}>
+         <div className="flex items-center space-x-3 bg-white/10 rounded-full pl-5 pr-2 py-2 border border-white/20 shadow-inner">
+           <input 
+             type="text" 
+             value={replyText}
+             onChange={(e) => setReplyText(e.target.value)}
+             placeholder={`Reply to ${data.user.name.split(' ')[0]}...`} 
+             className="flex-1 bg-transparent text-white placeholder:text-white/60 font-light text-[14px] focus:outline-none" 
+           />
+           <button 
+             onClick={() => { setReplyText(''); onClose(); }}
+             className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${replyText.trim() ? 'bg-white text-black scale-105 shadow-md' : 'bg-transparent text-white/50'}`}
+           >
+             <Send className="w-4 h-4 transform translate-x-[1px] -translate-y-[1px]" strokeWidth={2.5}/>
+           </button>
+         </div>
+      </div>
+    </div>
+  );
+};
+
+const MomentViewer = ({ moments, initialUserIndex, onClose, t, isDark }) => {
+  const [currentUserIndex, setCurrentUserIndex] = React.useState(initialUserIndex);
+  const [currentStoryIndex, setCurrentStoryIndex] = React.useState(0);
+  const [progress, setProgress] = React.useState(0);
+  const [isPaused, setIsPaused] = React.useState(false);
+  const [hasLiked, setHasLiked] = React.useState(false);
+  const [showHeartPop, setShowHeartPop] = React.useState(false);
+  const [showViewers, setShowViewers] = React.useState(false);
+  const [replyText, setReplyText] = React.useState('');
+  const [showOptionsMenu, setShowOptionsMenu] = React.useState(false);
+  
+  const timerRef = React.useRef(null);
+  const startTimeRef = React.useRef(Date.now());
+  const pausedProgressRef = React.useRef(0);
+  const updateInterval = 16; 
+
+  const currentUser = moments[currentUserIndex];
+  const mediaItems = currentUser?.items.filter(i => i.type !== 'note') || [];
+  const currentItem = mediaItems[currentStoryIndex];
+
+  React.useEffect(() => {
+    if (mediaItems.length === 0) {
+       if (currentUserIndex < moments.length - 1) setCurrentUserIndex(prev => prev + 1);
+       else onClose();
+       return;
+    }
+    if (!currentItem) return;
+    
+    if (!isPaused && !showViewers && !showOptionsMenu) {
+      startTimeRef.current = Date.now() - (pausedProgressRef.current / 100 * currentItem.duration);
+      timerRef.current = setInterval(() => {
+        const elapsed = Date.now() - startTimeRef.current;
+        const newProgress = (elapsed / currentItem.duration) * 100;
+        if (newProgress >= 100) handleNext();
+        else setProgress(newProgress);
+      }, updateInterval);
+    } else {
+      if (timerRef.current) clearInterval(timerRef.current);
+      pausedProgressRef.current = progress;
+    }
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [currentUserIndex, currentStoryIndex, isPaused, showViewers, showOptionsMenu, currentItem, mediaItems.length]);
+
+  const handleNext = () => {
+    setHasLiked(false); setProgress(0); pausedProgressRef.current = 0;
+    if (currentStoryIndex < mediaItems.length - 1) setCurrentStoryIndex(prev => prev + 1);
+    else if (currentUserIndex < moments.length - 1) { setCurrentUserIndex(prev => prev + 1); setCurrentStoryIndex(0); }
+    else onClose();
+  };
+
+  const handlePrev = () => {
+    setHasLiked(false); setProgress(0); pausedProgressRef.current = 0;
+    if (currentStoryIndex > 0) setCurrentStoryIndex(prev => prev - 1);
+    else if (currentUserIndex > 0) { setCurrentUserIndex(prev => prev - 1); setCurrentStoryIndex(moments[currentUserIndex - 1].items.filter(i => i.type !== 'note').length - 1 || 0); }
+    else setProgress(0); 
+  };
+
+  const handleInteractionStart = () => setIsPaused(true);
+  const handleInteractionEnd = () => setIsPaused(false);
+
+  const handleLike = (e) => {
+    e.stopPropagation();
+    if (!hasLiked) {
+      setHasLiked(true); setShowHeartPop(true);
+      setTimeout(() => setShowHeartPop(false), 800);
+    } else setHasLiked(false);
+  };
+
+  if (!currentItem) return null;
+
+  const displayedLikes = hasLiked ? currentItem.reactions + 1 : currentItem.reactions;
+  const displayedViews = currentItem.reactions * 14 + 52 + (hasLiked ? 1 : 0); 
+
+  return (
+    <div className={`absolute inset-0 z-[100] ${t.bg} overflow-hidden flex flex-col justify-center py-2 animate-scale-up origin-center transition-colors duration-500`}>
+      <div className="w-full max-w-[430px] mx-auto aspect-[9/16] bg-[#121212] overflow-hidden relative shadow-2xl transition-transform duration-300 rounded-[8px]">
+        {currentItem.type === 'image' && (
+          <img src={currentItem.url} alt="Moment" className="w-full h-full object-cover" draggable={false} />
+        )}
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-black/70 via-black/30 to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute top-0 left-0 w-full pt-4 px-4 pb-4 flex flex-col z-20 shrink-0">
+          <div className="flex space-x-1.5 w-full mb-3">
+            {mediaItems.map((_, idx) => (
+              <div key={idx} className={`h-[3px] flex-1 bg-white/30 rounded-full overflow-hidden transition-colors`}>
+                <div 
+                  className={`h-full bg-white rounded-full transition-all ease-linear`}
+                  style={{ 
+                    width: idx === currentStoryIndex ? `${progress}%` : idx < currentStoryIndex ? '100%' : '0%',
+                    transitionDuration: idx === currentStoryIndex && !isPaused && !showViewers ? `${updateInterval}ms` : '0ms'
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className={`w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center overflow-hidden transition-colors shadow-sm`}>
+                 <User className={`w-6 h-6 text-white`} strokeWidth={1.5} />
+              </div>
+              <div className="flex flex-col">
+                <div className="flex items-center space-x-1">
+                  <span className={`text-[14px] font-semibold text-white drop-shadow-md`}>{currentUser.user.name}</span>
+                  {currentUser.user.verified && <BadgeCheck className="w-4 h-4 text-[#1D9BF0]" strokeWidth={3} />}
+                  <span className={`text-[12px] font-light ml-1 text-white/90 drop-shadow-md`}>• 4h</span>
+                </div>
+                <span className={`text-[10px] font-medium uppercase tracking-wider text-white/80 drop-shadow-md mt-0.5`}>{currentUser.user.role}</span>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button onClick={(e) => { e.stopPropagation(); setShowOptionsMenu(true); setIsPaused(true); }} className={`w-9 h-9 rounded-full bg-black/20 backdrop-blur-md border border-white/20 text-white flex items-center justify-center active:scale-95 transition-all shadow-sm`}>
+                <MoreVertical className="w-4 h-4" strokeWidth={2.5} />
+              </button>
+              <button onClick={onClose} className={`w-9 h-9 rounded-full bg-black/20 backdrop-blur-md border border-white/20 text-white flex items-center justify-center active:scale-95 transition-all shadow-sm`}>
+                <X className="w-5 h-5" strokeWidth={2.5} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="absolute bottom-0 left-0 w-full h-56 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-full px-4 pt-6 pb-4 z-20 flex flex-col justify-end space-y-4">
+          <div className="flex justify-between items-end px-1">
+            <div className="flex items-center space-x-2 bg-black/20 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-full cursor-pointer active:scale-95 transition-transform" onClick={() => { setShowViewers(true); setIsPaused(true); }}>
+               <div className="flex -space-x-2">
+                 {[1,2,3].map(i => (
+                    <div key={i} className="w-6 h-6 rounded-full bg-gray-500 border border-[#121212] flex items-center justify-center overflow-hidden shadow-sm">
+                      <User className="w-3.5 h-3.5 text-white" />
+                    </div>
+                 ))}
+               </div>
+               <span className="text-xs font-medium text-white drop-shadow-md pr-1">{displayedViews}</span>
+            </div>
+            <div className="flex flex-col items-center space-y-1">
+              <button onClick={handleLike} className="p-2 flex items-center justify-center active:scale-[0.7] transition-transform duration-300 ease-spring">
+                <Heart className={`w-8 h-8 transition-colors duration-300 ${hasLiked ? 'text-[#1D9BF0] fill-[#1D9BF0]' : 'text-white'}`} strokeWidth={hasLiked ? 0 : 2.5} style={{ filter: 'drop-shadow(0px 4px 6px rgba(0,0,0,0.5))' }} />
+              </button>
+              <span className="text-[12px] font-medium text-white drop-shadow-md">{displayedLikes}</span>
+            </div>
+          </div>
+          <div className="flex items-center space-x-3 bg-black/30 backdrop-blur-md rounded-full pl-5 pr-2 py-2 border border-white/20 shadow-lg">
+             <input type="text" value={replyText} onChange={(e) => setReplyText(e.target.value)} onFocus={() => setIsPaused(true)} onBlur={() => setIsPaused(false)} placeholder={`Send message...`} className="flex-1 bg-transparent text-white placeholder:text-white/80 font-light text-[14px] focus:outline-none" />
+             <button onClick={() => { setReplyText(''); }} className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${replyText.trim() ? 'bg-white text-black scale-105 shadow-md' : 'bg-transparent text-white/60'}`}>
+               <Send className="w-4 h-4 transform translate-x-[1px] -translate-y-[1px]" strokeWidth={2.5}/>
+             </button>
+          </div>
+        </div>
+
+        <div className="absolute top-24 bottom-32 left-0 w-[40%] z-10 cursor-pointer" onClick={handlePrev} onMouseDown={handleInteractionStart} onMouseUp={handleInteractionEnd} onTouchStart={handleInteractionStart} onTouchEnd={handleInteractionEnd} />
+        <div className="absolute top-24 bottom-32 right-0 w-[60%] z-10 cursor-pointer" onClick={handleNext} onMouseDown={handleInteractionStart} onMouseUp={handleInteractionEnd} onTouchStart={handleInteractionStart} onTouchEnd={handleInteractionEnd} />
+
+        {showHeartPop && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
+            <Heart className="w-24 h-24 text-[#1D9BF0] fill-[#1D9BF0] animate-heart-fly" style={{ filter: 'drop-shadow(0px 10px 20px rgba(29, 155, 240, 0.4))' }} />
+          </div>
+        )}
+
+        {showViewers && (
+          <div className="absolute inset-0 z-50 flex flex-col justify-end animate-fade-in">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={(e) => { e.stopPropagation(); setShowViewers(false); setIsPaused(false); }} />
+            <div className={`relative ${isDark ? 'bg-[#1E1E1E]' : 'bg-white'} rounded-t-3xl max-h-[65%] w-full flex flex-col animate-slide-up shadow-[0_-10px_40px_rgba(0,0,0,0.3)] z-10`} onClick={(e) => e.stopPropagation()}>
+               <div className={`w-12 h-1.5 ${isDark ? 'bg-gray-600' : 'bg-gray-300'} rounded-full mx-auto mt-4 mb-2 shrink-0`}></div>
+               <div className={`px-5 py-3 border-b ${isDark ? 'border-white/10' : 'border-black/5'} flex justify-between items-center`}>
+                 <h3 className={`font-semibold text-lg ${t.text}`}>Viewers</h3>
+                 <span className={`text-sm font-medium ${t.textMuted}`}>{displayedViews} views</span>
+               </div>
+               <div className="overflow-y-auto px-3 py-2 space-y-1 mb-4 flex-1 hide-scrollbar">
+                 {Array.from({ length: 8 }).map((_, i) => (
+                    <div key={i} className={`flex items-center justify-between p-3 rounded-2xl ${isDark ? 'hover:bg-white/10' : 'hover:bg-gray-100'} transition-colors cursor-pointer`}>
+                       <div className="flex items-center space-x-3">
+                         <div className={`w-11 h-11 rounded-full ${isDark ? 'bg-[#2A2A2A]' : 'bg-gray-200'} border ${isDark ? 'border-white/10' : 'border-black/5'} flex items-center justify-center overflow-hidden`}>
+                           <User className={`w-6 h-6 ${t.textMuted}`} />
+                         </div>
+                         <div className="flex flex-col">
+                           <span className={`font-medium text-[13px] ${t.text}`}>User_{Math.floor(Math.random() * 900) + 100}</span>
+                           <span className={`text-[11px] font-light ${t.textMuted}`}>{Math.floor(Math.random() * 59) + 1}m ago</span>
+                         </div>
+                       </div>
+                       {i % 3 !== 0 && <Heart className="w-5 h-5 text-[#1D9BF0] fill-[#1D9BF0] drop-shadow-sm" />}
+                    </div>
+                 ))}
+               </div>
+            </div>
+          </div>
+        )}
+
+        {showOptionsMenu && (
+          <div className="absolute inset-0 z-50 flex flex-col justify-end animate-fade-in">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={(e) => { e.stopPropagation(); setShowOptionsMenu(false); setIsPaused(false); }} />
+            <div className={`relative ${isDark ? 'bg-[#1E1E1E]' : 'bg-white'} rounded-t-3xl w-full flex flex-col animate-slide-up shadow-[0_-10px_40px_rgba(0,0,0,0.3)] z-10 pb-8`} onClick={(e) => e.stopPropagation()}>
+               <div className={`w-12 h-1.5 ${isDark ? 'bg-gray-600' : 'bg-gray-300'} rounded-full mx-auto mt-4 mb-2 shrink-0`}></div>
+               <div className="px-6 py-2 flex flex-col">
+                 <button className={`w-full py-4 text-left font-medium text-[15px] ${t.text} border-b ${isDark ? 'border-white/10' : 'border-black/5'} active:scale-95 transition-transform`}>Share Moment</button>
+                 <button className={`w-full py-4 text-left font-medium text-[15px] ${t.text} border-b ${isDark ? 'border-white/10' : 'border-black/5'} active:scale-95 transition-transform`}>Copy Link</button>
+                 <button className={`w-full py-4 text-left font-medium text-[15px] ${t.text} border-b ${isDark ? 'border-white/10' : 'border-black/5'} active:scale-95 transition-transform`}>Mute {currentUser.user.name}</button>
+                 <button className={`w-full py-4 text-left font-medium text-[15px] text-red-500 active:scale-95 transition-transform`}>Report</button>
+                 <button onClick={(e) => { e.stopPropagation(); setShowOptionsMenu(false); setIsPaused(false); }} className={`w-full py-3.5 text-center font-semibold text-[15px] ${isDark ? 'bg-[#2A2A2A] text-white' : 'bg-gray-100 text-black'} rounded-2xl mt-4 active:scale-95 transition-transform`}>Cancel</button>
+               </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const CreateMomentSheet = ({ onClose, t, isDark }) => {
+  const [step, setStep] = React.useState('select'); 
+  const [noteText, setNoteText] = React.useState('');
+  
+  const handlePost = () => { setTimeout(() => { onClose(); }, 500); };
+
+  return (
+    <>
+      <div className="absolute inset-0 z-[100] bg-black/60 backdrop-blur-sm animate-fade-in" onClick={onClose}></div>
+      <div className={`absolute bottom-0 left-0 w-full ${isDark ? 'bg-[#1E1E1E]' : 'bg-white'} rounded-t-3xl shadow-2xl z-[100] animate-slide-up flex flex-col max-h-[90vh] pb-8`}>
+        <div className={`w-12 h-1.5 ${isDark ? 'bg-gray-600' : 'bg-gray-300'} rounded-full mx-auto mt-3 mb-4 shrink-0`}></div>
+        
+        {step === 'select' && (
+          <div className="px-6 flex flex-col pb-4">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className={`text-xl font-semibold ${t.text}`}>Create Moment</h3>
+              <button onClick={onClose} className={`w-8 h-8 rounded-full ${isDark ? 'bg-white/10' : 'bg-black/5'} flex items-center justify-center active:scale-95`}><X className={`w-4 h-4 ${t.text}`} strokeWidth={2.5} /></button>
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+               <div onClick={() => setStep('compose_media')} className={`flex flex-col items-center justify-center p-4 rounded-2xl ${t.card} border ${t.borderSoft} shadow-sm active:scale-95 transition-transform cursor-pointer`}>
+                 <div className="w-12 h-12 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center mb-3"><Camera className="w-6 h-6" strokeWidth={2.5} /></div>
+                 <span className={`text-[11px] font-semibold ${t.text}`}>Camera</span>
+               </div>
+               <div onClick={() => setStep('compose_media')} className={`flex flex-col items-center justify-center p-4 rounded-2xl ${t.card} border ${t.borderSoft} shadow-sm active:scale-95 transition-transform cursor-pointer`}>
+                 <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-3"><ImageIcon className="w-6 h-6" strokeWidth={2.5} /></div>
+                 <span className={`text-[11px] font-semibold ${t.text}`}>Photo/Video</span>
+               </div>
+               <div onClick={() => setStep('compose_note')} className={`flex flex-col items-center justify-center p-4 rounded-2xl ${t.card} border ${t.borderSoft} shadow-sm active:scale-95 transition-transform cursor-pointer`}>
+                 <div className="w-12 h-12 rounded-full bg-purple-500/10 text-purple-500 flex items-center justify-center mb-3"><Type className="w-6 h-6" strokeWidth={2.5} /></div>
+                 <span className={`text-[11px] font-semibold ${t.text}`}>Text Note</span>
+               </div>
+            </div>
+            <p className={`text-[10px] font-medium ${t.textMuted} text-center mt-6`}>Moments disappear after 24 hours.</p>
+          </div>
+        )}
+
+        {step === 'compose_note' && (
+          <div className="px-6 flex flex-col pb-4 h-[50vh]">
+             <div className="flex justify-between items-center mb-6">
+              <button onClick={() => setStep('select')} className={`w-8 h-8 rounded-full flex items-center justify-center active:scale-95`}><ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} /></button>
+              <h3 className={`text-base font-semibold ${t.text}`}>Share a Note</h3>
+              <div className="w-8"></div>
+            </div>
+            <div className="flex-1 flex flex-col items-center justify-center">
+               <div className={`relative w-full max-w-[280px] p-6 rounded-3xl ${isDark ? 'bg-white/10' : 'bg-gray-100'} shadow-inner mb-6`}>
+                 <textarea autoFocus maxLength={60} value={noteText} onChange={(e) => setNoteText(e.target.value)} placeholder="Share a thought..." className={`w-full bg-transparent text-center text-xl font-light ${t.text} placeholder:${t.textMuted} resize-none focus:outline-none`} rows={3} />
+                 <div className={`absolute -bottom-3 left-1/2 -translate-x-1/2 w-6 h-6 rotate-45 ${isDark ? 'bg-[#333333]' : 'bg-gray-100'}`}></div>
+               </div>
+               <div className={`w-16 h-16 rounded-full ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200'} border-2 flex items-center justify-center shadow-lg relative z-10`}><User className={`w-8 h-8 ${t.textMuted}`} /></div>
+            </div>
+            <div className="flex items-center justify-between mt-auto pt-4">
+              <span className={`text-[11px] font-medium ${noteText.length === 60 ? 'text-red-500' : t.textMuted}`}>{noteText.length}/60</span>
+              <button disabled={!noteText.trim()} onClick={handlePost} className={`px-6 py-3 rounded-full font-semibold text-sm transition-all active:scale-95 ${noteText.trim() ? 'bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/40' : `${isDark ? 'bg-gray-700' : 'bg-gray-300'} text-gray-500 cursor-not-allowed`}`}>Share</button>
+            </div>
+          </div>
+        )}
+
+        {step === 'compose_media' && (
+          <div className="px-6 flex flex-col pb-4 h-[60vh]">
+            <div className="flex justify-between items-center mb-6">
+              <button onClick={() => setStep('select')} className={`w-8 h-8 rounded-full flex items-center justify-center active:scale-95`}><ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} /></button>
+              <h3 className={`text-base font-semibold ${t.text}`}>Preview</h3>
+              <div className="w-8"></div>
+            </div>
+            <div className={`flex-1 rounded-3xl ${isDark ? 'bg-[#121212]' : 'bg-gray-200'} flex items-center justify-center overflow-hidden relative mb-4`}>
+               <ImageIcon className="w-12 h-12 text-gray-400" />
+               <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
+                 <span className="text-white font-medium text-sm">Tap to change media</span>
+               </div>
+            </div>
+            <button onClick={handlePost} className={`w-full h-14 rounded-xl font-semibold text-base transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/40 flex items-center justify-center`}>Post Moment</button>
+          </div>
+        )}
+      </div>
+    </>
+  );
+};
+
 export default function App() {
   const [currentView, setCurrentView] = useState('splash');
   const [authRole, setAuthRole] = useState('student'); // 'student' | 'faculty' | 'alumni'
@@ -758,7 +1257,10 @@ export default function App() {
   const [selectedUser, setSelectedUser] = useState(null); 
   const [selectedJob, setSelectedJob] = useState(null); 
   const [selectedEmergency, setSelectedEmergency] = useState(null);
-  const [isDark, setIsDark] = useState(false); 
+  const [isDark, setIsDark] = useState(false);
+  const [viewerIndex, setViewerIndex] = useState(null); 
+  const [noteViewerData, setNoteViewerData] = useState(null);
+  const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
   
   const [requestedSet, setRequestedSet] = useState(new Set());
   const [isPostJobOpen, setIsPostJobOpen] = useState(false);
@@ -1307,7 +1809,7 @@ export default function App() {
       <div className="flex flex-col h-full overflow-y-auto pb-36 px-5 pt-0 space-y-6 animate-fade-in relative z-10">
         
         {/* Top Header Banner with SVG Background */}
-        <div className="relative -mx-5 px-5 pt-12 pb-6 rounded-b-[2.5rem]">
+        <div className="relative -mx-5 px-5 pt-12 pb-2 rounded-b-[2.5rem]">
           {/* SVG Background */}
           <div 
             className="absolute inset-0 z-0 pointer-events-none opacity-100"
@@ -1358,6 +1860,20 @@ export default function App() {
             </div>
           </div>
         </div>
+        {/* --- MOMENTS FEATURE --- */}
+        <div className="relative -mt-2 mb-2">
+          <MomentsRow 
+            moments={globalMomentsData} 
+            isDark={isDark} 
+            t={t} 
+            onOpenViewer={(index) => setViewerIndex(index)}
+            onOpenNote={(momentGroup) => setNoteViewerData(momentGroup)}
+            onCreateClick={() => setIsCreateSheetOpen(true)}
+          />
+        </div>
+        {/* --- END MOMENTS FEATURE --- */}
+
+        <AdCarousel ads={demoAds} isDark={isDark} />
 
         {/* Redesigned Quick Actions: Custom Layered Icons + Label */}
         <div className="w-full pt-0 pb-2 relative z-10">
@@ -1384,7 +1900,7 @@ export default function App() {
           </div>
         </div>
 
-        <AdCarousel ads={demoAds} isDark={isDark} />
+        
 
         <div>
           <div className="flex justify-between items-end mb-1 relative z-10 px-1">
@@ -3196,6 +3712,15 @@ export default function App() {
         @keyframes fadeInUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes wave { 0% { transform: rotate(0deg); } 20% { transform: rotate(14deg); } 40% { transform: rotate(-8deg); } 60% { transform: rotate(14deg); } 80% { transform: rotate(-4deg); } 100% { transform: rotate(10deg); } }
+        @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .ease-spring { transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes heartFly {
+          0% { transform: translateY(0) scale(0.5); opacity: 1; }
+          50% { transform: translateY(-60px) scale(1.5) rotate(-15deg); opacity: 0.8; }
+          100% { transform: translateY(-120px) scale(1) rotate(15deg); opacity: 0; }
+        }
+        .animate-heart-fly { animation: heartFly 0.8s ease-out forwards; }
+        .animate-scale-up { animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-slide-up { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-fade-in-up { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
@@ -3303,6 +3828,34 @@ export default function App() {
             {activeOverlay === 'message_settings' && <MessageSettingsOverlay onClose={() => setActiveOverlay(null)} />}
             {activeOverlay === 'chat' && <ChatOverlay />}
             {activeOverlay === 'notifications' && <NotificationsOverlay />}
+            {/* --- MOMENTS OVERLAYS --- */}
+            {viewerIndex !== null && (
+              <MomentViewer 
+                moments={globalMomentsData} 
+                initialUserIndex={viewerIndex} 
+                onClose={() => setViewerIndex(null)}
+                t={t}
+                isDark={isDark}
+              />
+            )}
+
+            {noteViewerData !== null && (
+              <NoteViewerOverlay 
+                data={noteViewerData}
+                onClose={() => setNoteViewerData(null)}
+                t={t}
+                isDark={isDark}
+              />
+            )}
+
+            {isCreateSheetOpen && (
+              <CreateMomentSheet 
+                onClose={() => setIsCreateSheetOpen(false)}
+                t={t}
+                isDark={isDark}
+              />
+            )}
+            {/* --- END MOMENTS OVERLAYS --- */}
             
             {selectedJob && (
               <JobDetailView job={selectedJob} onBack={() => setSelectedJob(null)} />
