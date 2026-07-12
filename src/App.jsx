@@ -1,16 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
-  Home, Users, Briefcase, MessageSquare, User, 
-  Droplets, Droplet, Bell, Search, Filter, ChevronRight, 
-  MapPin, Phone, Send, Paperclip, Settings, 
-  LogOut, Bookmark, FileText, ArrowLeft, Plus,
-  Info, Lock, Mail, AlertTriangle, CheckCircle2,
-  Moon, Sun, BadgeCheck, Clock, ArrowUpRight, ShieldCheck,
-  Share, BookmarkIcon, GraduationCap, DollarSign, SlidersHorizontal,
-  Edit, MoreVertical, CheckCheck, Smile, Copy, QrCode, Wifi, 
-  Eye, Lightbulb, Shield, Globe, Smartphone, CreditCard, ChevronDown,
+  // Base / Navigation / Existing
+  Home, Users, Briefcase, MessageSquare, User, Droplets, Droplet, Bell, 
+  Search, Filter, ChevronRight, MapPin, Phone, Send, Paperclip, Settings, 
+  LogOut, Bookmark, FileText, ArrowLeft, Plus, Info, Lock, Mail, 
+  AlertTriangle, CheckCircle2, Moon, Sun, BadgeCheck, Clock, ArrowUpRight, 
+  ShieldCheck, Share, BookmarkIcon, GraduationCap, DollarSign, 
+  SlidersHorizontal, Edit, MoreVertical, CheckCheck, Smile, Copy, QrCode, 
+  Wifi, Eye, Lightbulb, Shield, Globe, Smartphone, CreditCard, ChevronDown, 
   Compass, Upload, X, Monitor, Landmark, Volume2, Archive,
-  Camera, Image as ImageIcon, VolumeX, Pin, Trash2, MailOpen, Reply, Heart, Type
+  
+  // Moments specific
+  Camera, Image as ImageIcon, VolumeX, Pin, Trash2, MailOpen, Reply, 
+  Heart, Type,
+  
+  // Events specific
+  CalendarDays, CalendarCheck, CalendarClock, TicketCheck, Trophy, 
+  BookOpen, Building2, UsersRound, Megaphone, Palette, Dumbbell, 
+  HandHeart, CircleDollarSign, ListFilter, RotateCcw, Sparkles
 } from 'lucide-react';
 
 // --- CUSTOM LAYERED ICONS ---
@@ -55,6 +62,140 @@ const CustomEmergencyIcon = ({ className }) => (
     <line x1="8.9" y1="23.1" x2="13.2" y2="18.8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
   </svg>
 );
+
+const CustomEventsIcon = ({ className }) => (
+  <svg viewBox="0 0 32 32" fill="none" className={className}>
+    <rect x="6" y="8" width="20" height="20" rx="4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M11 5V9M21 5V9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M6 14H26" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="12" cy="20" r="1.5" fill="currentColor" />
+    <circle cx="16" cy="20" r="1.5" fill="currentColor" />
+    <circle cx="20" cy="20" r="1.5" fill="currentColor" />
+  </svg>
+);
+// --- GLOBAL DEMO EVENTS DATA ---
+const EVENTS_REFERENCE_DATE = new Date('2026-07-12T12:00:00');
+
+const globalEventsData = [
+  {
+    id: 'event-career-fair',
+    title: 'NSU Career Fair Summer 2026',
+    shortDescription: 'Meet leading employers and explore graduate opportunities directly on campus.',
+    description: 'The official NSU Career Fair connects students with over 50 top national and multinational companies. Bring your resumes, participate in on-the-spot interviews, and discover your next internship or full-time role. Registration is mandatory for entry.',
+    category: 'Career',
+    organizer: {
+      id: 'org-1', name: 'Career and Placement Center (CPC)', type: 'University', verified: true,
+      description: 'Official career support office of North South University.'
+    },
+    date: '2026-07-22', endDate: '2026-07-22', time: '10:00 AM', endTime: '5:00 PM',
+    venue: 'NSU Plaza', venueDetails: 'Level 1 and Level 2, North South University campus.',
+    image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop',
+    registrationStatus: 'Closing Soon', registrationDeadline: '2026-07-20T23:59:00', capacity: 1200,
+    goingCount: 430, interestedCount: 780, featured: true, popular: true,
+    recommendationReason: 'Trending at NSU',
+    schedule: [
+      { time: '10:00 AM', title: 'Opening Ceremony' },
+      { time: '10:30 AM', title: 'Employer Booths Open' },
+      { time: '2:00 PM', title: 'Panel: How to Crack Interviews' }
+    ],
+    registrationInfo: 'Registration is free for verified NSU students. Alumni must show verified ID.',
+    tags: ['Career', 'Internship', 'Graduate Jobs'],
+    notificationType: 'deadline', notificationMessage: 'Registration closes in 48 hours!'
+  },
+  {
+    id: 'event-ai-talk',
+    title: 'Responsible AI Research Talk',
+    shortDescription: 'Exploring ethical considerations in deploying LLMs in healthcare.',
+    description: 'Join Dr. Aminul Islam as he discusses the ethical deployment of large language models in healthcare settings, addressing bias, privacy, and regulatory compliance.',
+    category: 'Research',
+    organizer: {
+      id: 'org-2', name: 'CSE Department', type: 'Department', verified: true,
+      description: 'Department of Electrical & Computer Engineering.'
+    },
+    date: '2026-07-14', endDate: '2026-07-14', time: '3:00 PM', endTime: '4:30 PM',
+    venue: 'AUDI 801', venueDetails: 'Admin Building, Level 8.',
+    image: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=800&auto=format&fit=crop',
+    registrationStatus: 'Closed', registrationDeadline: '2026-07-13T23:59:00', capacity: 150,
+    goingCount: 145, interestedCount: 300, featured: false, popular: false,
+    recommendationReason: 'Recommended for CSE',
+    schedule: [],
+    registrationInfo: 'Seats are strictly limited to 150 due to venue capacity.',
+    tags: ['AI', 'Ethics', 'Research'],
+    notificationType: null, notificationMessage: null
+  },
+  {
+    id: 'event-uiux-bootcamp',
+    title: 'UI/UX Design Bootcamp',
+    shortDescription: 'A 2-day intensive bootcamp on Figma, prototyping, and user research.',
+    description: 'Kickstart your journey in product design. Learn wireframing, high-fidelity prototyping, and foundational user research principles from industry experts.',
+    category: 'Workshop',
+    organizer: {
+      id: 'organizer-acm', name: 'NSU ACM Student Chapter', type: 'Club', verified: true,
+      description: 'The premier computer science student community at NSU.'
+    },
+    date: '2026-07-25', endDate: '2026-07-26', time: '9:00 AM', endTime: '4:00 PM',
+    venue: 'SAC 312', venueDetails: 'South Academic Building, Level 3.',
+    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&auto=format&fit=crop',
+    registrationStatus: 'Open', registrationDeadline: '2026-07-23T23:59:00', capacity: 60,
+    goingCount: 45, interestedCount: 120, featured: false, popular: true,
+    recommendationReason: 'From a followed club',
+    schedule: [
+      { time: 'Day 1 - 9:00 AM', title: 'Intro to Design Thinking' },
+      { time: 'Day 1 - 2:00 PM', title: 'Figma Basics' },
+      { time: 'Day 2 - 10:00 AM', title: 'Prototyping & Handoff' }
+    ],
+    registrationInfo: 'Workshop fee: 500 BDT. Includes lunch and digital certificate.',
+    tags: ['Design', 'Figma', 'UI/UX'],
+    notificationType: null, notificationMessage: null
+  },
+  {
+    id: 'event-orientation',
+    title: 'Freshers’ Orientation Summer 2026',
+    shortDescription: 'Welcome to North South University! Mandatory for all incoming students.',
+    description: 'The official orientation program for the Summer 2026 incoming batch. Get to know campus facilities, academic rules, clubs, and meet your faculty members.',
+    category: 'Academic',
+    organizer: {
+      id: 'org-3', name: 'NSU Admissions Office', type: 'University', verified: true,
+      description: 'Official admissions and registrar office.'
+    },
+    date: '2026-07-15', endDate: '2026-07-15', time: '9:00 AM', endTime: '1:00 PM',
+    venue: 'Open Air Theater (OAT)', venueDetails: 'Main campus center.',
+    image: 'https://images.unsplash.com/photo-1523580494112-071d4574024e?w=800&auto=format&fit=crop',
+    registrationStatus: 'Free Entry', registrationDeadline: null, capacity: 2000,
+    goingCount: 1500, interestedCount: 2000, featured: true, popular: true,
+    recommendationReason: null,
+    schedule: [
+      { time: '9:00 AM', title: 'Arrival and Seating' },
+      { time: '10:00 AM', title: 'Vice Chancellor’s Address' },
+      { time: '11:30 AM', title: 'Campus Tour' }
+    ],
+    registrationInfo: 'No prior registration required. Bring your provisional ID slip.',
+    tags: ['Freshers', 'Orientation', 'Campus'],
+    notificationType: null, notificationMessage: null
+  },
+  {
+    id: 'event-ambassador',
+    title: 'Campus Ambassador Hiring Session',
+    shortDescription: 'Become the face of Grameenphone on campus.',
+    description: 'Grameenphone is looking for energetic students to join their campus ambassador program. Discover the perks and apply on-site.',
+    category: 'Recruitment',
+    organizer: {
+      id: 'org-10', name: 'Grameenphone Ltd.', type: 'External Partner', verified: true,
+      description: 'Leading telecommunications provider.'
+    },
+    date: '2026-07-16', endDate: '2026-07-16', time: '2:00 PM', endTime: '4:00 PM',
+    venue: 'Career Center', venueDetails: 'Admin Building, Level 4.',
+    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop',
+    registrationStatus: 'Cancelled', registrationDeadline: '2026-07-15T23:59:00', capacity: 100,
+    goingCount: 0, interestedCount: 250, featured: false, popular: false,
+    recommendationReason: null,
+    schedule: [],
+    registrationInfo: 'Event cancelled due to unavoidable circumstances.',
+    tags: ['Ambassador', 'Jobs', 'Networking'],
+    notificationType: 'cancelled', notificationMessage: 'Event has been cancelled by the organizer.'
+  }
+];
+
 
 const JobSlider = ({ jobs, isDark, t, onSelectJob }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -1247,7 +1388,987 @@ const CreateMomentSheet = ({ onClose, t, isDark }) => {
   );
 };
 
+// --- EVENTS MODULE COMPONENTS ---
+
+const EventStatusBadge = ({ status, isDark }) => {
+  if (status === 'Open') return <span className="px-2 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wider bg-[#1D9BF0]/10 text-[#1D9BF0] border border-[#1D9BF0]/20">Open</span>;
+  if (status === 'Closing Soon') return <span className="px-2 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">Closing Soon</span>;
+  if (status === 'Registered') return <span className="px-2 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wider bg-[#1D9BF0]/10 text-[#1D9BF0] border border-[#1D9BF0]/20 flex items-center"><CheckCircle2 className="w-2.5 h-2.5 mr-1" strokeWidth={3}/>Registered</span>;
+  if (status === 'Closed') return <span className={`px-2 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wider ${isDark ? 'bg-white/10 text-white/70 border-white/20' : 'bg-black/5 text-black/60 border-black/10'}`}>Closed</span>;
+  if (status === 'Free Entry') return <span className="px-2 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">Free Entry</span>;
+  if (status === 'Cancelled') return <span className="px-2 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wider bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">Cancelled</span>;
+  return null;
+};
+
+const EventCategoryChip = ({ category, selected, onClick, t, isDark }) => (
+  <button 
+    onClick={onClick}
+    className={`px-4 py-2 rounded-full text-xs font-extrabold transition-all border shrink-0 ${
+      selected ? 'bg-[#1D9BF0] text-white border-[#1D9BF0] shadow-sm' : `${isDark ? 'bg-white/5 text-gray-400 border-white/10' : 'bg-white/50 text-gray-700 border-white/60'} hover:bg-white/20`
+    }`}
+  >
+    {category}
+  </button>
+);
+
+const EventCard = ({ event, variant = 'standard', t, isDark, onClick, registeredEventIds }) => {
+  const isRegistered = registeredEventIds.has(event.id);
+  const displayStatus = isRegistered ? 'Registered' : event.registrationStatus;
+  const isPast = new Date(event.date) < EVENTS_REFERENCE_DATE;
+
+  const dateObj = new Date(event.date);
+  const monthStr = dateObj.toLocaleString('en-US', { month: 'short' });
+  const dayStr = dateObj.getDate();
+
+  if (variant === 'compact') {
+    return (
+      <div onClick={() => onClick(event)} className={`p-4 rounded-2xl ${t.card} border ${t.border} shadow-sm active:scale-[0.98] transition-transform cursor-pointer flex items-center space-x-4`}>
+        <div className={`w-14 h-14 rounded-xl overflow-hidden shrink-0 relative ${isDark ? 'bg-white/5' : 'bg-black/5'}`}>
+          <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+          {isPast && <div className="absolute inset-0 bg-black/50 flex items-center justify-center backdrop-blur-[1px]"><span className="text-[8px] font-extrabold text-white uppercase tracking-wider">Past</span></div>}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex justify-between items-start mb-1">
+            <span className={`text-[10px] font-extrabold text-[#1D9BF0] uppercase tracking-wider`}>{monthStr} {dayStr} • {event.time}</span>
+            <EventStatusBadge status={displayStatus} isDark={isDark} />
+          </div>
+          <h4 className={`text-sm font-extrabold ${t.text} truncate mb-0.5`}>{event.title}</h4>
+          <p className={`text-[11px] font-bold ${t.textMuted} truncate flex items-center`}><MapPin className="w-3 h-3 mr-1 shrink-0" strokeWidth={2.5}/> {event.venue}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (variant === 'horizontal' || variant === 'recommended') {
+    return (
+      <div onClick={() => onClick(event)} className={`w-[260px] shrink-0 rounded-2xl ${t.card} border ${t.border} shadow-sm active:scale-[0.98] transition-transform cursor-pointer overflow-hidden flex flex-col`}>
+        {variant === 'recommended' && event.recommendationReason && (
+          <div className={`px-4 py-2 ${isDark ? 'bg-white/5 border-b border-white/5' : 'bg-black/5 border-b border-black/5'}`}>
+            <span className={`text-[10px] font-extrabold ${t.text} uppercase tracking-wider flex items-center`}>
+              <Sparkles className="w-3 h-3 mr-1.5 text-amber-500" strokeWidth={2.5} /> {event.recommendationReason}
+            </span>
+          </div>
+        )}
+        <div className="h-28 w-full relative">
+          <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+          <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md rounded-lg px-2 py-1 flex flex-col items-center border border-white/10">
+            <span className="text-white text-[10px] font-extrabold uppercase leading-tight">{monthStr}</span>
+            <span className="text-white text-sm font-black leading-none">{dayStr}</span>
+          </div>
+        </div>
+        <div className="p-4 flex-1 flex flex-col">
+          <h4 className={`text-base font-extrabold ${t.text} line-clamp-2 leading-tight mb-1`}>{event.title}</h4>
+          <div className="flex items-center space-x-1.5 mb-3">
+             <span className={`text-[11px] font-bold ${t.textMuted} truncate`}>{event.organizer.name}</span>
+             {event.organizer.verified && <BadgeCheck className="w-3.5 h-3.5 text-[#1D9BF0] shrink-0" strokeWidth={2.5} />}
+          </div>
+          <div className="mt-auto flex justify-between items-center">
+            <EventStatusBadge status={displayStatus} isDark={isDark} />
+            <span className={`text-[10px] font-extrabold ${t.textMuted}`}>{event.goingCount} going</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div onClick={() => onClick(event)} className={`rounded-2xl overflow-hidden ${t.card} border ${t.border} shadow-sm active:scale-[0.98] transition-transform cursor-pointer flex flex-col`}>
+      <div className="h-36 w-full relative">
+        <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+        <div className="absolute top-3 left-3">
+           <span className="px-2 py-1 rounded bg-black/40 backdrop-blur-md text-white text-[10px] font-extrabold uppercase tracking-wider border border-white/20">{event.category}</span>
+        </div>
+        <div className="absolute bottom-3 left-3 right-3 flex justify-between items-end">
+          <div className="flex items-center text-white bg-black/40 backdrop-blur-md px-2 py-1 rounded-lg border border-white/20">
+            <CalendarDays className="w-3.5 h-3.5 mr-1.5" strokeWidth={2.5} />
+            <span className="text-[11px] font-extrabold tracking-wide">{monthStr} {dayStr}, {event.time}</span>
+          </div>
+        </div>
+      </div>
+      <div className="p-4">
+        <div className="flex justify-between items-start mb-1">
+          <h3 className={`text-lg font-extrabold ${t.text} leading-tight line-clamp-2 pr-2`}>{event.title}</h3>
+        </div>
+        <div className="flex items-center space-x-1.5 mb-3">
+           <span className={`text-xs font-bold ${t.textMuted} truncate`}>{event.organizer.name}</span>
+           {event.organizer.verified && <BadgeCheck className="w-3.5 h-3.5 text-[#1D9BF0] shrink-0" strokeWidth={2.5} />}
+        </div>
+        <div className="flex items-center space-x-4 mb-4">
+           <div className={`flex items-center text-[11px] font-bold ${t.textMuted}`}><MapPin className="w-3.5 h-3.5 mr-1" strokeWidth={2.5}/> <span className="truncate max-w-[120px]">{event.venue}</span></div>
+           <div className={`flex items-center text-[11px] font-bold ${t.textMuted}`}><UsersRound className="w-3.5 h-3.5 mr-1" strokeWidth={2.5}/> {event.goingCount} going</div>
+        </div>
+        <div className={`pt-3 border-t ${isDark ? 'border-white/10' : 'border-black/5'} flex justify-between items-center`}>
+          <EventStatusBadge status={displayStatus} isDark={isDark} />
+          <button className={`w-8 h-8 rounded-full ${isDark ? 'bg-white/10' : 'bg-black/5'} flex items-center justify-center hover:bg-[#1D9BF0] hover:text-white transition-colors`}>
+            <ChevronRight className="w-4 h-4" strokeWidth={2.5} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const FeaturedEventsCarousel = ({ events, onEventClick, t, isDark, registeredEventIds }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [dragStartX, setDragStartX] = useState(null);
+  const [dragOffset, setDragOffset] = useState(0);
+
+  useEffect(() => {
+    if (isPaused || dragStartX !== null || events.length === 0) return;
+    const interval = setInterval(() => setCurrentIndex((prev) => (prev + 1) % events.length), 5000);
+    return () => clearInterval(interval);
+  }, [isPaused, dragStartX, events.length]);
+
+  if (events.length === 0) return null;
+
+  const handleDragEnd = () => {
+    if (dragStartX === null) return;
+    setIsPaused(false);
+    if (dragOffset < -50) setCurrentIndex((prev) => (prev + 1) % events.length);
+    else if (dragOffset > 50) setCurrentIndex((prev) => (prev - 1 + events.length) % events.length);
+    setDragStartX(null); setDragOffset(0);
+  };
+
+  return (
+    <div className="w-full relative z-10 mb-6">
+      <div 
+        className={`relative w-full h-[240px] rounded-[24px] overflow-hidden border ${isDark ? 'border-white/10' : 'border-black/5'} shadow-lg touch-pan-y select-none`}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => { setIsPaused(false); if (dragStartX !== null) handleDragEnd(); }}
+        onMouseDown={(e) => { setIsPaused(true); setDragStartX(e.clientX); }}
+        onMouseMove={(e) => { if (dragStartX !== null) setDragOffset(e.clientX - dragStartX); }}
+        onMouseUp={handleDragEnd}
+        onTouchStart={(e) => { setIsPaused(true); setDragStartX(e.touches[0].clientX); }}
+        onTouchMove={(e) => { if (dragStartX !== null) setDragOffset(e.touches[0].clientX - dragStartX); }}
+        onTouchEnd={handleDragEnd}
+      >
+        <div className="flex h-full transition-transform duration-500 ease-out" style={{ transform: `translateX(calc(-${currentIndex * 100}% + ${dragOffset}px))` }}>
+          {events.map((ev, idx) => {
+             const isRegistered = registeredEventIds.has(ev.id);
+             return (
+              <div key={idx} className="w-full h-full shrink-0 relative cursor-pointer" onClick={() => onEventClick(ev)}>
+                <img src={ev.image} alt={ev.title} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10"></div>
+                <div className="absolute top-4 left-4">
+                  <span className="px-2 py-1 rounded bg-black/40 backdrop-blur-md text-white text-[10px] font-extrabold uppercase tracking-wider border border-white/20">{ev.category}</span>
+                </div>
+                <div className="absolute bottom-4 left-4 right-4 flex flex-col">
+                  <h3 className="text-white text-xl font-extrabold leading-tight mb-1.5 line-clamp-2 drop-shadow-md">{ev.title}</h3>
+                  <div className="flex items-center space-x-1.5 mb-3 text-white/90">
+                    <span className="text-xs font-bold truncate max-w-[200px]">{ev.organizer.name}</span>
+                    {ev.organizer.verified && <BadgeCheck className="w-3.5 h-3.5 text-[#1D9BF0] shrink-0" strokeWidth={2.5} />}
+                  </div>
+                  <div className="flex justify-between items-end">
+                    <div className="flex flex-col space-y-1.5">
+                       <div className="flex items-center text-white/80 text-[11px] font-bold">
+                         <CalendarDays className="w-3 h-3 mr-1.5" strokeWidth={2.5} /> {new Date(ev.date).toLocaleDateString('en-US', {month:'short', day:'numeric'})} • {ev.time}
+                       </div>
+                    </div>
+                    <button className="px-4 py-2 rounded-xl bg-[#1D9BF0] text-white text-xs font-extrabold active:scale-95 transition-transform shadow-md" onClick={(e) => { e.stopPropagation(); onEventClick(ev); }}>
+                      {isRegistered || ev.registrationStatus === 'Closed' ? 'Details' : 'Register'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      <div className="flex justify-center space-x-1.5 mt-3">
+         {events.map((_, idx) => (
+           <button key={idx} onClick={() => setCurrentIndex(idx)} className={`h-1.5 rounded-full transition-all duration-300 ${currentIndex === idx ? 'w-4 bg-[#1D9BF0]' : 'w-1.5 bg-gray-300 dark:bg-gray-600'}`}/>
+         ))}
+      </div>
+    </div>
+  );
+};
+
+// --- EVENTS SUB-SCREENS ---
+
+const EventsHomeScreen = ({ navigateTo, events, t, isDark, registeredEventIds }) => {
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const categories = ['All', 'Academic', 'Workshop', 'Competition', 'Career', 'Recruitment', 'Networking', 'Research', 'Cultural', 'Sports', 'Volunteer'];
+  
+  const upcomingEvents = events.filter(e => new Date(e.date) >= EVENTS_REFERENCE_DATE).sort((a,b) => new Date(a.date) - new Date(b.date));
+  const featuredEvents = upcomingEvents.filter(e => e.featured);
+  const recommendedEvents = upcomingEvents.filter(e => e.recommendationReason);
+  const popularEvents = upcomingEvents.filter(e => e.popular).sort((a,b) => b.goingCount - a.goingCount);
+  
+  const closingSoonCount = upcomingEvents.filter(e => e.registrationStatus === 'Closing Soon').length;
+
+  const displayUpcoming = upcomingEvents.filter(e => activeCategory === 'All' || e.category === activeCategory).slice(0, 4);
+  const displayRecommended = recommendedEvents.filter(e => activeCategory === 'All' || e.category === activeCategory);
+
+  const searchResults = searchQuery.trim() 
+    ? events.filter(e => 
+        e.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        e.organizer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        e.category.toLowerCase().includes(searchQuery.toLowerCase())
+      ) 
+    : [];
+
+  return (
+    <div className="flex-1 overflow-y-auto pb-32 animate-fade-in relative z-10">
+      {/* Sticky Header */}
+      <div className={`px-4 pt-12 pb-3 flex items-center justify-between ${t.glass} border-b sticky top-0 z-50 shadow-sm`}>
+        <div className="flex items-center">
+          <button onClick={() => navigateTo('close')} className={`mr-3 w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors active:scale-95 outline-none`} aria-label="Close Events">
+            <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
+          </button>
+          <h2 className={`text-xl font-extrabold ${t.text} tracking-tight`}>Events</h2>
+        </div>
+        <div className="flex space-x-2">
+          <button onClick={() => navigateTo('calendar')} className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors active:scale-95 outline-none`} aria-label="Open Calendar">
+            <CalendarDays className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} />
+          </button>
+          <button onClick={() => navigateTo('my_events')} className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors active:scale-95 outline-none`} aria-label="My Events">
+            <BookmarkIcon className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} />
+          </button>
+        </div>
+      </div>
+
+      <div className="px-5 pt-5 pb-6">
+        {/* Search */}
+        <div className="relative w-full mb-5">
+          <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4`} strokeWidth={2.5} />
+          <input 
+            type="text" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search events, organizers..." 
+            className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 pl-10 pr-10 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`}
+          />
+          {searchQuery && (
+            <button onClick={() => setSearchQuery('')} className={`absolute right-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} hover:${t.text}`} aria-label="Clear Search">
+              <X className="w-4 h-4" strokeWidth={2.5} />
+            </button>
+          )}
+        </div>
+
+        {searchQuery.trim() ? (
+          <div className="animate-fade-in space-y-4">
+             <h3 className={`text-sm font-extrabold ${t.textMuted} uppercase tracking-wider mb-2`}>Search Results ({searchResults.length})</h3>
+             {searchResults.length > 0 ? (
+               searchResults.map(ev => <EventCard key={ev.id} event={ev} variant="compact" t={t} isDark={isDark} onClick={(e) => navigateTo('details', e)} registeredEventIds={registeredEventIds}/>)
+             ) : (
+               <div className="flex flex-col items-center justify-center py-10 opacity-60">
+                 <Search className="w-10 h-10 mb-3" strokeWidth={1.5} />
+                 <p className="text-sm font-bold">No events found for "{searchQuery}"</p>
+               </div>
+             )}
+          </div>
+        ) : (
+          <>
+            {/* Deadline Alert */}
+            {closingSoonCount > 0 && (
+              <div className={`mb-6 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between`}>
+                <div className="flex items-center space-x-2.5">
+                  <Clock className="w-5 h-5 text-amber-500 shrink-0" strokeWidth={2.5} />
+                  <p className={`text-[11px] font-extrabold text-amber-600 dark:text-amber-400 leading-tight`}>{closingSoonCount} registration{closingSoonCount > 1 ? 's close' : ' closes'} soon</p>
+                </div>
+                <button onClick={() => navigateTo('browse', { filter: 'Closing Soon' })} className={`px-3 py-1.5 bg-amber-500 text-white rounded-lg text-[10px] font-extrabold active:scale-95 transition-transform shrink-0 shadow-sm`}>View</button>
+              </div>
+            )}
+
+            <FeaturedEventsCarousel events={featuredEvents} onEventClick={(e) => navigateTo('details', e)} t={t} isDark={isDark} registeredEventIds={registeredEventIds}/>
+
+            <div className="flex space-x-2 overflow-x-auto hide-scrollbar -mx-5 px-5 mb-8">
+              {categories.map(cat => (
+                <EventCategoryChip key={cat} category={cat} selected={activeCategory === cat} onClick={() => setActiveCategory(cat)} t={t} isDark={isDark} />
+              ))}
+            </div>
+
+            {/* Upcoming Events */}
+            <div className="mb-8">
+              <div className="flex justify-between items-end mb-4">
+                <h3 className={`text-lg font-extrabold ${t.text} tracking-tight`}>Upcoming Events</h3>
+                <button className="text-[#1D9BF0] font-bold text-sm hover:underline" onClick={() => navigateTo('browse', { category: activeCategory })}>See All</button>
+              </div>
+              <div className="space-y-4">
+                {displayUpcoming.length > 0 ? (
+                  displayUpcoming.map(ev => (
+                    <EventCard key={ev.id} event={ev} variant="standard" t={t} isDark={isDark} onClick={(e) => navigateTo('details', e)} registeredEventIds={registeredEventIds} />
+                  ))
+                ) : (
+                  <div className={`p-6 rounded-2xl border border-dashed ${t.borderSoft} text-center opacity-60`}>
+                    <p className={`text-xs font-bold ${t.textMuted}`}>No upcoming events in this category.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Recommended For You */}
+            {displayRecommended.length > 0 && (
+              <div className="mb-8">
+                <h3 className={`text-lg font-extrabold ${t.text} tracking-tight mb-4`}>Recommended For You</h3>
+                <div className="flex space-x-4 overflow-x-auto hide-scrollbar -mx-5 px-5 pb-2">
+                  {displayRecommended.map(ev => (
+                    <EventCard key={ev.id} event={ev} variant="recommended" t={t} isDark={isDark} onClick={(e) => navigateTo('details', e)} registeredEventIds={registeredEventIds} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Popular This Week */}
+            <div className="mb-6">
+              <h3 className={`text-lg font-extrabold ${t.text} tracking-tight mb-4`}>Popular This Week</h3>
+              <div className={`rounded-2xl ${t.card} border ${t.border} overflow-hidden shadow-sm`}>
+                {popularEvents.slice(0, 3).map((ev, idx) => (
+                  <div key={ev.id} onClick={() => navigateTo('details', ev)} className={`flex items-center p-4 border-b ${t.borderSoft} last:border-0 hover:${isDark ? 'bg-white/5' : 'bg-black/5'} transition-colors cursor-pointer group active:scale-[0.99]`}>
+                     <div className="w-6 font-black text-xl text-[#1D9BF0]/40 mr-3 text-center">{idx + 1}</div>
+                     <div className="flex-1 min-w-0 pr-4">
+                       <h4 className={`text-sm font-extrabold ${t.text} truncate mb-0.5 group-hover:text-[#1D9BF0] transition-colors`}>{ev.title}</h4>
+                       <div className="flex items-center space-x-2">
+                         <span className={`text-[10px] font-bold ${t.textMuted}`}>{new Date(ev.date).toLocaleDateString('en-US', {month:'short', day:'numeric'})}</span>
+                         <span className="w-1 h-1 rounded-full bg-gray-400"></span>
+                         <span className={`text-[10px] font-bold ${t.textMuted} truncate`}>{ev.organizer.name}</span>
+                       </div>
+                     </div>
+                     <div className="flex flex-col items-end shrink-0">
+                       <span className={`text-[10px] font-extrabold ${t.text} mb-1`}>{ev.goingCount} Going</span>
+                       <ChevronRight className={`w-4 h-4 ${t.textMuted}`} strokeWidth={2.5} />
+                     </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Past Events Link */}
+            <button 
+              onClick={() => navigateTo('browse', { filter: 'Past' })}
+              className={`w-full py-4 rounded-2xl ${isDark ? 'bg-white/5' : 'bg-black/5'} border border-transparent hover:${t.borderSoft} text-center transition-all active:scale-[0.98] flex items-center justify-center space-x-2`}
+            >
+              <Archive className={`w-4 h-4 ${t.textMuted}`} strokeWidth={2.5}/>
+              <span className={`text-sm font-extrabold ${t.textMuted}`}>View Past Events</span>
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const EventsBrowseScreen = ({ navigateTo, events, initialParams, t, isDark, registeredEventIds }) => {
+  const [filter, setFilter] = useState(initialParams?.filter || 'All');
+  const [category, setCategory] = useState(initialParams?.category || 'All');
+  const [search, setSearch] = useState('');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  let displayed = events;
+
+  if (filter === 'Closing Soon') displayed = displayed.filter(e => e.registrationStatus === 'Closing Soon');
+  else if (filter === 'Past') displayed = displayed.filter(e => new Date(e.date) < EVENTS_REFERENCE_DATE);
+  else if (filter === 'Upcoming') displayed = displayed.filter(e => new Date(e.date) >= EVENTS_REFERENCE_DATE);
+
+  if (category !== 'All') displayed = displayed.filter(e => e.category === category);
+  
+  if (search.trim()) {
+    displayed = displayed.filter(e => e.title.toLowerCase().includes(search.toLowerCase()) || e.organizer.name.toLowerCase().includes(search.toLowerCase()));
+  }
+
+  if (filter !== 'Past') {
+    displayed.sort((a,b) => new Date(a.date) - new Date(b.date));
+  } else {
+    displayed.sort((a,b) => new Date(b.date) - new Date(a.date));
+  }
+
+  return (
+    <div className="flex-1 flex flex-col h-full overflow-hidden animate-fade-in relative z-10">
+      <div className={`px-4 pt-12 pb-3 flex items-center justify-between ${t.glass} border-b z-20 shadow-sm shrink-0`}>
+        <div className="flex items-center">
+          <button onClick={() => navigateTo('home')} className={`mr-3 w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors active:scale-95 outline-none`} aria-label="Back">
+            <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
+          </button>
+          <div className="flex flex-col">
+            <h2 className={`text-lg font-extrabold ${t.text} leading-tight`}>Browse Events</h2>
+            <span className={`text-[10px] font-bold ${t.textMuted}`}>{displayed.length} results</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto pb-32 px-5 pt-5 relative z-10">
+        <div className="flex space-x-2 mb-5">
+           <div className="relative flex-1">
+              <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4`} strokeWidth={2.5} />
+              <input 
+                type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search..." 
+                className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-11 pl-10 pr-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`}
+              />
+           </div>
+           <button onClick={() => setIsFilterOpen(!isFilterOpen)} className={`w-11 h-11 rounded-xl ${t.card} border ${t.borderSoft} flex items-center justify-center transition-colors shadow-sm shrink-0 active:scale-95`}>
+             <SlidersHorizontal className={`w-4 h-4 ${t.text}`} strokeWidth={2.5} />
+           </button>
+        </div>
+
+        {isFilterOpen && (
+          <div className={`p-4 rounded-2xl ${t.card} border ${t.border} mb-5 shadow-sm animate-fade-in-up`}>
+            <h4 className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mb-3`}>Status Filter</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['All', 'Upcoming', 'Closing Soon', 'Past'].map(f => (
+                <button key={f} onClick={() => setFilter(f)} className={`px-3 py-1.5 rounded-lg text-xs font-extrabold border transition-all ${filter === f ? 'bg-[#1D9BF0] text-white border-[#1D9BF0]' : `${isDark ? 'bg-white/5 border-white/10 text-white' : 'bg-black/5 border-black/10 text-black'}`}`}>
+                  {f}
+                </button>
+              ))}
+            </div>
+            <h4 className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mb-3`}>Category</h4>
+            <div className="flex flex-wrap gap-2">
+              {['All', 'Academic', 'Workshop', 'Competition', 'Career', 'Cultural'].map(c => (
+                <button key={c} onClick={() => setCategory(c)} className={`px-3 py-1.5 rounded-lg text-xs font-extrabold border transition-all ${category === c ? 'bg-[#1D9BF0] text-white border-[#1D9BF0]' : `${isDark ? 'bg-white/5 border-white/10 text-white' : 'bg-black/5 border-black/10 text-black'}`}`}>
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-4">
+          {displayed.length > 0 ? (
+            displayed.map(ev => <EventCard key={ev.id} event={ev} variant="compact" t={t} isDark={isDark} onClick={(e) => navigateTo('details', e)} registeredEventIds={registeredEventIds} />)
+          ) : (
+            <div className="flex flex-col items-center justify-center py-16 opacity-50">
+              <ListFilter className="w-12 h-12 mb-3" strokeWidth={1.5} />
+              <p className="text-sm font-bold">No events match these filters.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const EventsCalendarScreen = ({ navigateTo, events, t, isDark }) => {
+  const [currentMonth, setCurrentMonth] = useState(new Date(2026, 6, 1)); 
+
+  const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
+  const getFirstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
+
+  const generateCalendar = () => {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+    const daysInMonth = getDaysInMonth(year, month);
+    const firstDay = getFirstDayOfMonth(year, month);
+    const daysInPrevMonth = getDaysInMonth(year, month - 1);
+    
+    let days = [];
+    for (let i = 0; i < firstDay; i++) {
+      days.push({ day: daysInPrevMonth - firstDay + i + 1, isCurrentMonth: false, dateStr: `${year}-${String(month).padStart(2, '0')}-${String(daysInPrevMonth - firstDay + i + 1).padStart(2, '0')}` });
+    }
+    for (let i = 1; i <= daysInMonth; i++) {
+      days.push({ day: i, isCurrentMonth: true, dateStr: `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}` });
+    }
+    const remainingCells = 42 - days.length; 
+    for (let i = 1; i <= remainingCells; i++) {
+      days.push({ day: i, isCurrentMonth: false, dateStr: `${year}-${String(month + 2).padStart(2, '0')}-${String(i).padStart(2, '0')}` });
+    }
+    return days;
+  };
+
+  const calendarDays = generateCalendar();
+  const [selectedDateStr, setSelectedDateStr] = useState('2026-07-12');
+
+  const selectedDateEvents = events.filter(e => e.date === selectedDateStr);
+
+  const handlePrevMonth = () => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
+  const handleNextMonth = () => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
+
+  return (
+    <div className="flex-1 flex flex-col h-full overflow-hidden animate-fade-in relative z-10">
+      <div className={`px-4 pt-12 pb-3 flex items-center justify-between ${t.glass} border-b z-20 shadow-sm shrink-0`}>
+        <div className="flex items-center">
+          <button onClick={() => navigateTo('home')} className={`mr-3 w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors active:scale-95 outline-none`} aria-label="Back">
+            <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
+          </button>
+          <h2 className={`text-lg font-extrabold ${t.text} leading-tight`}>Calendar</h2>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto pb-32 px-5 pt-5 relative z-10">
+        <div className={`p-5 rounded-3xl ${t.card} border ${t.border} shadow-sm mb-6`}>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className={`text-lg font-extrabold ${t.text}`}>{currentMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' })}</h3>
+            <div className="flex space-x-2">
+              <button onClick={handlePrevMonth} className={`w-8 h-8 rounded-lg flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-black/5 text-black'} active:scale-95 transition-transform`}><ArrowLeft className="w-4 h-4" strokeWidth={2.5}/></button>
+              <button onClick={handleNextMonth} className={`w-8 h-8 rounded-lg flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-black/5 text-black'} active:scale-95 transition-transform`}><ChevronRight className="w-4 h-4" strokeWidth={2.5}/></button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-7 gap-1 mb-2">
+            {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => (
+              <div key={d} className={`text-center text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted}`}>{d}</div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-7 gap-1">
+            {calendarDays.map((d, i) => {
+              const dayEvents = events.filter(e => e.date === d.dateStr);
+              const isSelected = selectedDateStr === d.dateStr;
+              const isToday = d.dateStr === '2026-07-12';
+
+              return (
+                <div 
+                  key={i} 
+                  onClick={() => d.isCurrentMonth && setSelectedDateStr(d.dateStr)}
+                  className={`aspect-square flex flex-col items-center justify-center rounded-xl relative cursor-pointer transition-all active:scale-95 ${
+                    !d.isCurrentMonth ? 'opacity-30 pointer-events-none' : 
+                    isSelected ? 'bg-[#1D9BF0] text-white shadow-md' : 
+                    isToday ? `border-2 border-[#1D9BF0] ${t.text}` :
+                    `hover:${isDark ? 'bg-white/10' : 'bg-black/5'} ${t.text}`
+                  }`}
+                >
+                  <span className={`text-xs font-bold ${isSelected ? 'text-white' : ''}`}>{d.day}</span>
+                  {dayEvents.length > 0 && (
+                    <div className="flex space-x-0.5 absolute bottom-1.5">
+                      {dayEvents.slice(0, 3).map((_, idx) => (
+                        <div key={idx} className={`w-1 h-1 rounded-full ${isSelected ? 'bg-white' : 'bg-[#1D9BF0]'}`}></div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <h3 className={`text-sm font-extrabold ${t.textMuted} uppercase tracking-wider mb-4`}>
+          Events on {new Date(selectedDateStr).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+        </h3>
+        <div className="space-y-4">
+          {selectedDateEvents.length > 0 ? (
+            selectedDateEvents.map(ev => <EventCard key={ev.id} event={ev} variant="compact" t={t} isDark={isDark} onClick={() => navigateTo('details', ev)} registeredEventIds={new Set()} />)
+          ) : (
+            <div className={`p-6 rounded-2xl border border-dashed ${t.borderSoft} text-center opacity-60`}>
+              <p className={`text-xs font-bold ${t.textMuted}`}>No events scheduled for this day.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MyEventsScreen = ({ navigateTo, events, t, isDark, registeredEventIds, goingEventIds, interestedEventIds }) => {
+  const [segment, setSegment] = useState('Going');
+
+  let displayed = [];
+  if (segment === 'Going') displayed = events.filter(e => goingEventIds.has(e.id));
+  if (segment === 'Interested') displayed = events.filter(e => interestedEventIds.has(e.id));
+  if (segment === 'Registered') displayed = events.filter(e => registeredEventIds.has(e.id));
+  if (segment === 'Past') displayed = events.filter(e => new Date(e.date) < EVENTS_REFERENCE_DATE && (goingEventIds.has(e.id) || registeredEventIds.has(e.id)));
+
+  return (
+    <div className="flex-1 flex flex-col h-full overflow-hidden animate-fade-in relative z-10">
+      <div className={`px-4 pt-12 pb-3 flex flex-col justify-end ${t.glass} border-b z-20 shadow-sm shrink-0`}>
+        <div className="flex items-center mb-4">
+          <button onClick={() => navigateTo('home')} className={`mr-3 w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors active:scale-95 outline-none`} aria-label="Back">
+            <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
+          </button>
+          <h2 className={`text-lg font-extrabold ${t.text} leading-tight`}>My Events</h2>
+        </div>
+        <div className="flex space-x-2 overflow-x-auto hide-scrollbar pb-1">
+          {['Going', 'Interested', 'Registered', 'Past'].map(s => (
+            <button 
+              key={s} 
+              onClick={() => setSegment(s)}
+              className={`px-4 py-2 rounded-lg text-xs font-extrabold transition-all border shrink-0 ${segment === s ? 'bg-[#1D9BF0] text-white border-[#1D9BF0] shadow-sm' : `${isDark ? 'bg-white/5 text-gray-400 border-white/10' : 'bg-white/50 text-gray-700 border-white/60'} hover:bg-white/20`}`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto pb-32 px-5 pt-5 relative z-10">
+        <h3 className={`text-sm font-extrabold ${t.textMuted} uppercase tracking-wider mb-4`}>{segment} ({displayed.length})</h3>
+        <div className="space-y-4">
+          {displayed.length > 0 ? (
+            displayed.map(ev => <EventCard key={ev.id} event={ev} variant="compact" t={t} isDark={isDark} onClick={() => navigateTo('details', ev)} registeredEventIds={registeredEventIds} />)
+          ) : (
+            <div className="flex flex-col items-center justify-center py-16 opacity-50">
+              <BookmarkIcon className="w-12 h-12 mb-3" strokeWidth={1.5} />
+              <p className="text-sm font-bold text-center">No events in this category.</p>
+              {segment !== 'Past' && (
+                <button onClick={() => navigateTo('browse')} className="mt-4 text-[#1D9BF0] font-extrabold text-sm hover:underline">Browse Events</button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const EventDetailsScreen = ({ 
+  event, navigateTo, onBack, t, isDark, setToastMsg,
+  registeredEventIds, setRegisteredEventIds,
+  goingEventIds, setGoingEventIds,
+  interestedEventIds, setInterestedEventIds,
+  reminderEventIds, setReminderEventIds,
+  followedOrganizerIds, setFollowedOrganizerIds,
+  allEvents
+}) => {
+  const isRegistered = registeredEventIds.has(event.id);
+  const isGoing = goingEventIds.has(event.id);
+  const isInterested = interestedEventIds.has(event.id);
+  const hasReminder = reminderEventIds.has(event.id);
+  const isFollowingOrg = followedOrganizerIds.has(event.organizer.id);
+  const isPast = new Date(event.date) < EVENTS_REFERENCE_DATE;
+
+  const dateObj = new Date(event.date);
+  const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+  const displayStatus = isRegistered ? 'Registered' : event.registrationStatus;
+
+  const handleRegisterToggle = () => {
+    if (isPast || displayStatus === 'Closed' || displayStatus === 'Cancelled') return;
+    setRegisteredEventIds(prev => {
+      const next = new Set(prev);
+      if (next.has(event.id)) { next.delete(event.id); setToastMsg("Registration cancelled"); } 
+      else { next.add(event.id); setToastMsg("Successfully registered!"); }
+      return next;
+    });
+  };
+
+  const handleGoingToggle = () => {
+    setGoingEventIds(prev => {
+      const next = new Set(prev);
+      if (next.has(event.id)) { next.delete(event.id); setToastMsg("Removed from Going"); } 
+      else { next.add(event.id); setToastMsg("Marked as Going"); }
+      return next;
+    });
+  };
+
+  const handleInterestedToggle = () => {
+    setInterestedEventIds(prev => {
+      const next = new Set(prev);
+      if (next.has(event.id)) { next.delete(event.id); setToastMsg("Removed from Interested"); } 
+      else { next.add(event.id); setToastMsg("Added to Interested"); }
+      return next;
+    });
+  };
+
+  const handleReminderToggle = () => {
+    setReminderEventIds(prev => {
+      const next = new Set(prev);
+      if (next.has(event.id)) { next.delete(event.id); setToastMsg("Reminder disabled"); } 
+      else { next.add(event.id); setToastMsg("Reminder enabled"); }
+      return next;
+    });
+  };
+
+  const handleFollowOrg = () => {
+    setFollowedOrganizerIds(prev => {
+      const next = new Set(prev);
+      if (next.has(event.organizer.id)) { next.delete(event.organizer.id); setToastMsg("Organizer unfollowed"); } 
+      else { next.add(event.organizer.id); setToastMsg("Organizer followed"); }
+      return next;
+    });
+  };
+
+  const relatedEvents = allEvents.filter(e => e.id !== event.id && (e.category === event.category || e.organizer.id === event.organizer.id)).slice(0, 3);
+
+  let primaryActionLabel = "Register";
+  let primaryActionState = "active"; 
+  if (displayStatus === 'Cancelled') { primaryActionLabel = "Event Cancelled"; primaryActionState = "disabled"; }
+  else if (isPast) { primaryActionLabel = "Event Ended"; primaryActionState = "disabled"; }
+  else if (isRegistered) { primaryActionLabel = "Registered"; primaryActionState = "success"; }
+  else if (displayStatus === 'Free Entry') { primaryActionLabel = isGoing ? "Going" : "Mark as Going"; primaryActionState = isGoing ? "success" : "active"; }
+  else if (displayStatus === 'Closed') { primaryActionLabel = "Registration Closed"; primaryActionState = "disabled"; }
+  else if (displayStatus === 'Closing Soon') { primaryActionLabel = "Register Now"; primaryActionState = "danger"; }
+
+  const handlePrimaryClick = () => {
+    if (primaryActionState === 'disabled') return;
+    if (displayStatus === 'Free Entry') handleGoingToggle();
+    else handleRegisterToggle();
+  };
+
+  return (
+    <div className="flex-1 flex flex-col h-full overflow-hidden animate-fade-in relative z-10">
+      {/* Hero Header */}
+      <div className="relative w-full h-[260px] shrink-0">
+        <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/90"></div>
+        <div className="absolute top-0 w-full px-4 pt-12 flex justify-between z-20">
+          <button onClick={onBack} className={`w-10 h-10 flex items-center justify-center rounded-lg bg-black/40 backdrop-blur-md border border-white/20 text-white transition-colors active:scale-95 outline-none`} aria-label="Back">
+            <ArrowLeft className="w-6 h-6" strokeWidth={2.5} />
+          </button>
+          <button onClick={handleInterestedToggle} className={`w-10 h-10 flex items-center justify-center rounded-lg bg-black/40 backdrop-blur-md border border-white/20 transition-colors active:scale-95 outline-none ${isInterested ? 'text-red-500' : 'text-white'}`} aria-label="Interested">
+            <Heart className={`w-5 h-5 ${isInterested ? 'fill-current' : ''}`} strokeWidth={2.5} />
+          </button>
+        </div>
+        <div className="absolute bottom-4 left-4 right-4">
+          <div className="flex items-center space-x-2 mb-2">
+            <span className="px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-[#1D9BF0] text-white shadow-sm">{event.category}</span>
+            <EventStatusBadge status={displayStatus} isDark={true} />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto pb-32 relative z-10 px-5 pt-5 space-y-6">
+        <div>
+          <h1 className={`text-2xl font-extrabold ${t.text} leading-tight tracking-tight mb-2`}>{event.title}</h1>
+          <div className="flex items-center space-x-2">
+             <span className={`text-sm font-bold ${t.textMuted}`}>{event.organizer.name}</span>
+             {event.organizer.verified && <BadgeCheck className="w-4 h-4 text-[#1D9BF0]" strokeWidth={2.5} />}
+             <span className="w-1 h-1 rounded-full bg-gray-400"></span>
+             <span className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted}`}>{event.organizer.type}</span>
+          </div>
+        </div>
+
+        <div className={`p-4 rounded-2xl ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft} space-y-4`}>
+          <div className="flex items-start space-x-3">
+             <div className={`w-10 h-10 rounded-xl ${isDark ? 'bg-white/10' : 'bg-white shadow-sm'} flex items-center justify-center shrink-0`}>
+               <CalendarDays className={`w-5 h-5 ${t.text}`} strokeWidth={2} />
+             </div>
+             <div className="flex flex-col pt-0.5">
+               <span className={`text-sm font-extrabold ${t.text}`}>{dateStr}</span>
+               <span className={`text-xs font-bold ${t.textMuted} mt-0.5`}>{event.time} - {event.endTime}</span>
+             </div>
+          </div>
+          <div className="flex items-start space-x-3">
+             <div className={`w-10 h-10 rounded-xl ${isDark ? 'bg-white/10' : 'bg-white shadow-sm'} flex items-center justify-center shrink-0`}>
+               <MapPin className={`w-5 h-5 ${t.text}`} strokeWidth={2} />
+             </div>
+             <div className="flex flex-col pt-0.5">
+               <span className={`text-sm font-extrabold ${t.text}`}>{event.venue}</span>
+               <span className={`text-xs font-bold ${t.textMuted} mt-0.5 leading-snug pr-2`}>{event.venueDetails}</span>
+             </div>
+          </div>
+          {event.notificationType === 'cancelled' && (
+            <div className="flex items-center space-x-2.5 mt-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+              <AlertTriangle className="w-5 h-5 text-red-500 shrink-0" strokeWidth={2.5} />
+              <span className="text-xs font-bold text-red-600 dark:text-red-400">{event.notificationMessage}</span>
+            </div>
+          )}
+        </div>
+
+        {!isPast && event.registrationStatus !== 'Cancelled' && (
+          <div className="flex space-x-3">
+            <button 
+              onClick={handlePrimaryClick}
+              className={`flex-1 h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.98] flex items-center justify-center space-x-2 ${
+                primaryActionState === 'success' ? 'bg-emerald-500 text-white shadow-emerald-500/30 shadow-md' :
+                primaryActionState === 'danger' ? 'bg-amber-500 text-white shadow-amber-500/30 shadow-md' :
+                primaryActionState === 'disabled' ? 'bg-gray-400 dark:bg-gray-700 text-white/70 cursor-not-allowed' :
+                'bg-[#1D9BF0] text-white shadow-[#1D9BF0]/30 shadow-md'
+              }`}
+            >
+              {primaryActionState === 'success' && <CheckCircle2 className="w-5 h-5" strokeWidth={2.5} />}
+              <span>{primaryActionLabel}</span>
+            </button>
+            <button 
+              onClick={handleReminderToggle}
+              className={`w-14 h-14 rounded-xl border ${t.border} ${t.card} flex items-center justify-center transition-colors active:scale-95 shrink-0 ${hasReminder ? 'border-[#1D9BF0] bg-[#1D9BF0]/10 text-[#1D9BF0]' : t.text}`}
+              aria-label="Toggle Reminder"
+            >
+              <Bell className={`w-5 h-5 ${hasReminder ? 'fill-current' : ''}`} strokeWidth={2.5} />
+            </button>
+          </div>
+        )}
+
+        <div className="flex items-center justify-around py-4 border-y border-dashed border-gray-400/30">
+          <div className="text-center">
+            <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mb-1`}>Going</p>
+            <p className={`text-base font-extrabold ${t.text}`}>{event.goingCount}</p>
+          </div>
+          <div className="text-center">
+            <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mb-1`}>Interested</p>
+            <p className={`text-base font-extrabold ${t.text}`}>{event.interestedCount}</p>
+          </div>
+          <div className="text-center">
+            <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mb-1`}>Capacity</p>
+            <p className={`text-base font-extrabold ${t.text}`}>{event.capacity}</p>
+          </div>
+        </div>
+
+        <div>
+          <h3 className={`text-lg font-extrabold ${t.text} tracking-tight mb-3`}>About</h3>
+          <p className={`text-sm font-medium ${t.text} leading-relaxed opacity-90`}>{event.description}</p>
+        </div>
+
+        {event.schedule && event.schedule.length > 0 && (
+          <div>
+            <h3 className={`text-lg font-extrabold ${t.text} tracking-tight mb-4`}>Schedule</h3>
+            <div className={`p-5 rounded-2xl ${t.card} border ${t.border} shadow-sm space-y-4`}>
+              {event.schedule.map((item, idx) => (
+                <div key={idx} className="flex relative">
+                  {idx !== event.schedule.length - 1 && (
+                    <div className={`absolute left-[5px] top-6 bottom-[-16px] w-0.5 ${isDark ? 'bg-white/10' : 'bg-black/10'}`}></div>
+                  )}
+                  <div className="w-3 h-3 rounded-full bg-[#1D9BF0] border-4 border-transparent shrink-0 mt-1 z-10 transform -translate-x-[2px]"></div>
+                  <div className="ml-4 flex flex-col">
+                    <span className={`text-[10px] font-extrabold text-[#1D9BF0] uppercase tracking-wider mb-0.5`}>{item.time}</span>
+                    <span className={`text-sm font-bold ${t.text}`}>{item.title}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div>
+          <h3 className={`text-lg font-extrabold ${t.text} tracking-tight mb-3`}>Registration Info</h3>
+          <div className={`p-4 rounded-xl ${isDark ? 'bg-[#1A1A1A] border-white/10' : 'bg-gray-100 border-gray-200'} border`}>
+             <p className={`text-sm font-bold ${t.text} mb-2 leading-relaxed`}>{event.registrationInfo}</p>
+             {event.registrationDeadline && (
+               <p className={`text-xs font-extrabold ${t.textMuted} flex items-center mt-3 pt-3 border-t ${isDark ? 'border-white/10' : 'border-black/10'}`}>
+                 <Clock className="w-3.5 h-3.5 mr-1.5" strokeWidth={2.5} /> Deadline: {new Date(event.registrationDeadline).toLocaleDateString()}
+               </p>
+             )}
+          </div>
+        </div>
+
+        <div>
+          <h3 className={`text-lg font-extrabold ${t.text} tracking-tight mb-4`}>Organizer</h3>
+          <div className={`p-5 rounded-2xl ${t.card} border ${t.border} shadow-sm flex flex-col`}>
+             <div className="flex items-start justify-between mb-3">
+               <div className="flex items-center space-x-3">
+                 <div className={`w-12 h-12 rounded-xl ${isDark ? 'bg-white/10' : 'bg-black/5'} border ${t.borderSoft} flex items-center justify-center shrink-0`}>
+                   <Building2 className={`w-6 h-6 ${t.textMuted}`} strokeWidth={1.5} />
+                 </div>
+                 <div className="flex flex-col">
+                   <div className="flex items-center space-x-1.5 mb-0.5">
+                     <h4 className={`text-base font-extrabold ${t.text} leading-tight`}>{event.organizer.name}</h4>
+                     {event.organizer.verified && <BadgeCheck className="w-4 h-4 text-[#1D9BF0] shrink-0" strokeWidth={2.5} />}
+                   </div>
+                   <span className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted}`}>{event.organizer.type}</span>
+                 </div>
+               </div>
+             </div>
+             <p className={`text-xs font-medium ${t.text} leading-relaxed opacity-90 mb-4`}>{event.organizer.description}</p>
+             <button onClick={handleFollowOrg} className={`w-full py-2.5 rounded-lg text-xs font-extrabold transition-all border active:scale-95 ${isFollowingOrg ? `${isDark ? 'bg-white/10 border-white/20 text-white' : 'bg-gray-100 border-gray-300 text-black'}` : 'bg-[#1D9BF0] border-[#1D9BF0] text-white shadow-sm'}`}>
+               {isFollowingOrg ? 'Following' : 'Follow Organizer'}
+             </button>
+          </div>
+        </div>
+
+        {relatedEvents.length > 0 && (
+          <div className="pt-2">
+            <h3 className={`text-lg font-extrabold ${t.text} tracking-tight mb-4`}>Related Events</h3>
+            <div className="flex space-x-4 overflow-x-auto hide-scrollbar -mx-5 px-5 pb-4">
+              {relatedEvents.map(ev => (
+                <EventCard key={ev.id} event={ev} variant="recommended" t={t} isDark={isDark} onClick={(e) => navigateTo('details', e)} registeredEventIds={registeredEventIds} />
+              ))}
+            </div>
+          </div>
+        )}
+
+      </div>
+      
+      {!isPast && event.registrationStatus !== 'Cancelled' && (
+        <div className={`absolute bottom-0 left-0 w-full p-4 pt-3 pb-8 ${t.glass} border-t border-white/10 z-30 animate-slide-up shadow-[0_-10px_20px_rgba(0,0,0,0.05)] flex space-x-3`}>
+           <button 
+              onClick={handlePrimaryClick}
+              className={`flex-1 h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.98] flex items-center justify-center space-x-2 ${
+                primaryActionState === 'success' ? 'bg-emerald-500 text-white shadow-emerald-500/30 shadow-md' :
+                primaryActionState === 'danger' ? 'bg-amber-500 text-white shadow-amber-500/30 shadow-md' :
+                primaryActionState === 'disabled' ? 'bg-gray-400 dark:bg-gray-700 text-white/70 cursor-not-allowed' :
+                'bg-[#1D9BF0] text-white shadow-[#1D9BF0]/30 shadow-md'
+              }`}
+            >
+              {primaryActionState === 'success' && <CheckCircle2 className="w-5 h-5" strokeWidth={2.5} />}
+              <span>{primaryActionLabel}</span>
+            </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const EventsModuleOverlay = ({
+  onClose, t, isDark, authRole, setToastMsg,
+  registeredEventIds, setRegisteredEventIds,
+  goingEventIds, setGoingEventIds,
+  interestedEventIds, setInterestedEventIds,
+  reminderEventIds, setReminderEventIds,
+  followedOrganizerIds, setFollowedOrganizerIds
+}) => {
+  const [eventsScreen, setEventsScreen] = useState('home');
+  const [previousScreen, setPreviousScreen] = useState('home');
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [browseParams, setBrowseParams] = useState(null);
+
+  const navigateTo = (screen, payload = null) => {
+    if (screen === 'close') {
+      onClose();
+      return;
+    }
+    setPreviousScreen(eventsScreen);
+    if (screen === 'details') setSelectedEvent(payload);
+    if (screen === 'browse' && payload) setBrowseParams(payload);
+    setEventsScreen(screen);
+  };
+
+  const handleBack = () => {
+    if (eventsScreen === 'details') setEventsScreen(previousScreen);
+    else setEventsScreen('home');
+  };
+
+  return (
+    <div className={`absolute inset-0 z-[90] flex flex-col ${t.bg} overflow-hidden animate-slide-up transition-colors duration-500`}>
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden transition-opacity duration-500 opacity-50">
+        <div className={`absolute top-[-5%] right-[-10%] w-[60%] h-[50%] bg-[#1D9BF0] rounded-full mix-blend-screen filter blur-[140px] ${isDark ? 'opacity-20' : 'opacity-[0.15]'}`}></div>
+        <div className={`absolute bottom-[10%] left-[-10%] w-[60%] h-[50%] bg-indigo-500 rounded-full mix-blend-screen filter blur-[140px] ${isDark ? 'opacity-[0.15]' : 'opacity-10'}`}></div>
+      </div>
+
+      {eventsScreen === 'home' && (
+        <EventsHomeScreen 
+          navigateTo={navigateTo} events={globalEventsData} t={t} isDark={isDark} 
+          registeredEventIds={registeredEventIds} 
+        />
+      )}
+      
+      {eventsScreen === 'browse' && (
+        <EventsBrowseScreen 
+          navigateTo={navigateTo} events={globalEventsData} initialParams={browseParams} t={t} isDark={isDark}
+          registeredEventIds={registeredEventIds}
+        />
+      )}
+
+      {eventsScreen === 'calendar' && (
+        <EventsCalendarScreen 
+          navigateTo={navigateTo} events={globalEventsData} t={t} isDark={isDark} 
+        />
+      )}
+
+      {eventsScreen === 'my_events' && (
+        <MyEventsScreen 
+          navigateTo={navigateTo} events={globalEventsData} t={t} isDark={isDark} 
+          registeredEventIds={registeredEventIds} goingEventIds={goingEventIds} interestedEventIds={interestedEventIds}
+        />
+      )}
+
+      {eventsScreen === 'details' && selectedEvent && (
+        <EventDetailsScreen 
+          event={selectedEvent} navigateTo={navigateTo} onBack={handleBack} t={t} isDark={isDark} setToastMsg={setToastMsg}
+          registeredEventIds={registeredEventIds} setRegisteredEventIds={setRegisteredEventIds}
+          goingEventIds={goingEventIds} setGoingEventIds={setGoingEventIds}
+          interestedEventIds={interestedEventIds} setInterestedEventIds={setInterestedEventIds}
+          reminderEventIds={reminderEventIds} setReminderEventIds={setReminderEventIds}
+          followedOrganizerIds={followedOrganizerIds} setFollowedOrganizerIds={setFollowedOrganizerIds}
+          allEvents={globalEventsData}
+        />
+      )}
+    </div>
+  );
+};
+
+// --- END OF EVENTS COMPONENTS ---
+
 export default function App() {
+
+  // --- EVENTS MODULE STATE ---
+  const [isEventsModuleOpen, setIsEventsModuleOpen] = useState(false);
+  const [registeredEventIds, setRegisteredEventIds] = useState(new Set(['event-career-fair']));
+  const [goingEventIds, setGoingEventIds] = useState(new Set());
+  const [interestedEventIds, setInterestedEventIds] = useState(new Set(['event-ai-talk']));
+  const [reminderEventIds, setReminderEventIds] = useState(new Set());
+  const [followedOrganizerIds, setFollowedOrganizerIds] = useState(new Set(['organizer-acm']));
+
   const [currentView, setCurrentView] = useState('splash');
   const [authRole, setAuthRole] = useState('student'); // 'student' | 'faculty' | 'alumni'
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
@@ -1355,6 +2476,8 @@ export default function App() {
     { id: 1, hospital: 'Apollo Hospital', location: 'Bashundhara, Dhaka', bg: 'B+', distance: '2.3km', urgency: 'Critical', units: 2, match: 'Perfect Match', time: '10m ago', description: 'Patient is undergoing open heart surgery. Blood is required immediately.', contact: '01711223344', patientName: 'Rahim Uddin' },
     { id: 2, hospital: 'Square Hospital', location: 'Panthapath, Dhaka', bg: 'O+', distance: '5.1km', urgency: 'Needed Today', units: 1, match: 'Compatible', time: '1h ago', description: 'Accident patient in ICU. Need O+ blood by tonight.', contact: '01811223344', patientName: 'Karim Hasan' }
   ];
+
+  
 
   const handleConnectClick = (e, id) => {
     e.stopPropagation();
@@ -1877,10 +3000,11 @@ export default function App() {
 
         {/* Redesigned Quick Actions: Custom Layered Icons + Label */}
         <div className="w-full pt-0 pb-2 relative z-10">
-          <div className="flex flex-row items-start justify-between w-full px-2">
+          <div className="flex flex-row items-start justify-between w-full px-1">
             {[
               { icon: CustomAlumniIcon, label: 'Network', action: () => setActiveTab('directory') },
               { icon: CustomJobsIcon, label: 'Jobs', action: () => setActiveTab('jobs') },
+              { icon: CustomEventsIcon, label: 'Events', action: () => setIsEventsModuleOpen(true) },
               { icon: CustomEmergencyIcon, label: 'Emergency', action: () => setActiveTab('emergency') },
               { icon: CustomMessagesIcon, label: 'Message', action: () => setActiveTab('messages') },
             ].map((action, idx) => (
@@ -1890,9 +3014,9 @@ export default function App() {
                 className="flex-1 flex flex-col items-center justify-center min-h-[72px] cursor-pointer group transition-all duration-200 ease-out active:scale-90"
               >
                 <action.icon 
-                  className={`w-[36px] h-[36px] mb-2 transition-colors duration-200 ${action.colorClass || (isDark ? 'text-white' : 'text-[#1C1C1E]')}`} 
+                  className={`w-[32px] h-[32px] mb-2 transition-colors duration-200 ${action.colorClass || (isDark ? 'text-white' : 'text-[#1C1C1E]')}`} 
                 />
-                <span className={`text-[12px] font-bold leading-tight text-center ${t.textMuted} group-hover:${isDark ? 'text-white' : 'text-black'} transition-colors duration-200`}>
+                <span className={`text-[11px] font-bold leading-tight text-center ${t.textMuted} group-hover:${isDark ? 'text-white' : 'text-black'} transition-colors duration-200`}>
                   {action.label}
                 </span>
               </div>
@@ -3828,6 +4952,26 @@ export default function App() {
             {activeOverlay === 'message_settings' && <MessageSettingsOverlay onClose={() => setActiveOverlay(null)} />}
             {activeOverlay === 'chat' && <ChatOverlay />}
             {activeOverlay === 'notifications' && <NotificationsOverlay />}
+            {/* --- EVENTS OVERLAY --- */}
+            {isEventsModuleOpen && (
+              <EventsModuleOverlay
+                onClose={() => setIsEventsModuleOpen(false)}
+                t={t}
+                isDark={isDark}
+                authRole={authRole}
+                setToastMsg={setToastMsg}
+                registeredEventIds={registeredEventIds}
+                setRegisteredEventIds={setRegisteredEventIds}
+                goingEventIds={goingEventIds}
+                setGoingEventIds={setGoingEventIds}
+                interestedEventIds={interestedEventIds}
+                setInterestedEventIds={setInterestedEventIds}
+                reminderEventIds={reminderEventIds}
+                setReminderEventIds={setReminderEventIds}
+                followedOrganizerIds={followedOrganizerIds}
+                setFollowedOrganizerIds={setFollowedOrganizerIds}
+              />
+            )}
             {/* --- MOMENTS OVERLAYS --- */}
             {viewerIndex !== null && (
               <MomentViewer 
