@@ -2506,7 +2506,7 @@ export default function App() {
         <img 
           src="https://res.cloudinary.com/ddgxqqe6t/image/upload/v1784041907/Urads_Trans_300x-8_r97jck.png" 
           alt="Ugrads Logo" 
-          className="w-72 h-72 object-contain drop-shadow-md" 
+          className="w-72 h-72 object-contain" 
         />
       </div>
     </div>
@@ -2520,7 +2520,7 @@ export default function App() {
         <img 
           src={isDark ? "https://res.cloudinary.com/ddgxqqe6t/image/upload/v1784041954/Icon_300x-8_l1gnkq.png" : "https://res.cloudinary.com/ddgxqqe6t/image/upload/v1784041954/Icon_300x-8_l1gnkq.png"} 
           alt="Ugrads Logo" 
-          className="w-40 h-40 mb-6 object-contain" 
+          className="w-36 h-36 mb-6 object-contain" 
         />
         
         <h1 className={`text-xl font-semibold tracking-tight text-center ${t.text}`}>Connect. Grow. Support.</h1>
