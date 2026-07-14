@@ -2500,13 +2500,14 @@ export default function App() {
 
   // --- NEW AUTHENTICATION SCREENS ---
   const SplashScreen = () => (
-    <div className={`flex flex-col items-center justify-center h-full ${t.bg} ${t.text} relative overflow-hidden transition-colors duration-500`}>
+    <div className="flex flex-col items-center justify-center h-full bg-[#1D9BF0] relative overflow-hidden transition-colors duration-500">
       <div className="relative z-10 flex flex-col items-center animate-fade-in-up">
-        <div className="w-16 h-16 bg-[#1D9BF0] text-white flex items-center justify-center rounded-xl mb-6">
-          <div className="w-6 h-6 border-2 border-white rounded-sm rotate-45"></div>
-        </div>
-        <h1 className="text-2xl font-extrabold tracking-widest mb-2">NSUNEXT</h1>
-        <p className={`${t.textMuted} text-xs tracking-widest uppercase font-bold`}>Connectivity Redefined</p>
+        {/* Replace with your transparent WHITE ICON Cloudinary URL */}
+        <img 
+          src="https://res.cloudinary.com/ddgxqqe6t/image/upload/v1784041907/Urads_Trans_300x-8_r97jck.png" 
+          alt="Ugrads Logo" 
+          className="w-72 h-72 object-contain drop-shadow-md" 
+        />
       </div>
     </div>
   );
@@ -2514,9 +2515,14 @@ export default function App() {
   const WelcomeScreen = () => (
     <div className={`flex flex-col items-center justify-center h-full px-6 pt-12 pb-8 transition-colors duration-500 animate-fade-in relative z-10`}>
       <div className="flex-1 flex flex-col items-center justify-center w-full animate-fade-in-up">
-        <div className="w-20 h-20 bg-[#1D9BF0] text-white flex items-center justify-center rounded-[24px] mb-6">
-          <div className="w-8 h-8 border-[3px] border-white rounded-sm rotate-45"></div>
-        </div>
+        
+        {/* Replace these URLs with your Cloudinary URLs */}
+        <img 
+          src={isDark ? "https://res.cloudinary.com/ddgxqqe6t/image/upload/v1784041954/Icon_300x-8_l1gnkq.png" : "https://res.cloudinary.com/ddgxqqe6t/image/upload/v1784041954/Icon_300x-8_l1gnkq.png"} 
+          alt="Ugrads Logo" 
+          className="w-40 h-40 mb-6 object-contain" 
+        />
+        
         <h1 className={`text-xl font-semibold tracking-tight text-center ${t.text}`}>Connect. Grow. Support.</h1>
         <p className={`text-sm mt-2 text-center ${t.textMuted} px-4`}>North South University Verified Network</p>
       </div>
