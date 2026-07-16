@@ -1612,143 +1612,153 @@ const EventsHomeScreen = ({ navigateTo, events, t, isDark, registeredEventIds })
     : [];
 
   return (
-    <div className="flex-1 overflow-y-auto pb-32 animate-fade-in relative z-10">
-      {/* Sticky Header */}
-      <div className={`px-4 pt-12 pb-3 flex items-center justify-between ${t.glass} border-b sticky top-0 z-50 shadow-sm`}>
-        <div className="flex items-center">
-          <button onClick={() => navigateTo('close')} className={`mr-3 w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors active:scale-95 outline-none`} aria-label="Close Events">
-            <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
-          </button>
-          <h2 className={`text-xl font-extrabold ${t.text} tracking-tight`}>Events</h2>
-        </div>
-        <div className="flex space-x-2">
-          <button onClick={() => navigateTo('calendar')} className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors active:scale-95 outline-none`} aria-label="Open Calendar">
-            <CalendarDays className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} />
-          </button>
-          <button onClick={() => navigateTo('my_events')} className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors active:scale-95 outline-none`} aria-label="My Events">
-            <BookmarkIcon className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} />
-          </button>
-        </div>
-      </div>
-
-      <div className="px-5 pt-5 pb-6">
-        {/* Search */}
-        <div className="relative w-full mb-5">
-          <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4`} strokeWidth={2.5} />
-          <input 
-            type="text" 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search events, organizers..." 
-            className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 pl-10 pr-10 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`}
-          />
-          {searchQuery && (
-            <button onClick={() => setSearchQuery('')} className={`absolute right-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} hover:${t.text}`} aria-label="Clear Search">
-              <X className="w-4 h-4" strokeWidth={2.5} />
+    <>
+      <div className="flex-1 overflow-y-auto pb-32 animate-fade-in relative z-10">
+        {/* Sticky Header */}
+        <div className={`px-4 pt-12 pb-3 flex items-center justify-between ${t.glass} border-b sticky top-0 z-50 shadow-sm`}>
+          <div className="flex items-center">
+            <button onClick={() => navigateTo('close')} className={`mr-3 w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors active:scale-95 outline-none`} aria-label="Close Events">
+              <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
             </button>
-          )}
+            <h2 className={`text-xl font-extrabold ${t.text} tracking-tight`}>Events</h2>
+          </div>
+          <div className="flex space-x-2">
+            <button onClick={() => navigateTo('calendar')} className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors active:scale-95 outline-none`} aria-label="Open Calendar">
+              <CalendarDays className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} />
+            </button>
+            <button onClick={() => navigateTo('my_events')} className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors active:scale-95 outline-none`} aria-label="My Events">
+              <BookmarkIcon className={`w-5 h-5 ${t.text}`} strokeWidth={2.5} />
+            </button>
+          </div>
         </div>
 
-        {searchQuery.trim() ? (
-          <div className="animate-fade-in space-y-4">
-             <h3 className={`text-sm font-extrabold ${t.textMuted} uppercase tracking-wider mb-2`}>Search Results ({searchResults.length})</h3>
-             {searchResults.length > 0 ? (
-               searchResults.map(ev => <EventCard key={ev.id} event={ev} variant="compact" t={t} isDark={isDark} onClick={(e) => navigateTo('details', e)} registeredEventIds={registeredEventIds}/>)
-             ) : (
-               <div className="flex flex-col items-center justify-center py-10 opacity-60">
-                 <Search className="w-10 h-10 mb-3" strokeWidth={1.5} />
-                 <p className="text-sm font-bold">No events found for "{searchQuery}"</p>
-               </div>
-             )}
-          </div>
-        ) : (
-          <>
-            {/* Deadline Alert */}
-            {closingSoonCount > 0 && (
-              <div className={`mb-6 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between`}>
-                <div className="flex items-center space-x-2.5">
-                  <Clock className="w-5 h-5 text-amber-500 shrink-0" strokeWidth={2.5} />
-                  <p className={`text-[11px] font-extrabold text-amber-600 dark:text-amber-400 leading-tight`}>{closingSoonCount} registration{closingSoonCount > 1 ? 's close' : ' closes'} soon</p>
-                </div>
-                <button onClick={() => navigateTo('browse', { filter: 'Closing Soon' })} className={`px-3 py-1.5 bg-amber-500 text-white rounded-lg text-[10px] font-extrabold active:scale-95 transition-transform shrink-0 shadow-sm`}>View</button>
-              </div>
+        <div className="px-5 pt-5 pb-6">
+          {/* Search */}
+          <div className="relative w-full mb-5">
+            <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4`} strokeWidth={2.5} />
+            <input 
+              type="text" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search events, organizers..." 
+              className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 pl-10 pr-10 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`}
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')} className={`absolute right-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} hover:${t.text}`} aria-label="Clear Search">
+                <X className="w-4 h-4" strokeWidth={2.5} />
+              </button>
             )}
+          </div>
 
-            <FeaturedEventsCarousel events={featuredEvents} onEventClick={(e) => navigateTo('details', e)} t={t} isDark={isDark} registeredEventIds={registeredEventIds}/>
-
-            <div className="flex space-x-2 overflow-x-auto hide-scrollbar -mx-5 px-5 mb-8">
-              {categories.map(cat => (
-                <EventCategoryChip key={cat} category={cat} selected={activeCategory === cat} onClick={() => setActiveCategory(cat)} t={t} isDark={isDark} />
-              ))}
+          {searchQuery.trim() ? (
+            <div className="animate-fade-in space-y-4">
+               <h3 className={`text-sm font-extrabold ${t.textMuted} uppercase tracking-wider mb-2`}>Search Results ({searchResults.length})</h3>
+               {searchResults.length > 0 ? (
+                 searchResults.map(ev => <EventCard key={ev.id} event={ev} variant="compact" t={t} isDark={isDark} onClick={(e) => navigateTo('details', e)} registeredEventIds={registeredEventIds}/>)
+               ) : (
+                 <div className="flex flex-col items-center justify-center py-10 opacity-60">
+                   <Search className="w-10 h-10 mb-3" strokeWidth={1.5} />
+                   <p className="text-sm font-bold">No events found for "{searchQuery}"</p>
+                 </div>
+               )}
             </div>
-
-            {/* Upcoming Events */}
-            <div className="mb-8">
-              <div className="flex justify-between items-end mb-4">
-                <h3 className={`text-lg font-extrabold ${t.text} tracking-tight`}>Upcoming Events</h3>
-                <button className="text-[#1D9BF0] font-bold text-sm hover:underline" onClick={() => navigateTo('browse', { category: activeCategory })}>See All</button>
-              </div>
-              <div className="space-y-4">
-                {displayUpcoming.length > 0 ? (
-                  displayUpcoming.map(ev => (
-                    <EventCard key={ev.id} event={ev} variant="standard" t={t} isDark={isDark} onClick={(e) => navigateTo('details', e)} registeredEventIds={registeredEventIds} />
-                  ))
-                ) : (
-                  <div className={`p-6 rounded-2xl border border-dashed ${t.borderSoft} text-center opacity-60`}>
-                    <p className={`text-xs font-bold ${t.textMuted}`}>No upcoming events in this category.</p>
+          ) : (
+            <>
+              {/* Deadline Alert */}
+              {closingSoonCount > 0 && (
+                <div className={`mb-6 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between`}>
+                  <div className="flex items-center space-x-2.5">
+                    <Clock className="w-5 h-5 text-amber-500 shrink-0" strokeWidth={2.5} />
+                    <p className={`text-[11px] font-extrabold text-amber-600 dark:text-amber-400 leading-tight`}>{closingSoonCount} registration{closingSoonCount > 1 ? 's close' : ' closes'} soon</p>
                   </div>
-                )}
-              </div>
-            </div>
+                  <button onClick={() => navigateTo('browse', { filter: 'Closing Soon' })} className={`px-3 py-1.5 bg-amber-500 text-white rounded-lg text-[10px] font-extrabold active:scale-95 transition-transform shrink-0 shadow-sm`}>View</button>
+                </div>
+              )}
 
-            {/* Recommended For You */}
-            {displayRecommended.length > 0 && (
+              <FeaturedEventsCarousel events={featuredEvents} onEventClick={(e) => navigateTo('details', e)} t={t} isDark={isDark} registeredEventIds={registeredEventIds}/>
+
+              <div className="flex space-x-2 overflow-x-auto hide-scrollbar -mx-5 px-5 mb-8">
+                {categories.map(cat => (
+                  <EventCategoryChip key={cat} category={cat} selected={activeCategory === cat} onClick={() => setActiveCategory(cat)} t={t} isDark={isDark} />
+                ))}
+              </div>
+
+              {/* Upcoming Events */}
               <div className="mb-8">
-                <h3 className={`text-lg font-extrabold ${t.text} tracking-tight mb-4`}>Recommended For You</h3>
-                <div className="flex space-x-4 overflow-x-auto hide-scrollbar -mx-5 px-5 pb-2">
-                  {displayRecommended.map(ev => (
-                    <EventCard key={ev.id} event={ev} variant="recommended" t={t} isDark={isDark} onClick={(e) => navigateTo('details', e)} registeredEventIds={registeredEventIds} />
+                <div className="flex justify-between items-end mb-4">
+                  <h3 className={`text-lg font-extrabold ${t.text} tracking-tight`}>Upcoming Events</h3>
+                  <button className="text-[#1D9BF0] font-bold text-sm hover:underline" onClick={() => navigateTo('browse', { category: activeCategory })}>See All</button>
+                </div>
+                <div className="space-y-4">
+                  {displayUpcoming.length > 0 ? (
+                    displayUpcoming.map(ev => (
+                      <EventCard key={ev.id} event={ev} variant="standard" t={t} isDark={isDark} onClick={(e) => navigateTo('details', e)} registeredEventIds={registeredEventIds} />
+                    ))
+                  ) : (
+                    <div className={`p-6 rounded-2xl border border-dashed ${t.borderSoft} text-center opacity-60`}>
+                      <p className={`text-xs font-bold ${t.textMuted}`}>No upcoming events in this category.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Recommended For You */}
+              {displayRecommended.length > 0 && (
+                <div className="mb-8">
+                  <h3 className={`text-lg font-extrabold ${t.text} tracking-tight mb-4`}>Recommended For You</h3>
+                  <div className="flex space-x-4 overflow-x-auto hide-scrollbar -mx-5 px-5 pb-2">
+                    {displayRecommended.map(ev => (
+                      <EventCard key={ev.id} event={ev} variant="recommended" t={t} isDark={isDark} onClick={(e) => navigateTo('details', e)} registeredEventIds={registeredEventIds} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Popular This Week */}
+              <div className="mb-6">
+                <h3 className={`text-lg font-extrabold ${t.text} tracking-tight mb-4`}>Popular This Week</h3>
+                <div className={`rounded-2xl ${t.card} border ${t.border} overflow-hidden shadow-sm`}>
+                  {popularEvents.slice(0, 3).map((ev, idx) => (
+                    <div key={ev.id} onClick={() => navigateTo('details', ev)} className={`flex items-center p-4 border-b ${t.borderSoft} last:border-0 hover:${isDark ? 'bg-white/5' : 'bg-black/5'} transition-colors cursor-pointer group active:scale-[0.99]`}>
+                       <div className="w-6 font-black text-xl text-[#1D9BF0]/40 mr-3 text-center">{idx + 1}</div>
+                       <div className="flex-1 min-w-0 pr-4">
+                         <h4 className={`text-sm font-extrabold ${t.text} truncate mb-0.5 group-hover:text-[#1D9BF0] transition-colors`}>{ev.title}</h4>
+                         <div className="flex items-center space-x-2">
+                           <span className={`text-[10px] font-bold ${t.textMuted}`}>{new Date(ev.date).toLocaleDateString('en-US', {month:'short', day:'numeric'})}</span>
+                           <span className="w-1 h-1 rounded-full bg-gray-400"></span>
+                           <span className={`text-[10px] font-bold ${t.textMuted} truncate`}>{ev.organizer.name}</span>
+                         </div>
+                       </div>
+                       <div className="flex flex-col items-end shrink-0">
+                         <span className={`text-[10px] font-extrabold ${t.text} mb-1`}>{ev.goingCount} Going</span>
+                         <ChevronRight className={`w-4 h-4 ${t.textMuted}`} strokeWidth={2.5} />
+                       </div>
+                    </div>
                   ))}
                 </div>
               </div>
-            )}
 
-            {/* Popular This Week */}
-            <div className="mb-6">
-              <h3 className={`text-lg font-extrabold ${t.text} tracking-tight mb-4`}>Popular This Week</h3>
-              <div className={`rounded-2xl ${t.card} border ${t.border} overflow-hidden shadow-sm`}>
-                {popularEvents.slice(0, 3).map((ev, idx) => (
-                  <div key={ev.id} onClick={() => navigateTo('details', ev)} className={`flex items-center p-4 border-b ${t.borderSoft} last:border-0 hover:${isDark ? 'bg-white/5' : 'bg-black/5'} transition-colors cursor-pointer group active:scale-[0.99]`}>
-                     <div className="w-6 font-black text-xl text-[#1D9BF0]/40 mr-3 text-center">{idx + 1}</div>
-                     <div className="flex-1 min-w-0 pr-4">
-                       <h4 className={`text-sm font-extrabold ${t.text} truncate mb-0.5 group-hover:text-[#1D9BF0] transition-colors`}>{ev.title}</h4>
-                       <div className="flex items-center space-x-2">
-                         <span className={`text-[10px] font-bold ${t.textMuted}`}>{new Date(ev.date).toLocaleDateString('en-US', {month:'short', day:'numeric'})}</span>
-                         <span className="w-1 h-1 rounded-full bg-gray-400"></span>
-                         <span className={`text-[10px] font-bold ${t.textMuted} truncate`}>{ev.organizer.name}</span>
-                       </div>
-                     </div>
-                     <div className="flex flex-col items-end shrink-0">
-                       <span className={`text-[10px] font-extrabold ${t.text} mb-1`}>{ev.goingCount} Going</span>
-                       <ChevronRight className={`w-4 h-4 ${t.textMuted}`} strokeWidth={2.5} />
-                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Past Events Link */}
-            <button 
-              onClick={() => navigateTo('browse', { filter: 'Past' })}
-              className={`w-full py-4 rounded-2xl ${isDark ? 'bg-white/5' : 'bg-black/5'} border border-transparent hover:${t.borderSoft} text-center transition-all active:scale-[0.98] flex items-center justify-center space-x-2`}
-            >
-              <Archive className={`w-4 h-4 ${t.textMuted}`} strokeWidth={2.5}/>
-              <span className={`text-sm font-extrabold ${t.textMuted}`}>View Past Events</span>
-            </button>
-          </>
-        )}
+              {/* Past Events Link */}
+              <button 
+                onClick={() => navigateTo('browse', { filter: 'Past' })}
+                className={`w-full py-4 rounded-2xl ${isDark ? 'bg-white/5' : 'bg-black/5'} border border-transparent hover:${t.borderSoft} text-center transition-all active:scale-[0.98] flex items-center justify-center space-x-2`}
+              >
+                <Archive className={`w-4 h-4 ${t.textMuted}`} strokeWidth={2.5}/>
+                <span className={`text-sm font-extrabold ${t.textMuted}`}>View Past Events</span>
+              </button>
+            </>
+          )}
+        </div>
       </div>
-    </div>
+
+      {/* FLOATING ACTION BUTTON */}
+      <button 
+        onClick={() => navigateTo('create')}
+        className="absolute bottom-6 right-5 w-14 h-14 bg-[#1D9BF0] text-white rounded-full flex items-center justify-center shadow-lg shadow-[#1D9BF0]/40 active:scale-95 transition-transform z-50"
+      >
+        <Plus className="w-6 h-6" strokeWidth={2.5} />
+      </button>
+    </>
   );
 };
 
@@ -2279,6 +2289,134 @@ const EventDetailsScreen = ({
   );
 };
 
+const CreateEventScreen = ({ onClose, t, isDark }) => {
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [schedules, setSchedules] = useState([{ time: '', title: '' }]);
+
+  const addSchedule = () => setSchedules([...schedules, { time: '', title: '' }]);
+  const removeSchedule = (idx) => setSchedules(schedules.filter((_, i) => i !== idx));
+  const updateSchedule = (idx, field, value) => {
+    const newSchedules = [...schedules];
+    newSchedules[idx][field] = value;
+    setSchedules(newSchedules);
+};
+  return (
+    <div className={`absolute inset-0 z-50 flex flex-col animate-slide-up ${t.bg}`}>
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden transition-opacity duration-500">
+        <div className={`absolute top-[-5%] right-[-10%] w-[80%] h-[60%] bg-[#1D9BF0] rounded-full mix-blend-screen filter blur-[140px] ${isDark ? 'opacity-10' : 'opacity-[0.15]'}`}></div>
+      </div>
+
+      <div className={`px-4 pt-12 pb-3 flex items-center justify-between ${t.glass} border-b sticky top-0 z-20 shadow-sm`}>
+        <button onClick={onClose} className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors`}>
+          <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
+        </button>
+        <h2 className={`text-base font-extrabold ${t.text} leading-tight`}>
+          {isSubmitted ? 'Status' : 'Create Event'}
+        </h2>
+        <div className="w-10 h-10"></div>
+      </div>
+
+      {!isSubmitted ? (
+        <>
+          <div className="flex-1 overflow-y-auto pb-32 relative z-10 px-5 pt-6 space-y-5">
+            <div>
+              <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Event Title</label>
+              <input type="text" placeholder="e.g. Annual Tech Symposium" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Category</label>
+                <select className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} appearance-none focus:outline-none transition-all shadow-sm`}>
+                  <option>Academic</option><option>Workshop</option><option>Competition</option>
+                  <option>Career</option><option>Cultural</option><option>Sports</option>
+                </select>
+              </div>
+              <div>
+                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Capacity</label>
+                <input type="number" placeholder="e.g. 150" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Event Date</label>
+                <input type="date" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm [&::-webkit-calendar-picker-indicator]:opacity-50`} />
+              </div>
+              <div>
+                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Reg. Deadline</label>
+                <input type="date" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm [&::-webkit-calendar-picker-indicator]:opacity-50`} />
+              </div>
+            </div>
+
+            {/* Dynamic Event Schedule Builder */}
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider block`}>Event Schedule</label>
+                <button onClick={addSchedule} className="text-[#1D9BF0] text-[10px] font-extrabold flex items-center bg-[#1D9BF0]/10 px-2 py-1 rounded-md active:scale-95 transition-transform"><Plus className="w-3 h-3 mr-1"/> Add Item</button>
+              </div>
+              <div className="space-y-3">
+                {schedules.map((sch, idx) => (
+                  <div key={idx} className="flex items-center space-x-2">
+                    <input type="time" value={sch.time} onChange={(e) => updateSchedule(idx, 'time', e.target.value)} className={`w-28 ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-2 text-xs font-bold ${t.text} focus:outline-none transition-all shadow-sm [&::-webkit-calendar-picker-indicator]:opacity-50`} />
+                    <input type="text" placeholder="Agenda title" value={sch.title} onChange={(e) => updateSchedule(idx, 'title', e.target.value)} className={`flex-1 ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-3 text-xs font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
+                    {schedules.length > 1 && (
+                      <button onClick={() => removeSchedule(idx)} className="w-10 h-12 flex items-center justify-center text-red-500 bg-red-500/10 rounded-xl shrink-0 active:scale-95 transition-transform"><Trash2 className="w-4 h-4"/></button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Venue</label>
+              <input type="text" placeholder="e.g. AUDI 801" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm mb-3`} />
+              <input type="text" placeholder="Venue Details (e.g. Admin Building, Level 8)" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
+            </div>
+
+            <div>
+              <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Cover Image URL</label>
+              <input type="url" placeholder="https://..." className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
+            </div>
+
+            <div>
+              <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Description</label>
+              <textarea rows="4" placeholder="What is this event about?" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl p-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm resize-none`}></textarea>
+            </div>
+            
+            <div>
+              <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Registration Info</label>
+              <textarea rows="2" placeholder="e.g. Free for CSE students" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl p-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm resize-none`}></textarea>
+            </div>
+          </div>
+
+          <div className={`absolute bottom-0 w-full p-5 pt-4 pb-8 ${t.glass} border-t z-20`}>
+             <button onClick={() => setIsSubmitted(true)} className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/40`}>
+               Publish Event
+             </button>
+          </div>
+        </>
+      ) : (
+        <div className="flex-1 flex flex-col items-center justify-center px-6 relative z-10 animate-fade-in-up pb-20">
+          <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mb-6 border border-emerald-500/20 shadow-xl shadow-emerald-500/10">
+            <CheckCircle2 className="w-12 h-12 text-emerald-500" strokeWidth={2.5} />
+          </div>
+          <h3 className={`text-2xl font-extrabold ${t.text} tracking-tight mb-2 text-center`}>Event Created!</h3>
+          <p className={`text-sm font-bold ${t.textMuted} text-center mb-8 max-w-xs leading-relaxed`}>
+            Your event has been successfully published and is now live for students to register.
+          </p>
+          <button 
+            onClick={onClose} 
+            className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] ${isDark ? 'bg-white/10 text-white' : 'bg-black/5 text-black'} border ${t.borderSoft} shadow-sm`}
+          >
+            Back to Events
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const EventsModuleOverlay = ({
   onClose, t, isDark, authRole, setToastMsg,
   registeredEventIds, setRegisteredEventIds,
@@ -2353,6 +2491,10 @@ const EventsModuleOverlay = ({
           allEvents={globalEventsData}
         />
       )}
+      {/* PASTE THIS NEW BLOCK HERE */}
+      {eventsScreen === 'create' && (
+        <CreateEventScreen onClose={handleBack} t={t} isDark={isDark} />
+      )}
     </div>
   );
 };
@@ -2363,6 +2505,7 @@ export default function App() {
 
   // --- EVENTS MODULE STATE ---
   const [isEventsModuleOpen, setIsEventsModuleOpen] = useState(false);
+  const [selectedGlobalEvent, setSelectedGlobalEvent] = useState(null);
   const [registeredEventIds, setRegisteredEventIds] = useState(new Set(['event-career-fair']));
   const [goingEventIds, setGoingEventIds] = useState(new Set());
   const [interestedEventIds, setInterestedEventIds] = useState(new Set(['event-ai-talk']));
@@ -3006,13 +3149,12 @@ export default function App() {
 
         {/* Redesigned Quick Actions: Custom Layered Icons + Label */}
         <div className="w-full pt-0 pb-2 relative z-10">
-          <div className="flex flex-row items-start justify-between w-full px-1">
+          <div className="flex flex-row items-start justify-between w-full px-4">
             {[
               { icon: CustomAlumniIcon, label: 'Network', action: () => setActiveTab('directory') },
               { icon: CustomJobsIcon, label: 'Jobs', action: () => setActiveTab('jobs') },
               { icon: CustomEventsIcon, label: 'Events', action: () => setIsEventsModuleOpen(true) },
               { icon: CustomEmergencyIcon, label: 'Emergency', action: () => setActiveTab('emergency') },
-              { icon: CustomMessagesIcon, label: 'Message', action: () => setActiveTab('messages') },
             ].map((action, idx) => (
               <div 
                 key={idx} 
@@ -3020,9 +3162,9 @@ export default function App() {
                 className="flex-1 flex flex-col items-center justify-center min-h-[72px] cursor-pointer group transition-all duration-200 ease-out active:scale-90"
               >
                 <action.icon 
-                  className={`w-[32px] h-[32px] mb-2 transition-colors duration-200 ${action.colorClass || (isDark ? 'text-white' : 'text-[#1C1C1E]')}`} 
+                  className={`w-[36px] h-[36px] mb-2 transition-colors duration-200 ${action.colorClass || (isDark ? 'text-white' : 'text-[#1C1C1E]')}`} 
                 />
-                <span className={`text-[11px] font-bold leading-tight text-center ${t.textMuted} group-hover:${isDark ? 'text-white' : 'text-black'} transition-colors duration-200`}>
+                <span className={`text-[12px] font-bold leading-tight text-center ${t.textMuted} group-hover:${isDark ? 'text-white' : 'text-black'} transition-colors duration-200`}>
                   {action.label}
                 </span>
               </div>
@@ -3083,6 +3225,20 @@ export default function App() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* --- MOVED FEATURED EVENTS CAROUSEL --- */}
+        <div className="mt-6 mb-4">
+          <div className="flex justify-between items-end mb-4 relative z-10 px-1">
+            <h3 className={`text-lg font-extrabold ${t.text} tracking-tight`}>Featured Events</h3>
+            <button className="text-[#1D9BF0] font-bold text-sm hover:underline" onClick={() => setIsEventsModuleOpen(true)}>See All</button>
+          </div>
+          <FeaturedEventsCarousel 
+            events={globalEventsData.filter(e => e.featured)} 
+            onEventClick={(e) => setSelectedGlobalEvent(e)} 
+            t={t} isDark={isDark} 
+            registeredEventIds={registeredEventIds} 
+          />
         </div>
 
         <div>
@@ -3150,6 +3306,7 @@ export default function App() {
             );
           })}
         </div>
+        
 
         <div 
           onClick={() => setActiveTab('emergency')}
@@ -5006,7 +5163,21 @@ export default function App() {
               />
             )}
             {/* --- END MOMENTS OVERLAYS --- */}
-            
+            {/* --- GLOBAL EVENT DETAILS OVERLAY --- */}
+            {selectedGlobalEvent && (
+              <EventDetailsScreen 
+                event={selectedGlobalEvent} 
+                navigateTo={() => {}} 
+                onBack={() => setSelectedGlobalEvent(null)} 
+                t={t} isDark={isDark} setToastMsg={setToastMsg}
+                registeredEventIds={registeredEventIds} setRegisteredEventIds={setRegisteredEventIds}
+                goingEventIds={goingEventIds} setGoingEventIds={setGoingEventIds}
+                interestedEventIds={interestedEventIds} setInterestedEventIds={setInterestedEventIds}
+                reminderEventIds={reminderEventIds} setReminderEventIds={setReminderEventIds}
+                followedOrganizerIds={followedOrganizerIds} setFollowedOrganizerIds={setFollowedOrganizerIds}
+                allEvents={globalEventsData}
+              />
+            )}
             {selectedJob && (
               <JobDetailView job={selectedJob} onBack={() => setSelectedJob(null)} />
             )}
