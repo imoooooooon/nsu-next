@@ -194,10 +194,11 @@ export default function DepartmentHubPage() {
 
           {/* Directory — the three tabs and the scrollable list of cards */}
           <div>
-            {/* The tab row is the spine of this page. On a 3,000-student
-                department it would scroll away immediately, so it sticks
-                under the TopBar and the cards pass beneath it. */}
-            <div className="sticky top-0 lg:top-20 z-20 -mx-5 px-5 lg:mx-0 lg:px-0 pt-2 pb-3">
+            {/* The tab row scrolls with the list. It was pinned so the
+                cohorts stayed reachable on a long roster, but a control strip
+                that detaches and hangs over the cards reads as a glitch —
+                and the cards it covered were the thing you came to read. */}
+            <div className="pb-4">
               <div className={`rounded-2xl ${t.card} border ${t.border} p-4 space-y-3`}>
                 <SegmentedControl
                   options={TABS.map(x => ({ id: x.id, label: x.label }))}
@@ -214,7 +215,7 @@ export default function DepartmentHubPage() {
               </div>
             </div>
 
-            <div className="flex items-center text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider mt-1 mb-4">
+            <div className="flex items-center text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider mb-4">
               Showing {people.length} of {formatCount(totalInCohort)} {activeTab.label.toLowerCase()}
             </div>
 

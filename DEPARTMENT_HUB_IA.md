@@ -129,9 +129,14 @@ detail-route rule (`lg:grid-cols-3`, content + sticky rail).
 
 **UX decisions worth naming**
 
-1. **Directory tabs are the page's spine, so they stick.** On a 3 000-student
-   department the tab row scrolls away instantly; it gets `sticky` under the
-   header so switching cohorts never requires scrolling back up.
+1. **Directory tabs scroll with the list.** They were pinned at first — on a
+   3 000-student department the tab row scrolls away instantly, so keeping the
+   cohorts reachable looked like the obvious win. In use it wasn't: a control
+   strip that detaches mid-scroll and then hangs over the roster reads as a
+   glitch, and what it covered was exactly the cards you came to read. The row
+   now sits in the flow as a normal block. If reaching the cohorts from deep in
+   a long roster becomes a real complaint, the fix is a scroll-to-top control,
+   not a floating strip.
 2. **The member count is a fact, not decoration.** The stat row doubles as the
    tab count, so "Students 3,120" and the Students tab never disagree.
 3. **Help Desk is the high-contrast primary action** (brief §2 of the flows) —

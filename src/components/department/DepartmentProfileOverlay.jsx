@@ -172,9 +172,11 @@ export const DepartmentProfileOverlay = ({
         </div>
 
         {/* -------------------------------------------- directory tabs + list */}
-        {/* The tab row is the spine of this screen. On a 3,000-student
-            department it would scroll away immediately, so it sticks. */}
-        <div className={`sticky top-0 z-20 px-5 pt-4 pb-3 ${t.glass} border-b mt-4`}>
+        {/* The tab row scrolls with the list. It was pinned so the cohorts
+            stayed reachable on a long roster, but a control strip that
+            detaches and hangs over the cards reads as a glitch — and the
+            cards it covered were the thing you came to read. */}
+        <div className={`mx-5 mt-4 p-4 rounded-2xl ${t.card} border ${t.border}`}>
           <div className={`flex p-1 rounded-xl ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft} mb-3`}>
             {TABS.map(seg => (
               <button
