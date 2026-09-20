@@ -1,3 +1,23 @@
+# NSUNEXT
+
+Two apps live in this repo, deployed together at https://nsu-next.vercel.app:
+
+- **Mobile prototype** (repo root, unchanged): the phone-frame design build that
+  clients and testers review on mobile — served at `/`.
+- **Web app** ([`webapp/`](webapp/)): the desktop web version with proper
+  routing and a reusable component system — served at `/webapp`. See
+  [`webapp/README.md`](webapp/README.md) and
+  [`webapp/DESIGN_SYSTEM.md`](webapp/DESIGN_SYSTEM.md).
+
+The root `vercel.json` builds both apps into a single static deploy.
+
+**Department Hub** (Entity Profiles — department directory, delegated admin
+access, broadcast channel, help desk): the information architecture that governs
+it on both surfaces is [`DEPARTMENT_HUB_IA.md`](DEPARTMENT_HUB_IA.md). Read it
+before changing those screens.
+
+---
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

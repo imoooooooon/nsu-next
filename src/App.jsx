@@ -8,7 +8,7 @@ import {
   ShieldCheck, Share, BookmarkIcon, GraduationCap, DollarSign, 
   SlidersHorizontal, Edit, MoreVertical, CheckCheck, Smile, Copy, QrCode, 
   Wifi, Eye, Lightbulb, Shield, Globe, Smartphone, CreditCard, ChevronDown, 
-  Compass, Upload, X, Monitor, Landmark, Volume2, Archive,
+  Compass, Upload, X, Monitor, Landmark, Volume2, Archive, LifeBuoy,
   
   // Moments specific
   Camera, Image as ImageIcon, VolumeX, Pin, Trash2, MailOpen, Reply, 
@@ -28,6 +28,16 @@ import {
   SeekingFeed, SeekingFiltersSheet, TalentDetailsOverlay,
   CreateSeekingOverlay, MySeekingPostsOverlay
 } from './components/seeking';
+
+// --- DEPARTMENT HUB MODULE (Entity Profiles) ---
+import {
+  globalDepartments, findDepartmentById,
+  departmentHelpDeskThreads, departmentBroadcasts,
+  VIEWER_DEPARTMENT_ID, getDepartmentAccess, formatCount,
+  DepartmentCard, EntityAvatar,
+  DepartmentProfileOverlay, DepartmentChannelOverlay,
+  DepartmentManageOverlay, DepartmentBloodRequestSheet,
+} from './components/department';
 
 // --- CUSTOM LAYERED ICONS ---
 const CustomBloodIcon = ({ className }) => (
@@ -3219,6 +3229,7 @@ export default function App() {
   ]);
 
   const [profileSegment, setProfileSegment] = useState('Account');
+  const [chatSegment, setChatSegment] = useState('All Chats');
   const [directorySegment, setDirectorySegment] = useState('Alumni');
   const [jobSegment, setJobSegment] = useState('All Jobs');
   const [jobFilter, setJobFilter] = useState(null);
@@ -3241,6 +3252,19 @@ export default function App() {
   const [emergencyViewMode, setEmergencyViewMode] = useState('list');
   const [isDonorAvailable, setIsDonorAvailable] = useState(true);
   const [directoryFilterBg, setDirectoryFilterBg] = useState(null); 
+
+  // --- DEPARTMENT HUB STATE (Entity Profiles) ---
+  const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [manageDepartment, setManageDepartment] = useState(null);
+  const [departmentChannel, setDepartmentChannel] = useState(null); // { dept, kind, thread }
+  const [bloodSheetDept, setBloodSheetDept] = useState(null);
+  const [postJobAsDept, setPostJobAsDept] = useState(null);
+  const [departmentAdminIds, setDepartmentAdminIds] = useState(() =>
+    Object.fromEntries(globalDepartments.map(d => [d.id, [...d.adminIds]]))
+  );
+  const [sentBroadcasts, setSentBroadcasts] = useState({});
+  const [departmentAbout, setDepartmentAbout] = useState({});
+  const [mutedChannelIds, setMutedChannelIds] = useState(new Set());
 
   useEffect(() => {
     if (currentView === 'splash') {
@@ -3285,14 +3309,18 @@ export default function App() {
     { id: 2, name: 'Tahmid Hasan', role: 'Product Lead', company: 'Pathao', dept: 'ECE', skills: ['Product Mgt', 'Growth'], batch: 'Batch 18', location: 'Dhaka, BD', followers: '8.2k', blood: 'B+', verified: true, about: "Building products that move millions. Former engineer turned product manager.", experience: [{ title: 'Product Lead', company: 'Pathao', duration: '2021 - Present' }] },
     { id: 3, name: 'Ayman Sadiq', role: 'CEO & Founder', company: '10 Minute School', dept: 'BBA', skills: ['EdTech', 'Leadership', 'Marketing'], batch: 'Batch 15', location: 'Dhaka, BD', followers: '1.2M', blood: 'A+', verified: true, about: "Making education accessible for everyone in Bangladesh.", experience: [{ title: 'CEO', company: '10 Minute School', duration: '2015 - Present' }] },
     { id: 4, name: 'Fahim Shahriar', role: 'Senior Product Designer', company: 'Optimizely', dept: 'Architecture', skills: ['UI/UX', 'Figma', 'User Research'], batch: 'Batch 14', location: 'Dhaka, BD', followers: '5.6k', blood: 'B-', verified: true, about: "Crafting intuitive digital experiences. Passionate about solving complex user problems.", experience: [{ title: 'Senior Designer', company: 'Optimizely', duration: '2021 - Present' }, { title: 'UX Designer', company: 'Pathao', duration: '2018 - 2021' }] },
-    { id: 5, name: 'Sadia Islam', role: 'Data Scientist', company: 'Microsoft', dept: 'CSE', skills: ['Python', 'Machine Learning', 'SQL'], batch: 'Batch 17', location: 'Seattle, WA', followers: '8.9k', blood: 'O+', verified: true, about: "Data enthusiast. Working on scalable machine learning models to improve cloud infrastructure.", experience: [{ title: 'Data Scientist', company: 'Microsoft', duration: '2020 - Present' }] }
+    { id: 5, name: 'Sadia Islam', role: 'Data Scientist', company: 'Microsoft', dept: 'CSE', skills: ['Python', 'Machine Learning', 'SQL'], batch: 'Batch 17', location: 'Seattle, WA', followers: '8.9k', blood: 'O+', verified: true, about: "Data enthusiast. Working on scalable machine learning models to improve cloud infrastructure.", experience: [{ title: 'Data Scientist', company: 'Microsoft', duration: '2020 - Present' }] },
+    { id: 6, name: 'Arif Chowdhury', role: 'Engineering Manager', company: 'Shopify', dept: 'CSE', skills: ['Distributed Systems', 'Go', 'Leadership'], batch: 'Batch 16', location: 'Toronto, CA', followers: '9.7k', blood: 'A-', verified: true, about: "Leading a platform infrastructure team. Happy to mentor NSU juniors starting out in systems careers.", experience: [{ title: 'Engineering Manager', company: 'Shopify', duration: '2023 - Present' }, { title: 'Senior Engineer', company: 'Shopify', duration: '2019 - 2023' }] }
   ];
 
   const globalFacultyData = [
     { id: 101, name: 'Dr. Aminul Islam', role: 'Professor', company: 'North South University', dept: 'CSE', skills: ['Machine Learning', 'AI', 'Algorithms'], batch: 'Faculty', location: 'Dhaka, BD', followers: '2.1k', blood: 'A+', verified: true, about: "Ph.D. from MIT. 15+ years of teaching and research experience.", experience: [{ title: 'Professor', company: 'NSU', duration: '2010 - Present' }] },
     { id: 102, name: 'Dr. Nova Ahmed', role: 'Associate Professor', company: 'North South University', dept: 'ECE', skills: ['HCI', 'IoT', 'Embedded Systems'], batch: 'Faculty', location: 'Dhaka, BD', followers: '1.8k', blood: 'O+', verified: true, about: "Passionate about building technologies for emerging markets.", experience: [{ title: 'Assoc. Professor', company: 'NSU', duration: '2015 - Present' }] },
     { id: 103, name: 'Dr. Shazzad Hosain', role: 'Professor', company: 'North South University', dept: 'ECE', skills: ['VLSI', 'Nanotechnology', 'Circuit Design'], batch: 'Faculty', location: 'Dhaka, BD', followers: '1.5k', blood: 'AB+', verified: true, about: "Senior faculty member focusing on advanced VLSI design and quantum computing.", experience: [{ title: 'Professor', company: 'NSU', duration: '2008 - Present' }] },
-    { id: 104, name: 'Ms. Nabila Rahman', role: 'Lecturer', company: 'North South University', dept: 'BBA', skills: ['Corporate Finance', 'Investment', 'Accounting'], batch: 'Faculty', location: 'Dhaka, BD', followers: '980', blood: 'O-', verified: true, about: "Passionate about teaching financial literacy and corporate investment strategies.", experience: [{ title: 'Lecturer', company: 'NSU', duration: '2021 - Present' }] }
+    { id: 104, name: 'Ms. Nabila Rahman', role: 'Lecturer', company: 'North South University', dept: 'BBA', skills: ['Corporate Finance', 'Investment', 'Accounting'], batch: 'Faculty', location: 'Dhaka, BD', followers: '980', blood: 'O-', verified: true, about: "Passionate about teaching financial literacy and corporate investment strategies.", experience: [{ title: 'Lecturer', company: 'NSU', duration: '2021 - Present' }] },
+    { id: 105, name: 'Dr. Tanzima Hashem', role: 'Associate Professor', company: 'North South University', dept: 'CSE', skills: ['Databases', 'Spatial Computing', 'Privacy'], batch: 'Faculty', location: 'Dhaka, BD', followers: '1.3k', blood: 'B+', verified: true, about: "Researching privacy-preserving location services and spatial query processing.", experience: [{ title: 'Assoc. Professor', company: 'NSU', duration: '2016 - Present' }] },
+    { id: 106, name: 'Mr. Rashedul Karim', role: 'Senior Lecturer', company: 'North South University', dept: 'CSE', skills: ['Software Engineering', 'Web Systems', 'DevOps'], batch: 'Faculty', location: 'Dhaka, BD', followers: '870', blood: 'O+', verified: true, about: "Teaching software engineering and web systems. Coordinator for the CSE industry internship programme.", experience: [{ title: 'Senior Lecturer', company: 'NSU', duration: '2018 - Present' }] },
+    { id: 107, name: 'Dr. Farhana Sarker', role: 'Assistant Professor', company: 'North South University', dept: 'CSE', skills: ['Health Informatics', 'Data Mining', 'R'], batch: 'Faculty', location: 'Dhaka, BD', followers: '1.1k', blood: 'A+', verified: true, about: "Working at the intersection of health informatics and applied data mining.", experience: [{ title: 'Asst. Professor', company: 'NSU', duration: '2019 - Present' }] }
   ];
 
   const globalStudentData = [
@@ -3300,7 +3328,9 @@ export default function App() {
     { id: 202, name: 'Tanisha Chowdhury', role: 'Student', company: 'North South University', dept: 'Architecture', skills: ['AutoCAD', '3D Modeling', 'Design'], batch: 'Batch 222', location: 'Dhaka, BD', followers: '512', blood: 'AB+', verified: true, about: "Architecture enthusiast, currently working on a thesis regarding sustainable housing.", experience: [{ title: 'Junior Architect', company: 'Design Lab', duration: '2023 - Present' }] },
     { id: 203, name: 'Abrar Fahim', role: 'Student', company: 'North South University', dept: 'CSE', skills: ['C++', 'React', 'Algorithms'], batch: 'Batch 232', location: 'Dhaka, BD', followers: '120', blood: 'A+', verified: false, about: "Sophomore studying CS. Active competitive programmer and open source contributor.", experience: [{ title: 'Executive Member', company: 'NSU ACM SC', duration: '2024 - Present' }] },
     { id: 204, name: 'Mehzabin Oishee', role: 'Student', company: 'North South University', dept: 'ECE', skills: ['IoT', 'Arduino', 'C'], batch: 'Batch 221', location: 'Dhaka, BD', followers: '250', blood: 'O+', verified: true, about: "Robotics enthusiast. Building smart home solutions for my final year project.", experience: [{ title: 'Project Lead', company: 'NSU Robotics Club', duration: '2023 - Present' }] },
-    { id: 205, name: 'Zayed Khan', role: 'Student', company: 'North South University', dept: 'BBA', skills: ['Marketing', 'Communication', 'Sales'], batch: 'Batch 241', location: 'Dhaka, BD', followers: '85', blood: 'B-', verified: false, about: "Freshman majoring in BBA. Looking to explore the world of digital marketing.", experience: [{ title: 'Volunteer', company: 'NSU YES', duration: '2025 - Present' }] }
+    { id: 205, name: 'Zayed Khan', role: 'Student', company: 'North South University', dept: 'BBA', skills: ['Marketing', 'Communication', 'Sales'], batch: 'Batch 241', location: 'Dhaka, BD', followers: '85', blood: 'B-', verified: false, about: "Freshman majoring in BBA. Looking to explore the world of digital marketing.", experience: [{ title: 'Volunteer', company: 'NSU YES', duration: '2025 - Present' }] },
+    { id: 206, name: 'Nafis Anwar', role: 'Student', company: 'North South University', dept: 'CSE', skills: ['Java', 'Spring Boot', 'SQL'], batch: 'Batch 233', location: 'Dhaka, BD', followers: '96', blood: 'O+', verified: true, about: "Backend-leaning CS student. Interested in distributed systems and clean architecture.", experience: [{ title: 'Backend Intern', company: 'Brain Station 23', duration: 'Summer 2025' }] },
+    { id: 207, name: 'Samira Haque', role: 'Student', company: 'North South University', dept: 'CSE', skills: ['Flutter', 'UI Engineering', 'Firebase'], batch: 'Batch 222', location: 'Dhaka, BD', followers: '318', blood: 'AB+', verified: true, about: "Final year CS student building cross-platform apps. TA for CSE 115 lab sections.", experience: [{ title: 'Teaching Assistant', company: 'NSU CSE', duration: '2025 - Present' }] }
   ];
 
   const globalJobsData = [
@@ -3425,6 +3455,53 @@ export default function App() {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); 
       else next.add(id);
+      return next;
+    });
+  };
+
+  // --- DEPARTMENT HUB HANDLERS ---
+  const viewerDepartment = findDepartmentById(VIEWER_DEPARTMENT_ID);
+  const viewerDeptAccess = getDepartmentAccess(viewerDepartment, authRole);
+
+  const handleOpenDepartment = (dept) => setSelectedDepartment(dept);
+
+  const handleOpenDepartmentChannel = (dept, kind, thread = null) => {
+    setDepartmentChannel({ dept, kind, thread });
+  };
+
+  const handleGrantDepartmentAdmin = (deptId, person) => {
+    setDepartmentAdminIds(prev => {
+      const current = prev[deptId] || [];
+      if (current.includes(person.id)) return prev;
+      return { ...prev, [deptId]: [...current, person.id] };
+    });
+    showToast(`${person.name} now has Admin Access`);
+  };
+
+  const handleRevokeDepartmentAdmin = (deptId, person) => {
+    setDepartmentAdminIds(prev => ({
+      ...prev,
+      [deptId]: (prev[deptId] || []).filter(id => id !== person.id),
+    }));
+    showToast(`Admin Access revoked for ${person.name}`);
+  };
+
+  const handleSendDepartmentBroadcast = (deptId, message) => {
+    setSentBroadcasts(prev => ({ ...prev, [deptId]: [...(prev[deptId] || []), message] }));
+  };
+
+  const handleSaveDepartmentAbout = (deptId, about) => {
+    setDepartmentAbout(prev => ({ ...prev, [deptId]: about }));
+    showToast('Department description updated');
+  };
+
+  const handleToggleChannelMute = (dept) => {
+    const channelId = dept.broadcastChannelId;
+    setMutedChannelIds(prev => {
+      const next = new Set(prev);
+      if (next.has(channelId)) next.delete(channelId);
+      else next.add(channelId);
+      showToast(next.has(channelId) ? 'Channel muted' : 'Channel unmuted');
       return next;
     });
   };
@@ -4389,9 +4466,14 @@ export default function App() {
   };
 
   const DirectoryTab = () => {
-    const availableTabs = ['Alumni', 'Student', 'Faculty'];
+    /* One directory, four lenses. Departments are Entity Profiles — they live
+       in the network, so they are a segment here rather than a sixth item
+       competing for a slot in a five-item capsule. */
+    const availableTabs = ['Alumni', 'Student', 'Faculty', 'Departments'];
+    const isDepartments = directorySegment === 'Departments';
 
-    let displayData = directorySegment === 'Alumni' ? globalAlumniData : 
+    let displayData = isDepartments ? globalDepartments :
+                      directorySegment === 'Alumni' ? globalAlumniData : 
                       directorySegment === 'Faculty' ? globalFacultyData : 
                       globalStudentData;
 
@@ -4410,7 +4492,7 @@ export default function App() {
               <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4`} strokeWidth={2.5} />
               <input 
                 type="text" 
-                placeholder="Search name, company..." 
+                placeholder={isDepartments ? "Search department, school..." : "Search name, company..."}
                 className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-lg h-11 pl-10 pr-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm placeholder:font-bold`}
               />
             </div>
@@ -4424,9 +4506,9 @@ export default function App() {
               <button 
                 key={seg} 
                 onClick={() => setDirectorySegment(seg)}
-                className={`flex-1 py-2 rounded-lg text-xs font-extrabold transition-all ${directorySegment === seg ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'} border` : `text-gray-500 hover:${t.text}`}`}
+                className={`flex-1 py-2 rounded-lg text-[11px] font-extrabold transition-all truncate ${directorySegment === seg ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'} border` : `text-gray-500 hover:${t.text}`}`}
               >
-                {seg}
+                {seg === 'Departments' ? 'Depts' : seg}
               </button>
             ))}
           </div>
@@ -4437,7 +4519,19 @@ export default function App() {
         </div>
 
         <div className="flex-1 overflow-y-auto pb-36 px-5 pt-6 relative z-10 space-y-5">
-          {displayData.map((person) => (
+          {isDepartments && displayData.map((dept) => (
+            <DepartmentCard
+              key={dept.id}
+              dept={dept}
+              authRole={authRole}
+              t={t}
+              isDark={isDark}
+              onOpen={handleOpenDepartment}
+              onMessage={(d) => handleOpenDepartmentChannel(d, 'helpdesk')}
+            />
+          ))}
+
+          {!isDepartments && displayData.map((person) => (
             <div 
               key={person.id} 
               className={`rounded-2xl p-5 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 cursor-pointer shadow-2xl shadow-black/5 dark:shadow-black/40 border ${t.border}`} 
@@ -4515,7 +4609,6 @@ export default function App() {
   };
 
   const MessagesTab = () => {
-    const [chatSegment, setChatSegment] = useState('All Chats');
     const [chatFilter, setChatFilter] = useState(null);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [contextMenuChat, setContextMenuChat] = useState(null);
@@ -4545,10 +4638,62 @@ export default function App() {
         e.preventDefault();
         return;
       }
+      // Department channels are asymmetric (broadcast down, help desk up), so
+      // they own their own overlay rather than bending the symmetric DM thread.
+      if (chat.dept) {
+        handleOpenDepartmentChannel(chat.dept, chat.kind, chat.kind === 'helpdesk-thread' ? chat : null);
+        return;
+      }
       // Opening a conversation from the list clears any Seeking hand-off context.
       setChatContext(null);
       setActiveOverlay('chat');
     };
+
+    /* Auto-enrolment, expressed as data: the department's two channels are
+       simply present in the inbox from account creation — no Join button,
+       and the broadcast row is pinned so a university notice never sorts
+       below a classmate's "lol". */
+    const deptChannels = viewerDepartment ? (() => {
+      const history = departmentBroadcasts[viewerDepartment.id] || [];
+      const latest = history[history.length - 1];
+      return [
+        {
+          id: viewerDepartment.broadcastChannelId,
+          kind: 'broadcast',
+          dept: viewerDepartment,
+          name: `${viewerDepartment.code} Department`,
+          subtitle: `Official broadcast · ${formatCount(viewerDepartment.memberCount)} members`,
+          msg: latest ? latest.title : 'No notices yet.',
+          time: latest ? latest.time : '',
+          unread: !!latest && latest.emailed,
+          isRequest: false,
+          online: false,
+          pinned: true,
+        },
+        {
+          id: viewerDepartment.helpDeskId,
+          kind: 'helpdesk',
+          dept: viewerDepartment,
+          name: `${viewerDepartment.code} Help Desk`,
+          subtitle: 'Ask the department directly',
+          msg: 'Send a question and a faculty member will reply here.',
+          time: '',
+          unread: false,
+          isRequest: false,
+          online: true,
+          pinned: true,
+        },
+      ];
+    })() : [];
+
+    /* The admin's Help Desk inbox — student questions kept out of the
+       admin's personal DMs. */
+    const helpDeskThreads = viewerDeptAccess.isAdmin && viewerDepartment
+      ? (departmentHelpDeskThreads[viewerDepartment.id] || []).map(x => ({
+          ...x, kind: 'helpdesk-thread', dept: viewerDepartment, isRequest: false,
+        }))
+      : [];
+    const waitingCount = helpDeskThreads.filter(x => x.unread).length;
 
     const conversations = [
       { id: 1, name: 'Sarah Rahman', role: 'Alumni', msg: 'The project files are attached, let\'s sync...', time: '2m ago', unread: true, isRequest: false, online: true },
@@ -4571,11 +4716,20 @@ export default function App() {
       }
     };
 
-    let displayedChats = conversations.filter(c => chatSegment === 'All Chats' ? !c.isRequest : c.isRequest);
-    
-    if (chatFilter) {
+    let displayedChats;
+    if (chatSegment === 'Help Desk') {
+      displayedChats = helpDeskThreads;
+    } else if (chatSegment === 'Requests') {
+      displayedChats = conversations.filter(c => c.isRequest);
+    } else {
+      displayedChats = [...deptChannels, ...conversations.filter(c => !c.isRequest)];
+    }
+
+    if (chatFilter && chatSegment !== 'Help Desk') {
       if (chatFilter === 'Unread') {
         displayedChats = displayedChats.filter(c => c.unread);
+      } else if (chatFilter === 'Departments') {
+        displayedChats = displayedChats.filter(c => c.dept);
       } else {
         displayedChats = displayedChats.filter(c => c.role === chatFilter);
       }
@@ -4607,7 +4761,7 @@ export default function App() {
                   <div className="fixed inset-0 z-40" onClick={() => setIsFilterOpen(false)}></div>
                   <div className={`absolute top-11 right-11 w-44 rounded-xl ${isDark ? 'bg-[#1A1A1A] border-white/10' : 'bg-white border-gray-200'} shadow-2xl z-50 p-2 animate-fade-in`}>
                      <h4 className={`text-[10px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 px-2 pt-1`}>Filter By</h4>
-                     {['Unread', 'Student', 'Alumni', 'Faculty'].map(f => (
+                     {['Unread', 'Departments', 'Student', 'Alumni', 'Faculty'].map(f => (
                        <button 
                          key={f} 
                          onClick={() => { setChatFilter(f); setIsFilterOpen(false); }}
@@ -4647,26 +4801,35 @@ export default function App() {
           </div>
 
           <div className={`flex p-1 rounded-xl ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft}`}>
-            {['All Chats', 'Requests'].map(seg => (
+            {(viewerDeptAccess.isAdmin ? ['All Chats', 'Requests', 'Help Desk'] : ['All Chats', 'Requests']).map(seg => {
+              const badge = seg === 'Requests' ? 1 : seg === 'Help Desk' ? waitingCount : 0;
+              return (
               <button 
                 key={seg} 
                 onClick={() => setChatSegment(seg)}
-                className={`flex-1 py-2 rounded-lg text-xs font-extrabold transition-all flex items-center justify-center ${chatSegment === seg ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'} border` : `text-gray-500 hover:${t.text}`}`}
+                className={`flex-1 py-2 rounded-lg text-[11px] font-extrabold transition-all flex items-center justify-center truncate ${chatSegment === seg ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'} border` : `text-gray-500 hover:${t.text}`}`}
               >
                 {seg}
-                {seg === 'Requests' && (
+                {badge > 0 && (
                   <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-black ${chatSegment === seg ? 'bg-[#1D9BF0] text-white' : 'bg-[#1D9BF0]/20 text-[#1D9BF0]'}`}>
-                    1
+                    {badge}
                   </span>
                 )}
               </button>
-            ))}
+              );
+            })}
           </div>
         </div>
 
         <div className="flex-1 overflow-y-auto pb-36 px-4 pt-3 relative z-10">
+          {chatSegment === 'Help Desk' && displayedChats.length > 0 && (
+            <p className={`px-3 pb-2 text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted}`}>
+              Questions sent to {viewerDepartment?.code} — private, 1-on-1
+            </p>
+          )}
           {displayedChats.length > 0 ? displayedChats.map((chat) => {
             const { icon: RoleIcon, colorClass, bgClass } = getRoleStyles(chat.role);
+            const isEntityRow = chat.kind === 'broadcast' || chat.kind === 'helpdesk';
 
             return (
               <div 
@@ -4681,26 +4844,44 @@ export default function App() {
                 onContextMenu={(e) => handleContextMenu(e, chat)}
                 onClick={(e) => handleClick(e, chat)}
               >
+                {/* Entities are rounded squares, people are circles — one
+                    glance separates an official notice from a classmate. */}
                 <div className="relative shrink-0">
-                  <div className={`w-14 h-14 rounded-full ${bgClass} border ${isDark ? 'border-white/5' : 'border-black/5'} flex items-center justify-center shadow-sm`}>
-                    <User className={`w-6 h-6 ${colorClass}`} strokeWidth={1.5} />
-                  </div>
-                  {chat.online && (
-                    <div className={`absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 ${isDark ? 'border-[#000000]' : 'border-[#F2F5F8] group-hover:border-[#E5E8EB]'} rounded-full transition-colors`}></div>
+                  {isEntityRow ? (
+                    <EntityAvatar dept={chat.dept} size="lg" isDark={isDark} />
+                  ) : (
+                    <>
+                      <div className={`w-14 h-14 rounded-full ${bgClass} border ${isDark ? 'border-white/5' : 'border-black/5'} flex items-center justify-center shadow-sm`}>
+                        <User className={`w-6 h-6 ${colorClass}`} strokeWidth={1.5} />
+                      </div>
+                      {chat.online && (
+                        <div className={`absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 ${isDark ? 'border-[#000000]' : 'border-[#F2F5F8] group-hover:border-[#E5E8EB]'} rounded-full transition-colors`}></div>
+                      )}
+                    </>
                   )}
                 </div>
                 
                 <div className="flex-1 min-w-0 ml-4">
                   <div className="flex justify-between items-center mb-0.5">
                     <div className="flex items-center space-x-1.5 truncate pr-2">
-                      <h4 className={`text-sm ${chat.unread ? `font-extrabold ${t.text}` : `font-bold ${t.text}`}`}>{chat.name}</h4>
-                      <RoleIcon className={`w-3.5 h-3.5 ${colorClass}`} strokeWidth={2.5} />
+                      <h4 className={`text-sm truncate ${chat.unread ? `font-extrabold ${t.text}` : `font-bold ${t.text}`}`}>{chat.name}</h4>
+                      {isEntityRow ? (
+                        chat.kind === 'broadcast'
+                          ? <Megaphone className="w-3.5 h-3.5 text-[#1D9BF0] shrink-0" strokeWidth={2.5} />
+                          : <LifeBuoy className="w-3.5 h-3.5 text-[#1D9BF0] shrink-0" strokeWidth={2.5} />
+                      ) : (
+                        <RoleIcon className={`w-3.5 h-3.5 ${colorClass} shrink-0`} strokeWidth={2.5} />
+                      )}
+                      {chat.pinned && <Pin className={`w-3 h-3 ${t.textMuted} shrink-0`} strokeWidth={2.5} />}
                     </div>
                     <span className={`${chat.unread ? 'text-[#1D9BF0] font-extrabold' : t.textMuted + ' font-bold'} text-[10px] shrink-0`}>{chat.time}</span>
                   </div>
                   <p className={`text-xs truncate ${chat.unread ? `font-bold ${t.text}` : `${t.textMuted} font-medium`}`}>
                     {chat.msg}
                   </p>
+                  {isEntityRow && (
+                    <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mt-1 truncate`}>{chat.subtitle}</p>
+                  )}
                 </div>
               </div>
             );
@@ -4718,26 +4899,39 @@ export default function App() {
             <div className={`absolute bottom-0 left-0 w-full p-4 pt-3 rounded-t-3xl ${isDark ? 'bg-[#1E1E1E]' : 'bg-white'} shadow-2xl z-50 animate-slide-up border-t ${t.borderSoft}`}>
               <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-5"></div>
               <div className="px-2 mb-4 flex items-center space-x-3">
-                <div className={`w-10 h-10 rounded-full ${isDark ? 'bg-white/10' : 'bg-black/5'} flex items-center justify-center`}>
-                   <User className={`w-5 h-5 ${t.text}`} strokeWidth={1.5} />
-                </div>
+                {contextMenuChat.dept ? (
+                  <EntityAvatar dept={contextMenuChat.dept} size="sm" isDark={isDark} />
+                ) : (
+                  <div className={`w-10 h-10 rounded-full ${isDark ? 'bg-white/10' : 'bg-black/5'} flex items-center justify-center`}>
+                     <User className={`w-5 h-5 ${t.text}`} strokeWidth={1.5} />
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
                   <h4 className={`text-base font-extrabold ${t.text} truncate`}>{contextMenuChat.name}</h4>
                   <p className={`text-[11px] font-bold ${t.textMuted} truncate`}>{contextMenuChat.msg}</p>
                 </div>
               </div>
               <div className="space-y-1 pb-32">
-                {[
-                  { icon: Archive, label: 'Archive' },
-                  { icon: VolumeX, label: 'Mute Notifications' },
-                  { icon: Pin, label: 'Pin Chat' },
-                  { icon: MailOpen, label: contextMenuChat.unread ? 'Mark as Read' : 'Mark as Unread' },
-                  { icon: Trash2, label: 'Delete', isDestructive: true }
-                ].map((item, i) => (
+                {/* A channel you are auto-enrolled in offers Mute, never
+                    Leave — leaving would break the university's only
+                    guaranteed reach. */}
+                {(contextMenuChat.kind === 'broadcast'
+                  ? [
+                      { icon: mutedChannelIds.has(contextMenuChat.id) ? Volume2 : VolumeX, label: mutedChannelIds.has(contextMenuChat.id) ? 'Unmute Channel' : 'Mute Channel', onPick: () => handleToggleChannelMute(contextMenuChat.dept) },
+                      { icon: Info, label: 'View Department Hub', onPick: () => handleOpenDepartment(contextMenuChat.dept) },
+                    ]
+                  : [
+                      { icon: Archive, label: 'Archive' },
+                      { icon: VolumeX, label: 'Mute Notifications' },
+                      { icon: Pin, label: 'Pin Chat' },
+                      { icon: MailOpen, label: contextMenuChat.unread ? 'Mark as Read' : 'Mark as Unread' },
+                      { icon: Trash2, label: 'Delete', isDestructive: true }
+                    ]
+                ).map((item, i) => (
                   <button 
                     key={i} 
                     className={`w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl hover:${isDark ? 'bg-white/10' : 'bg-black/5'} active:scale-[0.98] transition-all`}
-                    onClick={() => setContextMenuChat(null)}
+                    onClick={() => { setContextMenuChat(null); if (item.onPick) item.onPick(); }}
                   >
                     <item.icon className={`w-5 h-5 ${item.isDestructive ? 'text-red-500' : t.textMuted}`} strokeWidth={2.5} />
                     <span className={`text-sm font-bold ${item.isDestructive ? 'text-red-500' : t.text}`}>{item.label}</span>
@@ -4759,7 +4953,7 @@ export default function App() {
         </div>
 
         <div className={`px-4 pt-12 pb-3 flex items-center justify-between ${t.glass} border-b sticky top-0 z-20 shadow-sm`}>
-          <button onClick={onBack} className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors`}>
+          <button onClick={onBack} aria-label="Back" className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors`}>
             <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
           </button>
           <h2 className={`text-base font-extrabold ${t.text} leading-tight`}>{user.name}</h2>
@@ -5067,7 +5261,7 @@ export default function App() {
     );
   };
 
-  const PostJobOverlay = ({ onClose }) => {
+  const PostJobOverlay = ({ onClose, asDept = null }) => {
     const [isSubmitted, setIsSubmitted] = useState(false);
 
     return (
@@ -5089,6 +5283,18 @@ export default function App() {
         {!isSubmitted ? (
           <>
             <div className="flex-1 overflow-y-auto pb-32 relative z-10 px-5 pt-6 space-y-5">
+              {/* The campus keeps ONE job board (brief §4) — posting from a
+                  department hub changes the posting identity, not the board. */}
+              {asDept && (
+                <div className={`flex items-center gap-3 p-3.5 rounded-2xl border ${isDark ? 'bg-[#1D9BF0]/10 border-[#1D9BF0]/20' : 'bg-[#1D9BF0]/[0.07] border-[#1D9BF0]/20'}`}>
+                  <EntityAvatar dept={asDept} size="sm" isDark={isDark} />
+                  <div className="min-w-0 flex-1">
+                    <p className={`text-[10px] font-extrabold ${t.textMuted} uppercase tracking-wider`}>Posting as</p>
+                    <p className={`text-sm font-extrabold ${t.text} truncate`}>{asDept.code} Department</p>
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Job Title</label>
                 <input type="text" placeholder="e.g. Frontend Developer" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
@@ -5421,7 +5627,7 @@ export default function App() {
             )}
 
             {isEmergencyFlowOpen && <EmergencyFlowOverlay onClose={() => setIsEmergencyFlowOpen(false)} />}
-            {isPostJobOpen && <PostJobOverlay onClose={() => setIsPostJobOpen(false)} />}
+            {isPostJobOpen && <PostJobOverlay asDept={postJobAsDept} onClose={() => { setIsPostJobOpen(false); setPostJobAsDept(null); }} />}
             {settingsOverlay && <SettingsFlowOverlay 
               type={settingsOverlay} onClose={() => setSettingsOverlay(null)} 
               t={t} isDark={isDark} authRole={authRole} 
@@ -5565,10 +5771,91 @@ export default function App() {
               <EmergencyRequestView req={selectedEmergency} onBack={() => setSelectedEmergency(null)} />
             )}
             
+            {/* --- DEPARTMENT HUB OVERLAYS (Entity Profiles) --- */}
+            {selectedDepartment && (
+              <DepartmentProfileOverlay
+                dept={selectedDepartment}
+                authRole={authRole}
+                t={t}
+                isDark={isDark}
+                aboutOverride={departmentAbout[selectedDepartment.id]}
+                adminIds={departmentAdminIds[selectedDepartment.id]}
+                peopleByCohort={{ students: globalStudentData, alumni: globalAlumniData, faculty: globalFacultyData }}
+                findUserById={(id) => allDirectoryUsers.find(u => u.id === id) || null}
+                onBack={() => setSelectedDepartment(null)}
+                onSelectUser={setSelectedUser}
+                onOpenChannel={handleOpenDepartmentChannel}
+                onManage={setManageDepartment}
+                onPostJob={(d) => { setPostJobAsDept(d); setIsPostJobOpen(true); }}
+                onPostBlood={setBloodSheetDept}
+                onToast={showToast}
+              />
+            )}
+
+            {manageDepartment && (
+              <DepartmentManageOverlay
+                dept={manageDepartment}
+                authRole={authRole}
+                t={t}
+                isDark={isDark}
+                facultyData={globalFacultyData}
+                findUserById={(id) => allDirectoryUsers.find(u => u.id === id) || null}
+                adminIds={departmentAdminIds[manageDepartment.id]}
+                aboutOverride={departmentAbout[manageDepartment.id]}
+                broadcastsSent={(sentBroadcasts[manageDepartment.id] || []).length}
+                onBack={() => setManageDepartment(null)}
+                onGrantAccess={handleGrantDepartmentAdmin}
+                onRevokeAccess={handleRevokeDepartmentAdmin}
+                onSaveAbout={handleSaveDepartmentAbout}
+                onOpenChannel={handleOpenDepartmentChannel}
+                onOpenHelpDeskInbox={() => {
+                  setManageDepartment(null);
+                  setSelectedDepartment(null);
+                  setChatSegment('Help Desk');
+                  setActiveTab('messages');
+                }}
+                onPostJob={(d) => { setPostJobAsDept(d); setIsPostJobOpen(true); }}
+                onPostBlood={setBloodSheetDept}
+                onToast={showToast}
+              />
+            )}
+
+            {departmentChannel && (
+              <DepartmentChannelOverlay
+                dept={departmentChannel.dept}
+                channelKind={departmentChannel.kind}
+                thread={departmentChannel.thread}
+                authRole={authRole}
+                t={t}
+                isDark={isDark}
+                sentBroadcasts={sentBroadcasts[departmentChannel.dept.id]}
+                onSendBroadcast={handleSendDepartmentBroadcast}
+                isMuted={mutedChannelIds.has(departmentChannel.dept.broadcastChannelId)}
+                onToggleMute={handleToggleChannelMute}
+                onBack={() => setDepartmentChannel(null)}
+                onOpenHub={(d) => { setDepartmentChannel(null); handleOpenDepartment(d); }}
+                onManage={(d) => { setDepartmentChannel(null); setManageDepartment(d); }}
+                onToast={showToast}
+              />
+            )}
+
+            {/* Sits above the manage console, which opened it. */}
+            {bloodSheetDept && (
+              <div className="absolute inset-0 z-[80]">
+                <DepartmentBloodRequestSheet
+                  dept={bloodSheetDept}
+                  t={t}
+                  isDark={isDark}
+                  onClose={() => setBloodSheetDept(null)}
+                  onPost={(d, bg) => { setBloodSheetDept(null); showToast(`${bg} request posted as ${d.code} Department`); }}
+                />
+              </div>
+            )}
+            
             {selectedUser && (
               <UserProfileView user={selectedUser} onBack={() => setSelectedUser(null)} />
             )}
-            
+
             {toastMsg && (
               <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-[100] animate-fade-in-up">
                 <div className={`px-5 py-2.5 rounded-full shadow-xl shadow-black/10 text-xs font-bold transition-colors whitespace-nowrap ${isDark ? 'bg-white text-black' : 'bg-[#1A1A1A] text-white'}`}>

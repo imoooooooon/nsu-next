@@ -1,0 +1,107 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* The app controls dark mode via a .dark class on <html> (see ThemeContext),
+   so bind Tailwind's dark: variant to it instead of prefers-color-scheme. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+   NSUNEXT Web — global styles
+   Design language ported 1:1 from the shipped NSUNEXT mobile prototype:
+   Plus Jakarta Sans, #1D9BF0 primary, ambient blurred orbs, liquid glass.
+--------------------------------------------------------------------------- */
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+.font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+/* Apple Liquid Glass Capsule (identical recipe to the mobile bottom nav) */
+.nav-capsule-light {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.4) 100%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    0 24px 48px -12px rgba(0, 0, 0, 0.15),
+    inset 0 1.5px 0 rgba(255, 255, 255, 1),
+    inset 0 -1.5px 0 rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(255, 255, 255, 0.5);
+  border: none;
+}
+
+.nav-capsule-dark {
+  background: linear-gradient(135deg, rgba(40, 40, 40, 0.65) 0%, rgba(20, 20, 20, 0.45) 100%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    0 24px 48px -12px rgba(0, 0, 0, 0.7),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1.5px 0 rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+  border: none;
+}
+
+/* Flat, solid expanding boxes for the active nav pill */
+.nav-active-light { background-color: #f1f2f4; }
+.nav-active-dark { background-color: #2c2c2e; }
+
+/* Motion vocabulary (same curves and names as the mobile app) */
+@keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes fadeInUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes wave { 0% { transform: rotate(0deg); } 20% { transform: rotate(14deg); } 40% { transform: rotate(-8deg); } 60% { transform: rotate(14deg); } 80% { transform: rotate(-4deg); } 100% { transform: rotate(10deg); } }
+@keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes heartFly {
+  0% { transform: translateY(0) scale(0.5); opacity: 1; }
+  50% { transform: translateY(-60px) scale(1.5) rotate(-15deg); opacity: 0.8; }
+  100% { transform: translateY(-120px) scale(1) rotate(15deg); opacity: 0; }
+}
+
+.ease-spring { transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.animate-heart-fly { animation: heartFly 0.8s ease-out forwards; }
+.animate-scale-up { animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-slide-up { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-fade-in-up { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+.animate-wave { animation: wave 2.5s infinite; transform-origin: 70% 70%; display: inline-block; }
+
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Horizontal rails run past the edge of their column. On a phone the frame
+   edge explains the cut; on a wide canvas it just looks clipped, so fade the
+   trailing edge to signal "there is more, scroll". Desktop only. */
+@media (min-width: 1024px) {
+  .rail-fade {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 56px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 calc(100% - 56px), transparent 100%);
+  }
+}
+
+/* Desktop scrollbars, tinted to the surface */
+* { scrollbar-width: thin; scrollbar-color: rgba(128, 128, 128, 0.35) transparent; }
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: rgba(128, 128, 128, 0.35); border-radius: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------------------------------------------------------------------------
+   Shadows off (client direction).
+
+   The mobile design leans on soft drop shadows for depth. On the web — larger
+   surfaces, a lighter canvas, no device bezel — they read as haze rather than
+   elevation, so the whole app is flat and relies on borders and the glass
+   surfaces instead. This is one switch: delete this block to bring the
+   `shadow-*` / `drop-shadow-*` utilities back everywhere.
+
+   The nav capsules' inset hairlines are intentionally kept above — they draw
+   the glass edge and are not cast shadows.
+--------------------------------------------------------------------------- */
+[class*="shadow-"] { box-shadow: none !important; }
+[class*="drop-shadow-"] { filter: none !important; }
