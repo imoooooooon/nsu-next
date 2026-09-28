@@ -1,4 +1,4 @@
-# NSUNEXT — Department Hub: Information Architecture
+# Ugrads — Department Hub: Information Architecture
 
 Covers both surfaces: the mobile prototype (`src/App.jsx` + `src/components/department/`)
 and the web app (`webapp/src/…`). Written before any screen, and binding on both.
@@ -9,7 +9,7 @@ Design tokens, primitives and layout rules come from
 
 ## 1. The problem in one line
 
-Every object in NSUNEXT so far is **a person** (student, alumni, faculty) or **a
+Every object in Ugrads so far is **a person** (student, alumni, faculty) or **a
 post** (job, event, moment, blood request). The brief introduces a third kind:
 an **institution that behaves like an account** — it has a profile, an inbox, a
 membership, and it publishes. The IA's job is to give that third kind a home
@@ -147,6 +147,13 @@ Decisions worth naming:
    right-aligned column, like a lobby board.
 5. **Verification is said once**, in the list header, not per row — every
    department is verified, so repeating it carried no information.
+6. **Card ⇄ list is the viewer's choice, remembered per kind.** The
+   directory grows every term, so every lens has a view toggle on its results
+   line. People default to cards, departments to the register, and each
+   keeps its own mode — switching the people lens to a list never turns the
+   department register into tiles. Department card mode keeps the register's
+   grammar (code tile, signals, office footer, grouped by school), so it
+   still reads as an office, not a person.
 
 ---
 

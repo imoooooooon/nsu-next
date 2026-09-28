@@ -2,9 +2,9 @@ import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Users, Building2 } from 'lucide-react';
 import { PageContainer, PageHeader } from '../../components/layout/AppShell';
-import { SearchInput, SegmentedControl, EmptyState } from '../../components/ui';
-import { PersonCard } from '../../features/network/PersonCard';
-import { DepartmentList, MyDepartmentPanel } from '../../features/departments/DepartmentDirectory';
+import { SearchInput, SegmentedControl, EmptyState, ViewModeToggle } from '../../components/ui';
+import { PersonCard, PersonList } from '../../features/network/PersonCard';
+import { DepartmentList, DepartmentGrid, MyDepartmentPanel } from '../../features/departments/DepartmentDirectory';
 import { globalAlumniData, globalFacultyData, globalStudentData } from '../../data/people';
 import { globalDepartments, findDepartmentById } from '../../data/departments';
 import { getDepartmentAccess, getViewerDepartmentId } from '../../lib/departmentAccess';
@@ -13,8 +13,9 @@ import { useAppState } from '../../context/AppStateContext';
 
 /* ---------------------------------------------------------------------------
    /network — the Directory (mobile DirectoryTab), re-laid for desktop:
-   search + segmented filter on one row, blue results micro-caption, and the
-   PersonCard grid instead of the single mobile column.
+   search + segmented filter on one row, the results caption with the
+   card/list view switch, and the PersonCard grid (or the one-line list)
+   instead of the single mobile column.
 --------------------------------------------------------------------------- */
 
 /* One directory, four lenses. Departments are Entity Profiles — they live in
@@ -26,6 +27,25 @@ const SEGMENT_DATA = {
   Alumni: globalAlumniData,
   Student: globalStudentData,
   Faculty: globalFacultyData,
+};
+
+/* The view mode is remembered per KIND of object, not globally: the three
+   people lenses share one mode (cards by default — you size a person up),
+   Departments keep their own (the register by default — you look an office
+   up). One global switch would flip the department list into cards the
+   moment someone browsed people in card view. It is a per-viewer
+   convenience, so it lives in localStorage and falls back to the defaults
+   whenever storage is unavailable. */
+const VIEW_KEY = 'ugrads-directory-view';
+const DEFAULT_VIEW = { people: 'card', departments: 'list' };
+
+const readView = () => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(VIEW_KEY) || 'null');
+    return { ...DEFAULT_VIEW, ...(saved || {}) };
+  } catch {
+    return DEFAULT_VIEW;
+  }
 };
 
 export default function NetworkPage() {
@@ -58,6 +78,15 @@ export default function NetworkPage() {
   }
 
   const isDepartments = segment === 'Departments';
+
+  const [viewByKind, setViewByKind] = useState(readView);
+  const viewKind = isDepartments ? 'departments' : 'people';
+  const view = viewByKind[viewKind];
+  const setView = (mode) => {
+    const next = { ...viewByKind, [viewKind]: mode };
+    setViewByKind(next);
+    try { localStorage.setItem(VIEW_KEY, JSON.stringify(next)); } catch { /* storage blocked — keep it for this visit */ }
+  };
 
   /* The viewer's own department leads the Departments lens — membership is
      the relationship that sets an entity apart from a person. */
@@ -102,8 +131,13 @@ export default function NetworkPage() {
         <SegmentedControl options={SEGMENTS} value={segment} onChange={setSegment} className="md:w-[26rem] shrink-0" />
       </div>
 
-      <div className="flex items-center text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider mb-5">
-        Showing {results.length} results • {segment}
+      {/* The results line carries the view switch: it changes how these
+          results are laid out, so it sits with them, not with the filters. */}
+      <div className="flex items-center justify-between gap-3 mb-5">
+        <p className="text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider">
+          Showing {results.length} results • {segment}
+        </p>
+        <ViewModeToggle value={view} onChange={setView} />
       </div>
 
       {isDepartments ? (
@@ -119,12 +153,14 @@ export default function NetworkPage() {
             {results.length === 0 ? (
               <EmptyState icon={Building2} title="No departments match your search" subtitle="Try a department code, name or school." className={t.text} />
             ) : (
-              <DepartmentList departments={results} />
+              view === 'list' ? <DepartmentList departments={results} /> : <DepartmentGrid departments={results} />
             )}
           </div>
         </div>
       ) : results.length === 0 ? (
         <EmptyState icon={Users} title="No people match your search" className={t.text} />
+      ) : view === 'list' ? (
+        <PersonList people={results} />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5">
           {results.map(person => <PersonCard key={person.id} person={person} variant="full" />)}

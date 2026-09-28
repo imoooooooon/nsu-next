@@ -257,7 +257,7 @@ export default function ProfilePage() {
               <SettingsRow icon={FileText} label="Privacy Policy" onClick={() => showToast('Coming soon')} />
             </Card>
             <div className="text-center mt-4">
-              <span className={`text-[10px] font-extrabold ${t.textMuted} uppercase tracking-wider`}>NSUNEXT v1.0.0 — Web</span>
+              <span className={`text-[10px] font-extrabold ${t.textMuted} uppercase tracking-wider`}>Ugrads v1.0.0 — Web</span>
             </div>
           </div>
 

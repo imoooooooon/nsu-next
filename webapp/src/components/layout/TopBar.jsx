@@ -70,11 +70,11 @@ export const TopBar = () => {
           <Link to="/home" className="flex items-center ml-1.5 min-w-0 group">
             <img
               src="https://res.cloudinary.com/ddgxqqe6t/image/upload/v1784041954/Icon_300x-8_l1gnkq.png"
-              alt="NSUNEXT"
+              alt="Ugrads"
               className="w-9 h-9 object-contain shrink-0 group-hover:scale-105 transition-transform"
             />
             <div className={`hidden ${isSidebarCollapsed ? '' : 'xl:flex'} flex-col ml-2 min-w-0`}>
-              <span className={`text-[15px] font-extrabold tracking-tight leading-tight ${t.text}`}>NSUNEXT</span>
+              <span className={`text-[15px] font-extrabold tracking-tight leading-tight ${t.text}`}>Ugrads</span>
               <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#1D9BF0]">NSU Verified Network</span>
             </div>
           </Link>

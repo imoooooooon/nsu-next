@@ -1,3 +1,4 @@
+import { LayoutGrid, List } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeContext';
 
 /* ---------------------------------------------------------------------------
@@ -30,6 +31,44 @@ export const SegmentedControl = ({ options, value, onChange, rounded = 'rounded-
                 {o.badge}
               </span>
             )}
+          </button>
+        );
+      })}
+    </div>
+  );
+};
+
+/* Card ⇄ list switch for growing collections (the Directory). Icon-only,
+   so each option names itself for screen readers and on hover. It shares
+   the SegmentedControl's track and active pill, one size down, because it
+   changes how results look — not which results you see. */
+const VIEW_MODES = [
+  { id: 'card', label: 'Card view', icon: LayoutGrid },
+  { id: 'list', label: 'List view', icon: List },
+];
+
+export const ViewModeToggle = ({ value, onChange, className = '' }) => {
+  const { t, isDark } = useTheme();
+  return (
+    <div role="radiogroup" aria-label="View mode" className={`inline-flex p-0.5 rounded-lg ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft} ${className}`}>
+      {VIEW_MODES.map((mode) => {
+        const active = value === mode.id;
+        return (
+          <button
+            key={mode.id}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            aria-label={mode.label}
+            title={mode.label}
+            onClick={() => onChange(mode.id)}
+            className={`w-8 h-7 rounded-md flex items-center justify-center border transition-all outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0] active:scale-95 ${
+              active
+                ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'}`
+                : `border-transparent ${t.textMuted} ${isDark ? 'hover:text-white' : 'hover:text-black'}`
+            }`}
+          >
+            <mode.icon className="w-3.5 h-3.5" strokeWidth={2.5} />
           </button>
         );
       })}

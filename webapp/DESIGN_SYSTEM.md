@@ -1,6 +1,6 @@
-# NSUNEXT Web — Design System & Build Contract
+# Ugrads Web — Design System & Build Contract
 
-The web app is a 1:1 visual port of the shipped NSUNEXT mobile app (`../src/App.jsx`),
+The web app is a 1:1 visual port of the shipped Ugrads mobile app (`../src/App.jsx`),
 re-architected for desktop with proper routing. **Every page must follow this document.**
 
 ## 1. Foundations
@@ -16,25 +16,37 @@ re-architected for desktop with proper routing. **Every page must follow this do
 | Radii | cards `rounded-2xl`, inputs/buttons `rounded-xl`, chips `rounded-md`/`rounded-lg`, nav capsules `rounded-[2rem]+` |
 | Type scale | page titles `text-2xl/3xl font-extrabold tracking-tight`; card titles `text-lg font-extrabold`; body `text-sm font-medium/bold`; micro-labels `text-[10px]/[11px] font-extrabold uppercase tracking-wider` |
 | Motion | `animate-fade-in`, `animate-fade-in-up`, `animate-slide-up`, `animate-scale-up`, `active:scale-[0.97]` on pressables (all defined in `src/index.css`) |
-| Elevation | **None.** Shadows are switched off app-wide — separation comes from borders and the glass surfaces. See "Shadows" below. |
+| Elevation | **A whisper.** One hairline shadow app-wide (`--ugrads-shadow`); separation comes from borders and the glass surfaces. See "Shadows" below. |
 
-### Shadows — off
+### Shadows — a whisper, the same on both apps
 
-The mobile design uses soft drop shadows for depth. On the web they read as haze
-rather than elevation, so they are disabled app-wide by one block at the bottom
-of `src/index.css`:
+Shadows may only *hint* that a surface sits above the canvas — the page should
+read as if there were none. Both apps (`src/index.css` and `../src/index.css`)
+end with one rule:
 
 ```css
-[class*="shadow-"] { box-shadow: none !important; }
-[class*="drop-shadow-"] { filter: none !important; }
+:root { --ugrads-shadow: 0 1px 2px 0 rgb(15 20 25 / 0.05); }
+[class*="shadow-"]:not(.shadow-none):not(.shadow-inner) { --tw-shadow: var(--ugrads-shadow) !important; }
 ```
 
-`t.cardShadow` is an empty string for the same reason (kept as a token so pages
-can keep composing with it). You may still *write* `shadow-*` classes — they
-simply have no effect, so the switch stays reversible: delete that CSS block and
-restore the `cardShadow` value to bring elevation back everywhere at once. The
-nav capsules keep their **inset** hairlines, which draw the glass edge and are
-not cast shadows.
+Every Tailwind shadow utility — sized (`shadow-sm…2xl`), coloured
+(`shadow-[#1D9BF0]/40`) or arbitrary (`shadow-[0_-10px_40px_…]`) — writes the
+single variable `--tw-shadow`, so this turns all of them into the same hairline
+and ignores their colour. You may keep writing `shadow-*` classes; they all
+resolve to the whisper. Tune the whole app by editing `--ugrads-shadow`, never
+per element.
+
+- **Focus rings survive.** Rings compose through `--tw-ring-shadow`, which the
+  rule leaves alone. (The old kill-switch, `box-shadow: none !important`, also
+  erased the focus ring on any element that carried a shadow class.)
+- `shadow-inner` (wells, progress tracks) and `shadow-none` keep their meaning.
+- `t.cardShadow` is `shadow-sm` on both apps — it just opts a card into the
+  whisper.
+- The nav capsules' drop is `0 2px 8px -2px` at 6% (light) / 30% (dark) — the
+  floating bar needs a hint of lift over scrolling content, no more. Their
+  **inset** hairlines draw the glass edge and are not cast shadows.
+- Text `drop-shadow-*` stays on mobile, where it keeps white text legible over
+  photos (the moment viewer), and off on the web, where nothing needs it.
 
 ### Theme access — never hardcode theme conditionals ad hoc
 
@@ -78,6 +90,7 @@ Toast is already rendered by the shells — just call `showToast('...')`.
 - `TintedCard` — gradient hero card: `tint: blue|blueSoft|emerald|red`, `interactive`, `contentClassName`
 - `CardGlow` — blurred corner glow inside relative cards
 - `SegmentedControl` — `options` (strings or `{id,label,badge}`), `value`, `onChange`
+- `ViewModeToggle` — icon-only card ⇄ list switch (`value: 'card'|'list'`, `onChange`); SegmentedControl's track, one size down. Lives on a collection's **results line**, never with the filters.
 - `ChipTabs` — solid-accent chip row (`options`, `value`, `onChange`)
 - `Pill` — static tinted pill; pass color classes via `className`
 - `Toggle` — switch (`checked, onChange, color, size`)
@@ -125,6 +138,9 @@ no gradient) holding hairline-divided rows, sectioned by school.
 | Signals | A chip appears **only when true**: open roles (emerald, `Briefcase`), blood requests (red, `Droplet`) — the app's semantic colours, same geometry as `AccessBadge`. Rows are meant to differ; never add a chip that is always present. |
 | Verification | Stated **once** in the list header ("Verified by NSU"). Rows carry an icon-only `BadgeCheck` glued to the name's last word. Everywhere outside the register (hub hero, messages) the worded `EntityVerified` still applies. |
 | Access | Lives on `MyDepartmentPanel`, not on rows — only the viewer's own department ever has a non-visitor level, and the panel sits directly above it. |
+| View modes | The Directory's `ViewModeToggle` switches **card ⇄ list** and remembers the mode **per kind of object**: the three people lenses share one (default **card** — `PersonCard` / `PersonList`), Departments keep their own (default **list** — `DepartmentList` / `DepartmentGrid`). A global mode would flip the register into tiles whenever someone browsed people as cards. |
+| Card mode (departments) | `DepartmentCard` is still not the person card: plain `Card`, no gradient; code tile + Message button on top, name, `members · Est.`, signal chips, and an **Office / Open hub** footer. Grouped by school; "Verified by NSU" once above the groups. |
+| List mode (people) | `PersonRow` inside one `Card`, hairline-divided: circle `Avatar md`, name + `Verified`, `role @ company`, then department chip + batch in a fixed right column (sm/md+), and a compact `ConnectButton` (`className="w-28 shrink-0"`). |
 | Your department | `MyDepartmentPanel` leads the lens (mobile: above the list; lg: sticky right rail, `lg:grid-cols-3`). It carries identity + `AccessBadge`, the **latest notice** (seed + session broadcasts, with the "Also emailed" mark) linking to the broadcast channel, and two doors: Open hub + Message (members) or Manage (Official/Admin). |
 
 Department accents (`getDeptStyle` / mobile `getDeptAccent`): CSE blue, ECE
@@ -168,7 +184,7 @@ bottom-nav <lg, sticky glass TopBar ≥lg).
 
 ### Sidebar width — responsive *and* chosen
 
-`isSidebarCollapsed` (from `useTheme()`, persisted as `nsunext-sidebar`) is the
+`isSidebarCollapsed` (from `useTheme()`, persisted as `ugrads-sidebar`) is the
 user's own preference and **wins at every breakpoint**, so "icons only" stays
 true on a 4K screen. Without it, width is still responsive: `lg → xl` is an icon
 rail because labels do not fit, `xl+` shows labels. The toggle lives in the
@@ -304,10 +320,13 @@ rather than hand-written, so the inbox row, the hub and the thread header can
 never disagree about a channel's name, reach or latest notice.
 
 Two things persist to `localStorage` because the web reloads where the app never
-did: the theme (`nsunext-theme`) and the demo session (`nsunext-session`, holding
+did: the theme (`ugrads-theme`) and the demo session (`ugrads-session`, holding
 `isAuthed` + `authRole`). Without the latter, refreshing or opening a deep link
-would bounce the user back to `/welcome`. Everything else is in-memory demo
-state, exactly like mobile.
+would bounce the user back to `/welcome`. Two per-viewer conveniences ride
+along: the sidebar width (`ugrads-sidebar`) and the Directory view modes
+(`ugrads-directory-view`, `{ people, departments }`). Every read and write is
+wrapped in try/catch and falls back to the defaults. Everything else is
+in-memory demo state, exactly like mobile.
 
 ## 6. Voice & fidelity rules
 

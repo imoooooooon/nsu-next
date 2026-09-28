@@ -17,7 +17,10 @@ import {
   // Events specific
   CalendarDays, CalendarCheck, CalendarClock, TicketCheck, Trophy,
   BookOpen, Building2, UsersRound, Megaphone, Palette, Dumbbell,
-  HandHeart, CircleDollarSign, ListFilter, RotateCcw, Sparkles
+  HandHeart, CircleDollarSign, ListFilter, RotateCcw, Sparkles,
+
+  // Directory view switch
+  LayoutGrid, List as ListIcon
 } from 'lucide-react';
 
 // --- SEEKING WORK MODULE (Jobs › Seeking) ---
@@ -34,7 +37,7 @@ import {
   globalDepartments, findDepartmentById,
   departmentHelpDeskThreads, departmentBroadcasts,
   VIEWER_DEPARTMENT_ID, getDepartmentAccess, formatCount,
-  DepartmentList, MyDepartmentPanel, EntityAvatar,
+  DepartmentList, DepartmentGrid, MyDepartmentPanel, EntityAvatar,
   DepartmentProfileOverlay, DepartmentChannelOverlay,
   DepartmentManageOverlay, DepartmentBloodRequestSheet,
 } from './components/department';
@@ -656,7 +659,7 @@ const ProfileTab = ({ authRole, t, isDark, profileSegment, setProfileSegment, se
                 <SettingsItem icon={FileText} label="Privacy Policy" t={t} isDark={isDark} />
               </div>
               <div className="text-center mt-4">
-                <span className={`text-[10px] font-extrabold ${t.textMuted} uppercase tracking-wider`}>NSUNEXT v1.0.0</span>
+                <span className={`text-[10px] font-extrabold ${t.textMuted} uppercase tracking-wider`}>Ugrads v1.0.0</span>
               </div>
             </div>
 
@@ -3231,6 +3234,9 @@ export default function App() {
   const [profileSegment, setProfileSegment] = useState('Account');
   const [chatSegment, setChatSegment] = useState('All Chats');
   const [directorySegment, setDirectorySegment] = useState('Alumni');
+  /* Card ⇄ list, remembered per kind of object: people lenses share one
+     mode (cards by default), Departments keep their own (list by default). */
+  const [directoryView, setDirectoryView] = useState({ people: 'card', departments: 'list' });
   const [jobSegment, setJobSegment] = useState('All Jobs');
   const [jobFilter, setJobFilter] = useState(null);
 
@@ -3285,7 +3291,7 @@ export default function App() {
     overlayGlass: isDark ? 'bg-black/50 backdrop-blur-md' : 'bg-[#F2F5F8]/50 backdrop-blur-md',
     inputBg: isDark ? 'bg-[#202327]/60 backdrop-blur-md focus:bg-black/80 focus:ring-2 focus:ring-[#1D9BF0]/50' : 'bg-white/80 backdrop-blur-md focus:bg-white focus:ring-2 focus:ring-[#1D9BF0]/30',
     inputBorder: isDark ? 'border-white/10 focus:border-transparent' : 'border-white focus:border-transparent',
-    cardShadow: isDark ? 'shadow-2xl shadow-black/40' : 'shadow-xl shadow-black/[0.04]', 
+    cardShadow: 'shadow-sm', // resolves to the one whisper shadow in index.css
   };
 
   const toggleTheme = () => setIsDark(!isDark);
@@ -3568,7 +3574,7 @@ export default function App() {
       
       <div className="mb-7">
         <h1 className={`text-[28px] font-extrabold tracking-tight ${t.text} leading-tight`}>Select Your Role</h1>
-        <p className={`text-sm mt-1 font-bold ${t.textMuted}`}>Choose how you want to access NSUNEXT</p>
+        <p className={`text-sm mt-1 font-bold ${t.textMuted}`}>Choose how you want to access Ugrads</p>
       </div>
       
       <div className="space-y-4" role="listbox" aria-label="Select user role">
@@ -4473,6 +4479,13 @@ export default function App() {
     const availableTabs = ['Alumni', 'Student', 'Faculty', 'Departments'];
     const isDepartments = directorySegment === 'Departments';
 
+    const viewKind = isDepartments ? 'departments' : 'people';
+    const view = directoryView[viewKind];
+    const viewModes = [
+      { id: 'card', label: 'Card view', icon: LayoutGrid },
+      { id: 'list', label: 'List view', icon: ListIcon },
+    ];
+
     let displayData = isDepartments ? globalDepartments :
                       directorySegment === 'Alumni' ? globalAlumniData : 
                       directorySegment === 'Faculty' ? globalFacultyData : 
@@ -4514,14 +4527,36 @@ export default function App() {
             ))}
           </div>
           
-          <div className="flex items-center text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider mt-1">
-             Showing {displayData.length} results • {directorySegment}
+          {/* The results line carries the view switch — it changes how these
+              results are laid out, so it sits with them. */}
+          <div className="flex items-center justify-between gap-3 mt-1">
+            <p className="text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider">
+              Showing {displayData.length} results • {directorySegment}
+            </p>
+            <div role="radiogroup" aria-label="View mode" className={`inline-flex p-0.5 rounded-lg ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft}`}>
+              {viewModes.map(mode => {
+                const active = view === mode.id;
+                const ModeIcon = mode.icon;
+                return (
+                  <button
+                    key={mode.id}
+                    role="radio"
+                    aria-checked={active}
+                    aria-label={mode.label}
+                    onClick={() => setDirectoryView(prev => ({ ...prev, [viewKind]: mode.id }))}
+                    className={`w-8 h-7 rounded-md flex items-center justify-center border transition-all active:scale-95 ${active ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'}` : `border-transparent ${t.textMuted}`}`}
+                  >
+                    <ModeIcon className="w-3.5 h-3.5" strokeWidth={2.5} />
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
         <div className="flex-1 overflow-y-auto pb-36 px-5 pt-6 relative z-10 space-y-5">
-          {/* Departments are a register, not a card grid — the viewer's own
-              department leads, then every department grouped by school. */}
+          {/* The viewer's own department leads, then every department
+              grouped by school — as the register (list) or as tiles (card). */}
           {isDepartments && viewerDepartment && viewerDeptAccess.isMember && (
             <MyDepartmentPanel
               dept={viewerDepartment}
@@ -4534,17 +4569,59 @@ export default function App() {
               onManage={setManageDepartment}
             />
           )}
-          {isDepartments && (
-            <DepartmentList
-              departments={displayData}
-              t={t}
-              isDark={isDark}
-              onOpen={handleOpenDepartment}
-              onMessage={(d) => handleOpenDepartmentChannel(d, 'helpdesk')}
-            />
+          {isDepartments && (() => {
+            const DepartmentView = view === 'list' ? DepartmentList : DepartmentGrid;
+            return (
+              <DepartmentView
+                departments={displayData}
+                t={t}
+                isDark={isDark}
+                onOpen={handleOpenDepartment}
+                onMessage={(d) => handleOpenDepartmentChannel(d, 'helpdesk')}
+              />
+            );
+          })()}
+
+          {/* People in list mode — one line each: circle avatar, name +
+              headline + department, and Connect as the trailing action. */}
+          {!isDepartments && view === 'list' && (
+            <div className={`rounded-2xl ${t.card} border ${t.border} ${t.cardShadow} overflow-hidden`}>
+              <ul className={`divide-y ${isDark ? 'divide-white/[0.06]' : 'divide-black/[0.05]'}`}>
+                {displayData.map((person) => (
+                  <li
+                    key={person.id}
+                    onClick={() => setSelectedUser(person)}
+                    className={`flex items-center gap-3.5 px-4 py-3.5 cursor-pointer transition-colors ${isDark ? 'active:bg-white/[0.05]' : 'active:bg-white/80'}`}
+                  >
+                    <div className={`w-12 h-12 rounded-full shrink-0 ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/60 border-white'} border flex items-center justify-center`}>
+                      <User className={`w-6 h-6 ${t.text}`} strokeWidth={1.5} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <h3 className={`font-extrabold text-[15px] tracking-tight truncate ${t.text}`}>{person.name}</h3>
+                        {person.verified && <BadgeCheck className="w-4 h-4 text-[#1D9BF0] shrink-0" strokeWidth={2.5} />}
+                      </div>
+                      <p className={`text-xs font-bold ${t.textMuted} truncate mt-0.5`}>{person.role} @ {person.company}</p>
+                      <span className={`inline-block mt-1.5 px-2 py-0.5 rounded-md text-[10px] font-extrabold border ${getDeptStyle(person.dept)}`}>{person.dept}</span>
+                    </div>
+                    <div className="w-[6.5rem] shrink-0" onClick={(e) => handleConnectClick(e, person.id)}>
+                      {requestedSet.has(person.id) ? (
+                        <div className={`flex items-center justify-center h-9 rounded-lg font-bold text-xs ${isDark ? 'bg-white/10 text-white' : 'bg-white text-black shadow-sm'} border ${t.border}`}>
+                          <CheckCircle2 className="w-3.5 h-3.5 mr-1.5 text-[#1D9BF0]" strokeWidth={2.5} /> Requested
+                        </div>
+                      ) : (
+                        <button className={`w-full h-9 rounded-lg font-bold text-xs transition-all active:scale-[0.97] ${isDark ? 'bg-white/10 text-white border border-white/20' : 'bg-white/60 text-black border border-white shadow-sm'}`}>
+                          Connect
+                        </button>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
 
-          {!isDepartments && displayData.map((person) => (
+          {!isDepartments && view === 'card' && displayData.map((person) => (
             <div 
               key={person.id} 
               className={`rounded-2xl p-5 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 cursor-pointer shadow-2xl shadow-black/5 dark:shadow-black/40 border ${t.border}`} 
@@ -5485,7 +5562,7 @@ export default function App() {
           backdrop-filter: blur(24px) saturate(180%);
           -webkit-backdrop-filter: blur(24px) saturate(180%);
           box-shadow: 
-            0 24px 48px -12px rgba(0, 0, 0, 0.15),
+            0 2px 8px -2px rgba(15, 20, 25, 0.06),
             inset 0 1.5px 0 rgba(255, 255, 255, 1),
             inset 0 -1.5px 0 rgba(0, 0, 0, 0.05),
             0 0 0 1px rgba(255, 255, 255, 0.5);
@@ -5497,7 +5574,7 @@ export default function App() {
           backdrop-filter: blur(24px) saturate(180%);
           -webkit-backdrop-filter: blur(24px) saturate(180%);
           box-shadow: 
-            0 24px 48px -12px rgba(0, 0, 0, 0.7),
+            0 2px 8px -2px rgba(0, 0, 0, 0.3),
             inset 0 1.5px 0 rgba(255, 255, 255, 0.2),
             inset 0 -1.5px 0 rgba(0, 0, 0, 0.4),
             0 0 0 1px rgba(255, 255, 255, 0.08);

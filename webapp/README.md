@@ -1,6 +1,6 @@
-# NSUNEXT Web App
+# Ugrads Web App
 
-The desktop/web version of the NSUNEXT mobile app, served at
+The desktop/web version of the Ugrads mobile app, served at
 **https://nsu-next.vercel.app/webapp**. It is a fully separate Vite + React
 project inside `webapp/` — the mobile prototype at the repo root is untouched
 and still serves at the root URL for phone testing.
@@ -29,7 +29,7 @@ webapp/
 │  ├─ components/
 │  │  ├─ ui/                  ← primitives (Button, Card, Modal, forms…)
 │  │  ├─ layout/              ← AppShell, Sidebar, TopBar, MobileNav, AuthLayout
-│  │  └─ icons/               ← custom NSUNEXT line icons
+│  │  └─ icons/               ← custom Ugrads line icons
 │  ├─ features/               ← reusable feature components (events, jobs,
 │  │                            network, seeking, moments, home, messages)
 │  ├─ pages/                  ← one component per route

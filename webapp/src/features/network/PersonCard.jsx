@@ -1,8 +1,8 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { CheckCircle2, Droplets, BookmarkIcon } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
-import { TintedCard, Avatar, Verified, Pill } from '../../components/ui';
+import { TintedCard, Card, Avatar, Verified, Pill } from '../../components/ui';
 import { getDeptStyle } from '../../lib/roleStyles';
 import { findDepartmentByCode } from '../../data/departments';
 
@@ -31,13 +31,13 @@ const DeptChip = ({ dept, className }) => {
    'connect' → the compact "People to Connect With" rail card on Home
 --------------------------------------------------------------------------- */
 
-export const ConnectButton = ({ personId, size = 'h-11 text-sm', accent = 'text-[#1D9BF0]' }) => {
+export const ConnectButton = ({ personId, size = 'h-11 text-sm', accent = 'text-[#1D9BF0]', className = 'flex-1' }) => {
   const { t, isDark } = useTheme();
   const { requestedSet, toggleRequested } = useAppState();
   const requested = requestedSet.has(personId);
 
   return (
-    <div className="flex-1" onClick={(e) => { e.stopPropagation(); toggleRequested(personId); }}>
+    <div className={`relative z-10 ${className}`} onClick={(e) => { e.stopPropagation(); toggleRequested(personId); }}>
       {requested ? (
         <div className={`flex items-center justify-center ${size} rounded-lg font-bold ${isDark ? 'bg-white/10 text-white' : 'bg-white text-black shadow-sm'} border ${t.border} transition-all cursor-pointer`}>
           <CheckCircle2 className={`w-4 h-4 mr-2 ${accent}`} strokeWidth={2.5} /> Requested
@@ -129,5 +129,60 @@ export const PersonCard = ({ person, variant = 'full', className = '' }) => {
         </button>
       </div>
     </TintedCard>
+  );
+};
+
+/* ---------------------------------------------------------------------------
+   List mode — the same people, one line each, for when the directory is
+   too long to browse card by card. Circle avatar (people are circles),
+   name + headline, then department and batch in their own column from sm,
+   and Connect as the one trailing action. The name is a stretched link, so
+   the whole row opens the profile while Connect and the department chip
+   stay their own targets above it.
+--------------------------------------------------------------------------- */
+
+export const PersonRow = ({ person }) => {
+  const { t, isDark } = useTheme();
+  const batch = person.batch === 'Faculty' ? 'Faculty' : person.batch;
+
+  return (
+    <li
+      className={`relative flex items-center gap-3.5 sm:gap-4 px-4 sm:px-5 py-3.5 transition-colors ${isDark ? 'hover:bg-white/[0.04]' : 'hover:bg-white/70'} has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-inset has-[a:focus-visible]:ring-[#1D9BF0]`}
+    >
+      <Avatar size="md" />
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5">
+          <Link
+            to={`/network/${person.id}`}
+            className={`font-extrabold text-[15px] tracking-tight truncate ${t.text} outline-none after:absolute after:inset-0 after:content-['']`}
+          >
+            {person.name}
+          </Link>
+          {person.verified && <Verified />}
+        </div>
+        <p className={`text-xs font-bold ${t.textMuted} truncate mt-0.5`}>
+          {person.role} @ {person.company}
+          <span className="sm:hidden"> · {person.dept}</span>
+        </p>
+      </div>
+      <div className="hidden sm:flex items-center justify-end gap-2 shrink-0 md:w-48 relative z-10">
+        <DeptChip dept={person.dept} className={getDeptStyle(person.dept, isDark)} />
+        <span className="hidden md:block">
+          <Pill className={isDark ? 'bg-black/20 text-white/70 border-white/10' : 'bg-white/60 text-black/60 border-white'}>{batch}</Pill>
+        </span>
+      </div>
+      <ConnectButton personId={person.id} size="h-9 text-xs" className="w-28 shrink-0" />
+    </li>
+  );
+};
+
+export const PersonList = ({ people, className = '' }) => {
+  const { isDark } = useTheme();
+  return (
+    <Card padded={false} className={`overflow-hidden ${className}`}>
+      <ul className={`divide-y ${isDark ? 'divide-white/[0.06]' : 'divide-black/[0.05]'}`}>
+        {people.map(person => <PersonRow key={person.id} person={person} />)}
+      </ul>
+    </Card>
   );
 };

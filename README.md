@@ -1,4 +1,4 @@
-# NSUNEXT
+# Ugrads
 
 Two apps live in this repo, deployed together at https://nsu-next.vercel.app:
 

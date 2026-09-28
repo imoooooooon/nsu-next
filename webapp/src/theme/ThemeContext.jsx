@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 /* ---------------------------------------------------------------------------
-   NSUNEXT Design System — theme tokens
+   Ugrads Design System — theme tokens
    Extracted verbatim from the shipped mobile prototype so both surfaces stay
    pixel-identical. `t` is the same token object the mobile app passes around;
    every component in the web app consumes it through useTheme().
@@ -21,9 +21,10 @@ export const buildThemeTokens = (isDark) => ({
     ? 'bg-[#202327]/60 backdrop-blur-md focus:bg-black/80 focus:ring-2 focus:ring-[#1D9BF0]/50'
     : 'bg-white/80 backdrop-blur-md focus:bg-white focus:ring-2 focus:ring-[#1D9BF0]/30',
   inputBorder: isDark ? 'border-white/10 focus:border-transparent' : 'border-white focus:border-transparent',
-  // Shadows are switched off app-wide (see the shadow block in index.css).
-  // Kept as a token so pages can keep composing with `t.cardShadow`.
-  cardShadow: '',
+  // Every card carries the app's one whisper shadow — the shadow block in
+  // index.css resolves any shadow utility to that hairline, so this token
+  // just opts a surface in. Same value as mobile.
+  cardShadow: 'shadow-sm',
 });
 
 /* Non-class primitives, for the rare inline-style need. */
@@ -40,10 +41,10 @@ export const BRAND = {
   mutedDark: '#71767B',
 };
 
-const STORAGE_KEY = 'nsunext-theme';
+const STORAGE_KEY = 'ugrads-theme';
 /* Sidebar width is a lasting workspace preference, like the theme — it rides
    in this context and persists for the same reason. */
-const SIDEBAR_KEY = 'nsunext-sidebar';
+const SIDEBAR_KEY = 'ugrads-sidebar';
 
 const ThemeContext = createContext(null);
 

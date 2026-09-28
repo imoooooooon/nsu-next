@@ -13,7 +13,8 @@ import {
 } from '../../lib/departmentAccess';
 
 /* ---------------------------------------------------------------------------
-   The Departments lens of the Directory — a REGISTER, not a card grid.
+   The Departments lens of the Directory — a REGISTER by default, with a
+   card mode (DepartmentGrid) behind the Directory's view toggle.
 
    People are cards because you size a person up before you connect. A
    department is an office you look up — like the directory board in a
@@ -81,11 +82,35 @@ const SignalChip = ({ tone, icon: Icon, children }) => {
   );
 };
 
+/* The row's and card's second door: straight into the Help Desk thread.
+   It sits above the stretched hub link, so it stays its own target. */
+const MessageDepartmentButton = ({ dept }) => {
+  const { isDark } = useTheme();
+  const navigate = useNavigate();
+  return (
+    <button
+      type="button"
+      aria-label={`Message the ${dept.code} department`}
+      title={`Message the ${dept.code} department`}
+      onClick={() => navigate(`/messages/${helpDeskChannelId(dept.id)}`)}
+      className={`relative z-10 w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${isDark ? 'bg-white/5 text-white border-white/10 hover:bg-white/10' : 'bg-white/70 text-black border-white hover:bg-white'} transition-all active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}
+    >
+      <Mail className="w-4 h-4" strokeWidth={2.5} />
+    </button>
+  );
+};
+
+/* Every department is verified, so the directory says it once per view. */
+const VerifiedByNsu = () => (
+  <span className="inline-flex items-center gap-1 text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider">
+    <BadgeCheck className="w-3.5 h-3.5" strokeWidth={2.5} /> Verified by NSU
+  </span>
+);
+
 /* One register row. The name is a stretched link, so the whole row opens the
    hub while the Message button stays its own target above it. */
 export const DepartmentRow = ({ dept }) => {
   const { t, isDark } = useTheme();
-  const navigate = useNavigate();
   const jobs = (departmentJobs[dept.id] || []).length;
   const blood = (departmentBloodRequests[dept.id] || []).length;
   const room = getOfficeRoom(dept);
@@ -125,15 +150,7 @@ export const DepartmentRow = ({ dept }) => {
         <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mt-0.5`}>Office</p>
       </div>
 
-      <button
-        type="button"
-        aria-label={`Message the ${dept.code} department`}
-        title={`Message the ${dept.code} department`}
-        onClick={() => navigate(`/messages/${helpDeskChannelId(dept.id)}`)}
-        className={`relative z-10 w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${isDark ? 'bg-white/5 text-white border-white/10 hover:bg-white/10' : 'bg-white/70 text-black border-white hover:bg-white'} transition-all active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}
-      >
-        <Mail className="w-4 h-4" strokeWidth={2.5} />
-      </button>
+      <MessageDepartmentButton dept={dept} />
       <ChevronRight className={`hidden sm:block w-4 h-4 shrink-0 -ml-1 ${t.textMuted}`} strokeWidth={2.5} aria-hidden="true" />
     </li>
   );
@@ -149,9 +166,7 @@ export const DepartmentList = ({ departments, className = '' }) => {
     <Card padded={false} className={`overflow-hidden ${className}`}>
       <div className={`flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-4 border-b ${divider}`}>
         <h3 className={`text-base font-extrabold tracking-tight ${t.text}`}>All departments</h3>
-        <span className="inline-flex items-center gap-1 text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider">
-          <BadgeCheck className="w-3.5 h-3.5" strokeWidth={2.5} /> Verified by NSU
-        </span>
+        <VerifiedByNsu />
       </div>
 
       {groupBySchool(departments).map(([school, depts], idx) => (
@@ -166,6 +181,85 @@ export const DepartmentList = ({ departments, className = '' }) => {
         </section>
       ))}
     </Card>
+  );
+};
+
+/* ---------------------------------------------------------------------------
+   Card mode — the same register, laid out as tiles for people who browse by
+   eye. Still NOT the person card: plain glass instead of the blue gradient,
+   the code tile leads, and the footer is the office — where you go — rather
+   than a stat strip. Still grouped by school, still verified once.
+--------------------------------------------------------------------------- */
+export const DepartmentCard = ({ dept }) => {
+  const { t, isDark } = useTheme();
+  const jobs = (departmentJobs[dept.id] || []).length;
+  const blood = (departmentBloodRequests[dept.id] || []).length;
+  const divider = isDark ? 'border-white/[0.06]' : 'border-black/[0.05]';
+
+  return (
+    <Card
+      padded={false}
+      className="relative p-5 h-full flex flex-col transition-colors hover:border-[#1D9BF0]/30 has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-[#1D9BF0]"
+    >
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <EntityAvatar dept={dept} size="lg" />
+        <MessageDepartmentButton dept={dept} />
+      </div>
+
+      <Link
+        to={`/departments/${dept.id}`}
+        className={`block font-extrabold text-base tracking-tight leading-snug line-clamp-2 ${t.text} outline-none after:absolute after:inset-0 after:content-[''] after:rounded-2xl`}
+      >
+        <VerifiedName name={dept.name} verified={dept.verified} />
+      </Link>
+      <p className={`text-xs font-bold ${t.textMuted} mt-1`}>
+        {formatCount(dept.memberCount)} members · Est. {dept.established}
+      </p>
+
+      {(jobs > 0 || blood > 0) && (
+        <div className="flex flex-wrap gap-1.5 mt-3">
+          {jobs > 0 && <SignalChip tone="emerald" icon={Briefcase}>{jobs} open {jobs === 1 ? 'role' : 'roles'}</SignalChip>}
+          {blood > 0 && <SignalChip tone="red" icon={Droplet}>{blood} blood {blood === 1 ? 'request' : 'requests'}</SignalChip>}
+        </div>
+      )}
+
+      <div className="mt-auto pt-4">
+        <div className={`flex items-end justify-between gap-3 pt-4 border-t ${divider}`}>
+          <div>
+            <p className={`text-sm font-extrabold tabular-nums ${t.text}`}>{getOfficeRoom(dept)}</p>
+            <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mt-0.5`}>Office</p>
+          </div>
+          <span className="inline-flex items-center text-[#1D9BF0] text-xs font-extrabold">
+            Open hub <ArrowUpRight className="w-3.5 h-3.5 ml-1" strokeWidth={2.5} />
+          </span>
+        </div>
+      </div>
+    </Card>
+  );
+};
+
+export const DepartmentGrid = ({ departments, className = '' }) => {
+  const { t } = useTheme();
+  return (
+    <div className={className}>
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <h3 className={`text-base font-extrabold tracking-tight ${t.text}`}>All departments</h3>
+        <VerifiedByNsu />
+      </div>
+      <div className="space-y-6">
+        {groupBySchool(departments).map(([school, depts]) => (
+          <section key={school} aria-label={school}>
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} truncate`}>{school}</p>
+              <span className={`text-[10px] font-extrabold tabular-nums ${t.textMuted} shrink-0`}>{depts.length}</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {depts.map(dept => <DepartmentCard key={dept.id} dept={dept} />)}
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
   );
 };
 

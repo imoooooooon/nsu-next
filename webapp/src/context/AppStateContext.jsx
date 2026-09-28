@@ -13,7 +13,7 @@ const AppStateContext = createContext(null);
 
 /* The demo session is persisted so a refresh or a pasted deep link keeps you
    signed in — on mobile the app never reloads, on the web it constantly does. */
-const SESSION_KEY = 'nsunext-session';
+const SESSION_KEY = 'ugrads-session';
 
 const readSession = () => {
   try {

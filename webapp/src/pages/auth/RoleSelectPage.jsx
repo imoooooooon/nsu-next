@@ -31,7 +31,7 @@ export default function RoleSelectPage() {
 
       <div className="mb-7">
         <h1 className={`text-[28px] font-extrabold tracking-tight ${t.text} leading-tight`}>Select Your Role</h1>
-        <p className={`text-sm mt-1 font-bold ${t.textMuted}`}>Choose how you want to access NSUNEXT</p>
+        <p className={`text-sm mt-1 font-bold ${t.textMuted}`}>Choose how you want to access Ugrads</p>
       </div>
 
       <div className="space-y-4" role="listbox" aria-label="Select user role">

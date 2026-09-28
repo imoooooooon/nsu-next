@@ -4,7 +4,8 @@ import { departmentBroadcasts, departmentJobs, departmentBloodRequests } from '.
 import { getDepartmentAccess, formatCount } from './access';
 
 /* ---------------------------------------------------------------------------
-   The Departments lens of the Directory — a REGISTER, not a card grid.
+   The Departments lens of the Directory — a REGISTER by default, with a
+   card mode (DepartmentGrid) behind the Directory's view toggle.
    Mirrors `webapp/src/features/departments/DepartmentDirectory.jsx`.
 
    People are cards because you size a person up before you connect. A
@@ -70,6 +71,24 @@ const SignalChip = (props) => {
   );
 };
 
+/* The row's and card's second door: straight into the Help Desk thread. */
+const MessageDepartmentButton = ({ dept, isDark, onMessage }) => (
+  <button
+    aria-label={`Message the ${dept.code} department`}
+    onClick={(e) => { e.stopPropagation(); onMessage(dept); }}
+    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${isDark ? 'bg-white/5 text-white border-white/10' : 'bg-white/70 text-black border-white'} transition-transform active:scale-95`}
+  >
+    <Mail className="w-4 h-4" strokeWidth={2.5} />
+  </button>
+);
+
+/* Every department is verified, so the directory says it once per view. */
+const VerifiedByNsu = () => (
+  <span className="inline-flex items-center gap-1 text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider">
+    <BadgeCheck className="w-3.5 h-3.5" strokeWidth={2.5} /> Verified by NSU
+  </span>
+);
+
 export const DepartmentRow = ({ dept, t, isDark, onOpen, onMessage }) => {
   const jobs = (departmentJobs[dept.id] || []).length;
   const blood = (departmentBloodRequests[dept.id] || []).length;
@@ -97,13 +116,7 @@ export const DepartmentRow = ({ dept, t, isDark, onOpen, onMessage }) => {
         )}
       </div>
 
-      <button
-        aria-label={`Message the ${dept.code} department`}
-        onClick={(e) => { e.stopPropagation(); onMessage(dept); }}
-        className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${isDark ? 'bg-white/5 text-white border-white/10' : 'bg-white/70 text-black border-white'} transition-transform active:scale-95`}
-      >
-        <Mail className="w-4 h-4" strokeWidth={2.5} />
-      </button>
+      <MessageDepartmentButton dept={dept} isDark={isDark} onMessage={onMessage} />
     </li>
   );
 };
@@ -117,9 +130,7 @@ export const DepartmentList = ({ departments, t, isDark, onOpen, onMessage }) =>
     <div className={`rounded-2xl ${t.card} border ${t.border} ${t.cardShadow} overflow-hidden`}>
       <div className={`flex items-center justify-between gap-2 px-4 py-3.5 border-b ${divider}`}>
         <h3 className={`text-base font-extrabold tracking-tight ${t.text}`}>All departments</h3>
-        <span className="inline-flex items-center gap-1 text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider">
-          <BadgeCheck className="w-3.5 h-3.5" strokeWidth={2.5} /> Verified by NSU
-        </span>
+        <VerifiedByNsu />
       </div>
 
       {groupBySchool(departments).map(([school, depts], idx) => (
@@ -145,6 +156,72 @@ export const DepartmentList = ({ departments, t, isDark, onOpen, onMessage }) =>
     </div>
   );
 };
+
+/* Card mode — the same register as tiles. Still NOT the person card: plain
+   glass, the code tile leads, and the footer is the office rather than a
+   stat strip. Still grouped by school, still verified once. */
+export const DepartmentCard = ({ dept, t, isDark, onOpen, onMessage }) => {
+  const jobs = (departmentJobs[dept.id] || []).length;
+  const blood = (departmentBloodRequests[dept.id] || []).length;
+  const divider = isDark ? 'border-white/[0.06]' : 'border-black/[0.05]';
+
+  return (
+    <div
+      onClick={() => onOpen(dept)}
+      className={`rounded-2xl ${t.card} border ${t.border} ${t.cardShadow} p-5 cursor-pointer active:scale-[0.99] transition-transform`}
+    >
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <EntityAvatar dept={dept} size="lg" isDark={isDark} />
+        <MessageDepartmentButton dept={dept} isDark={isDark} onMessage={onMessage} />
+      </div>
+      <h3 className={`font-extrabold text-base tracking-tight leading-snug line-clamp-2 ${t.text}`}>
+        <VerifiedName name={dept.name} verified={dept.verified} />
+      </h3>
+      <p className={`text-xs font-bold ${t.textMuted} mt-1`}>
+        {formatCount(dept.memberCount)} members · Est. {dept.established}
+      </p>
+      {(jobs > 0 || blood > 0) && (
+        <div className="flex flex-wrap gap-1.5 mt-3">
+          {jobs > 0 && <SignalChip tone="emerald" icon={Briefcase} isDark={isDark}>{jobs} open {jobs === 1 ? 'role' : 'roles'}</SignalChip>}
+          {blood > 0 && <SignalChip tone="red" icon={Droplet} isDark={isDark}>{blood} blood {blood === 1 ? 'request' : 'requests'}</SignalChip>}
+        </div>
+      )}
+      <div className={`flex items-end justify-between gap-3 mt-4 pt-4 border-t ${divider}`}>
+        <div>
+          <p className={`text-sm font-extrabold tabular-nums ${t.text}`}>{getOfficeRoom(dept)}</p>
+          <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mt-0.5`}>Office</p>
+        </div>
+        <span className="inline-flex items-center text-[#1D9BF0] text-xs font-extrabold">
+          Open hub <ArrowUpRight className="w-3.5 h-3.5 ml-1" strokeWidth={2.5} />
+        </span>
+      </div>
+    </div>
+  );
+};
+
+export const DepartmentGrid = ({ departments, t, isDark, onOpen, onMessage }) => (
+  <div>
+    <div className="flex items-center justify-between gap-2 mb-4">
+      <h3 className={`text-base font-extrabold tracking-tight ${t.text}`}>All departments</h3>
+      <VerifiedByNsu />
+    </div>
+    <div className="space-y-6">
+      {groupBySchool(departments).map(([school, depts]) => (
+        <section key={school} aria-label={school}>
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} truncate`}>{school}</p>
+            <span className={`text-[10px] font-extrabold tabular-nums ${t.textMuted} shrink-0`}>{depts.length}</span>
+          </div>
+          <div className="space-y-4">
+            {depts.map(dept => (
+              <DepartmentCard key={dept.id} dept={dept} t={t} isDark={isDark} onOpen={onOpen} onMessage={onMessage} />
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  </div>
+);
 
 /* The viewer's own department — the membership pass. It carries the one
    thing a member checks most (the latest notice) and their two doors in. */
