@@ -17,11 +17,11 @@ import {
   // Events specific
   CalendarDays, CalendarCheck, CalendarClock, TicketCheck, Trophy,
   BookOpen, Building2, UsersRound, Megaphone, Palette, Dumbbell,
-  HandHeart, CircleDollarSign, ListFilter, RotateCcw, Sparkles,
-
-  // Directory view switch
-  LayoutGrid, List as ListIcon
+  HandHeart, CircleDollarSign, ListFilter, RotateCcw, Sparkles
 } from 'lucide-react';
+
+// --- SELECTION CONTROLS (sliding spring pill + switch, shared with the web) ---
+import { SegmentedPill, ViewModeSwitch, SwitchVisual } from './components/ui/controls';
 
 // --- SEEKING WORK MODULE (Jobs › Seeking) ---
 import {
@@ -130,9 +130,10 @@ const globalEventsData = [
     shortDescription: 'Exploring ethical considerations in deploying LLMs in healthcare.',
     description: 'Join Dr. Aminul Islam as he discusses the ethical deployment of large language models in healthcare settings, addressing bias, privacy, and regulatory compliance.',
     category: 'Research',
+    deptId: 'cse',
     organizer: {
       id: 'org-2', name: 'CSE Department', type: 'Department', verified: true,
-      description: 'Department of Electrical & Computer Engineering.'
+      description: 'Department of Computer Science & Engineering.'
     },
     date: '2026-07-14', endDate: '2026-07-14', time: '3:00 PM', endTime: '4:30 PM',
     venue: 'AUDI 801', venueDetails: 'Admin Building, Level 8.',
@@ -215,8 +216,150 @@ const globalEventsData = [
     registrationInfo: 'Event cancelled due to unavoidable circumstances.',
     tags: ['Ambassador', 'Jobs', 'Networking'],
     notificationType: 'cancelled', notificationMessage: 'Event has been cancelled by the organizer.'
+  },
+  {
+    id: 'event-cse-hackathon',
+    title: 'CSE Project Showcase & Hackathon',
+    shortDescription: 'Thirty-six hours, 60 teams, and the best capstone projects of the semester on show.',
+    description: 'The CSE Department’s flagship end-of-semester event. Capstone teams demo their projects to faculty and industry judges on day one; day two is an open hackathon on the theme “Tech for Bangladesh”. Prizes for the top three teams and internship interviews with partner companies.',
+    category: 'Competition',
+    deptId: 'cse',
+    organizer: {
+      id: 'org-2', name: 'CSE Department', type: 'Department', verified: true,
+      description: 'Department of Computer Science & Engineering.'
+    },
+    date: '2026-07-30', endDate: '2026-07-31', time: '9:00 AM', endTime: '9:00 PM',
+    venue: 'SAC Atrium', venueDetails: 'South Academic Building, Ground Floor.',
+    image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&auto=format&fit=crop',
+    registrationStatus: 'Open', registrationDeadline: '2026-07-26T23:59:00', capacity: 300,
+    goingCount: 184, interestedCount: 410, featured: false, popular: true,
+    recommendationReason: 'From your department',
+    schedule: [
+      { time: 'Day 1 - 9:00 AM', title: 'Capstone Showcase' },
+      { time: 'Day 1 - 3:00 PM', title: 'Hackathon Kick-off' },
+      { time: 'Day 2 - 6:00 PM', title: 'Judging & Awards' }
+    ],
+    registrationInfo: 'Teams of 2–4. At least one member must be a current CSE student.',
+    tags: ['Hackathon', 'Capstone', 'CSE'],
+    notificationType: null, notificationMessage: null
+  },
+  {
+    id: 'event-cse-alumni-talk',
+    title: 'Alumni Tech Talk: Careers in Cloud',
+    shortDescription: 'Tanvir Hasan (AWS, Batch 15) on building a cloud career from Dhaka.',
+    description: 'CSE alumnus Tanvir Hasan, Cloud Solutions Architect at AWS Singapore, talks about certifications, remote roles and what hiring managers look for. Followed by an open Q&A and CV clinic with the CSE industry internship coordinator.',
+    category: 'Career',
+    deptId: 'cse',
+    organizer: {
+      id: 'org-2', name: 'CSE Department', type: 'Department', verified: true,
+      description: 'Department of Computer Science & Engineering.'
+    },
+    date: '2026-08-05', endDate: '2026-08-05', time: '2:30 PM', endTime: '4:30 PM',
+    venue: 'SAC 1042 Seminar Room', venueDetails: 'South Academic Building, Level 10.',
+    image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&auto=format&fit=crop',
+    registrationStatus: 'Open', registrationDeadline: '2026-08-04T23:59:00', capacity: 120,
+    goingCount: 62, interestedCount: 140, featured: false, popular: false,
+    recommendationReason: 'From your department',
+    schedule: [
+      { time: '2:30 PM', title: 'Talk: Careers in Cloud' },
+      { time: '3:30 PM', title: 'Q&A and CV Clinic' }
+    ],
+    registrationInfo: 'Free for NSU students and alumni. Seats are first come, first served.',
+    tags: ['Alumni', 'Cloud', 'Career'],
+    notificationType: null, notificationMessage: null
+  },
+  {
+    id: 'event-ece-iot-expo',
+    title: 'ECE IoT & Robotics Expo',
+    shortDescription: 'Live demos from the VLSI, IoT and robotics labs — open to the whole campus.',
+    description: 'The ECE Department opens its labs for a day of live demos: smart-farming sensors, line-following robots, a RISC-V core on FPGA and more. Industry partners from Samsung R&D and Robi Axiata judge the student project track.',
+    category: 'Research',
+    deptId: 'ece',
+    organizer: {
+      id: 'org-dept-ece', name: 'ECE Department', type: 'Department', verified: true,
+      description: 'Department of Electrical & Computer Engineering.'
+    },
+    date: '2026-07-28', endDate: '2026-07-28', time: '10:00 AM', endTime: '4:00 PM',
+    venue: 'SAC 0915 Lab Wing', venueDetails: 'South Academic Building, Level 9.',
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop',
+    registrationStatus: 'Free Entry', registrationDeadline: null, capacity: 400,
+    goingCount: 96, interestedCount: 220, featured: false, popular: false,
+    recommendationReason: null,
+    schedule: [
+      { time: '10:00 AM', title: 'Labs Open' },
+      { time: '1:00 PM', title: 'Student Project Judging' }
+    ],
+    registrationInfo: 'No registration needed. Bring your NSU ID.',
+    tags: ['IoT', 'Robotics', 'ECE'],
+    notificationType: null, notificationMessage: null
+  },
+  {
+    id: 'event-bba-case-competition',
+    title: 'SBE Case Competition 2026',
+    shortDescription: 'Crack a live business case from a partner bank in 48 hours.',
+    description: 'Teams of four receive a live case from a partner bank and present their recommendation to a panel of senior bankers and faculty. Winners receive a cash prize and fast-track interviews for the partner’s management-trainee programme.',
+    category: 'Competition',
+    deptId: 'bba',
+    organizer: {
+      id: 'org-dept-bba', name: 'Accounting & Finance Department', type: 'Department', verified: true,
+      description: 'Department of Accounting & Finance, School of Business & Economics.'
+    },
+    date: '2026-08-02', endDate: '2026-08-02', time: '10:00 AM', endTime: '5:00 PM',
+    venue: 'NAC Auditorium', venueDetails: 'North Academic Building, Level 2.',
+    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&auto=format&fit=crop',
+    registrationStatus: 'Closing Soon', registrationDeadline: '2026-07-18T23:59:00', capacity: 160,
+    goingCount: 128, interestedCount: 260, featured: false, popular: true,
+    recommendationReason: null,
+    schedule: [
+      { time: '10:00 AM', title: 'Case Release' },
+      { time: '3:00 PM', title: 'Final Presentations' }
+    ],
+    registrationInfo: 'Teams of four. Open to all SBE students.',
+    tags: ['Case Competition', 'Finance', 'Business'],
+    notificationType: null, notificationMessage: null
+  },
+  {
+    id: 'event-arc-thesis-exhibition',
+    title: 'Architecture Thesis Exhibition 2026',
+    shortDescription: 'Final-year thesis projects on building for a delta — models, drawings and juries.',
+    description: 'The annual thesis exhibition of the Department of Architecture. Twenty-four final-year projects on climate-responsive housing, heritage and waterfront design, with public juries every afternoon. Open to the whole campus.',
+    category: 'Cultural',
+    deptId: 'architecture',
+    organizer: {
+      id: 'org-dept-architecture', name: 'Architecture Department', type: 'Department', verified: true,
+      description: 'Department of Architecture.'
+    },
+    date: '2026-07-20', endDate: '2026-07-24', time: '11:00 AM', endTime: '6:00 PM',
+    venue: 'NAC Gallery', venueDetails: 'North Academic Building, Level 4.',
+    image: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&auto=format&fit=crop',
+    registrationStatus: 'Free Entry', registrationDeadline: null, capacity: 600,
+    goingCount: 210, interestedCount: 380, featured: false, popular: false,
+    recommendationReason: null,
+    schedule: [
+      { time: '11:00 AM', title: 'Gallery Opens' },
+      { time: '3:00 PM', title: 'Public Thesis Jury' }
+    ],
+    registrationInfo: 'Free entry for everyone with a campus ID.',
+    tags: ['Architecture', 'Exhibition', 'Thesis'],
+    notificationType: null, notificationMessage: null
   }
 ];
+
+/* Events a department hosts. There is ONE campus calendar: a department event
+   is an ordinary event carrying `deptId`, so it shows in the Events module
+   and on the hub without two lists that could drift apart. "Upcoming" = ends
+   on or after the reference date and not cancelled — soonest first. Same
+   rule as the web's `getDepartmentEvents` (webapp/src/data/events.js). */
+const isUpcomingEvent = (event) =>
+  event.registrationStatus !== 'Cancelled' &&
+  new Date(`${event.endDate || event.date}T23:59:59`) >= EVENTS_REFERENCE_DATE;
+
+const departmentEvents = Object.fromEntries(globalDepartments.map(d => [
+  d.id,
+  globalEventsData
+    .filter(e => e.deptId === d.id && isUpcomingEvent(e))
+    .sort((a, b) => a.date.localeCompare(b.date)),
+]));
 
 
 const JobSlider = ({ jobs, isDark, t, onSelectJob }) => {
@@ -469,9 +612,16 @@ const SettingsItem = ({ icon: Icon, label, value, isToggle, toggleState, onToggl
     <div className="flex items-center">
       {value && <span className={`text-xs font-bold ${t.textMuted} mr-2`}>{value}</span>}
       {isToggle ? (
-        <div onClick={(e) => { e.stopPropagation(); onToggle && onToggle(); }} className={`w-10 h-6 rounded-full flex items-center px-1 transition-colors ${toggleState ? 'bg-[#1D9BF0]' : (isDark ? 'bg-white/20' : 'bg-gray-300')}`}>
-          <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform ${toggleState ? 'translate-x-4' : 'translate-x-0'}`}></div>
-        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={!!toggleState}
+          aria-label={label}
+          onClick={(e) => { e.stopPropagation(); onToggle && onToggle(); }}
+          className="group/switch rounded-full outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]"
+        >
+          <SwitchVisual checked={toggleState} isDark={isDark} />
+        </button>
       ) : (
         <ChevronRight className={`w-4 h-4 ${t.textMuted} group-hover:${t.text} transition-colors`} strokeWidth={2.5} />
       )}
@@ -555,17 +705,14 @@ const ProfileTab = ({ authRole, t, isDark, profileSegment, setProfileSegment, se
         </div>
 
         <div className="mx-5 mt-6 mb-6">
-          <div className={`flex p-1 rounded-xl ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft}`}>
-            {['Account', 'Settings'].map(seg => (
-              <button 
-                key={seg} 
-                onClick={() => setProfileSegment(seg)}
-                className={`flex-1 py-2 rounded-lg text-xs font-extrabold transition-all ${profileSegment === seg ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'} border` : `text-gray-500 hover:${t.text}`}`}
-              >
-                {seg}
-              </button>
-            ))}
-          </div>
+          <SegmentedPill
+            options={['Account', 'Settings']}
+            value={profileSegment}
+            onChange={setProfileSegment}
+            t={t}
+            isDark={isDark}
+            ariaLabel="Profile section"
+          />
         </div>
 
         {profileSegment === 'Account' && (
@@ -2311,7 +2458,9 @@ const EventDetailsScreen = ({
   );
 };
 
-const CreateEventScreen = ({ onClose, t, isDark }) => {
+/* `hostDept` hosts the event as a department hub (its Official / Admins only)
+   — same form, one calendar; the host identity is what changes. */
+const CreateEventScreen = ({ onClose, t, isDark, hostDept = null }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [schedules, setSchedules] = useState([{ time: '', title: '' }]);
 
@@ -2332,15 +2481,29 @@ const CreateEventScreen = ({ onClose, t, isDark }) => {
         <button onClick={onClose} className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors`}>
           <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
         </button>
-        <h2 className={`text-base font-extrabold ${t.text} leading-tight`}>
-          {isSubmitted ? 'Status' : 'Create Event'}
-        </h2>
+        <div className="flex flex-col items-center min-w-0 px-3">
+          <h2 className={`text-base font-extrabold ${t.text} leading-tight`}>
+            {isSubmitted ? 'Status' : 'Create Event'}
+          </h2>
+          {!isSubmitted && hostDept && (
+            <p className={`text-[10px] font-bold ${t.textMuted} truncate`}>Hosting as {hostDept.code} Department</p>
+          )}
+        </div>
         <div className="w-10 h-10"></div>
       </div>
 
       {!isSubmitted ? (
         <>
           <div className="flex-1 overflow-y-auto pb-32 relative z-10 px-5 pt-6 space-y-5">
+            {hostDept && (
+              <div className={`flex items-center gap-3 p-3.5 rounded-2xl ${isDark ? 'bg-[#1D9BF0]/10 border-[#1D9BF0]/20' : 'bg-[#1D9BF0]/[0.07] border-[#1D9BF0]/20'} border`}>
+                <EntityAvatar dept={hostDept} size="sm" isDark={isDark} />
+                <div className="min-w-0 flex-1">
+                  <p className={`text-[10px] font-extrabold ${t.textMuted} uppercase tracking-wider`}>Hosting as</p>
+                  <p className={`text-sm font-extrabold ${t.text} truncate`}>{hostDept.code} Department</p>
+                </div>
+              </div>
+            )}
             <div>
               <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Event Title</label>
               <input type="text" placeholder="e.g. Annual Tech Symposium" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
@@ -2425,13 +2588,15 @@ const CreateEventScreen = ({ onClose, t, isDark }) => {
           </div>
           <h3 className={`text-2xl font-extrabold ${t.text} tracking-tight mb-2 text-center`}>Event Created!</h3>
           <p className={`text-sm font-bold ${t.textMuted} text-center mb-8 max-w-xs leading-relaxed`}>
-            Your event has been successfully published and is now live for students to register.
+            {hostDept
+              ? `Your event is live on the campus calendar and on the ${hostDept.code} Department hub.`
+              : 'Your event has been successfully published and is now live for students to register.'}
           </p>
           <button 
             onClick={onClose} 
             className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] ${isDark ? 'bg-white/10 text-white' : 'bg-black/5 text-black'} border ${t.borderSoft} shadow-sm`}
           >
-            Back to Events
+            {hostDept ? `Back to ${hostDept.code} Hub` : 'Back to Events'}
           </button>
         </div>
       )}
@@ -2996,27 +3161,20 @@ const JobsTab = ({
         </div>
 
         {/* Primary Hiring / Seeking mode toggle */}
-        <div className={`flex p-1 rounded-full ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft} mb-3`} role="tablist" aria-label="Jobs mode">
-          {[
+        <SegmentedPill
+          options={[
             { id: 'hiring', label: 'Hiring' },
             { id: 'seeking', label: 'Seeking' }
-          ].map(mode => (
-            <button
-              key={mode.id}
-              type="button"
-              role="tab"
-              aria-selected={jobsMode === mode.id}
-              onClick={() => { setJobsMode(mode.id); setIsFilterOpen(false); }}
-              className={`flex-1 py-2 rounded-full text-xs font-extrabold transition-all outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0] active:scale-[0.98] ${
-                jobsMode === mode.id
-                  ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'} border`
-                  : `text-gray-500 hover:${t.text}`
-              }`}
-            >
-              {mode.label}
-            </button>
-          ))}
-        </div>
+          ]}
+          value={jobsMode}
+          onChange={(mode) => { setJobsMode(mode); setIsFilterOpen(false); }}
+          t={t}
+          isDark={isDark}
+          rounded="rounded-full"
+          itemRounded="rounded-full"
+          ariaLabel="Jobs mode"
+          className="mb-3"
+        />
 
         <div className="relative w-full mb-4">
           <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4`} strokeWidth={2.5} />
@@ -3264,6 +3422,7 @@ export default function App() {
   const [manageDepartment, setManageDepartment] = useState(null);
   const [departmentChannel, setDepartmentChannel] = useState(null); // { dept, kind, thread }
   const [bloodSheetDept, setBloodSheetDept] = useState(null);
+  const [createEventDept, setCreateEventDept] = useState(null); // hosts an event as a department
   const [postJobAsDept, setPostJobAsDept] = useState(null);
   const [departmentAdminIds, setDepartmentAdminIds] = useState(() =>
     Object.fromEntries(globalDepartments.map(d => [d.id, [...d.adminIds]]))
@@ -3316,7 +3475,19 @@ export default function App() {
     { id: 3, name: 'Ayman Sadiq', role: 'CEO & Founder', company: '10 Minute School', dept: 'BBA', skills: ['EdTech', 'Leadership', 'Marketing'], batch: 'Batch 15', location: 'Dhaka, BD', followers: '1.2M', blood: 'A+', verified: true, about: "Making education accessible for everyone in Bangladesh.", experience: [{ title: 'CEO', company: '10 Minute School', duration: '2015 - Present' }] },
     { id: 4, name: 'Fahim Shahriar', role: 'Senior Product Designer', company: 'Optimizely', dept: 'Architecture', skills: ['UI/UX', 'Figma', 'User Research'], batch: 'Batch 14', location: 'Dhaka, BD', followers: '5.6k', blood: 'B-', verified: true, about: "Crafting intuitive digital experiences. Passionate about solving complex user problems.", experience: [{ title: 'Senior Designer', company: 'Optimizely', duration: '2021 - Present' }, { title: 'UX Designer', company: 'Pathao', duration: '2018 - 2021' }] },
     { id: 5, name: 'Sadia Islam', role: 'Data Scientist', company: 'Microsoft', dept: 'CSE', skills: ['Python', 'Machine Learning', 'SQL'], batch: 'Batch 17', location: 'Seattle, WA', followers: '8.9k', blood: 'O+', verified: true, about: "Data enthusiast. Working on scalable machine learning models to improve cloud infrastructure.", experience: [{ title: 'Data Scientist', company: 'Microsoft', duration: '2020 - Present' }] },
-    { id: 6, name: 'Arif Chowdhury', role: 'Engineering Manager', company: 'Shopify', dept: 'CSE', skills: ['Distributed Systems', 'Go', 'Leadership'], batch: 'Batch 16', location: 'Toronto, CA', followers: '9.7k', blood: 'A-', verified: true, about: "Leading a platform infrastructure team. Happy to mentor NSU juniors starting out in systems careers.", experience: [{ title: 'Engineering Manager', company: 'Shopify', duration: '2023 - Present' }, { title: 'Senior Engineer', company: 'Shopify', duration: '2019 - 2023' }] }
+    { id: 6, name: 'Arif Chowdhury', role: 'Engineering Manager', company: 'Shopify', dept: 'CSE', skills: ['Distributed Systems', 'Go', 'Leadership'], batch: 'Batch 16', location: 'Toronto, CA', followers: '9.7k', blood: 'A-', verified: true, about: "Leading a platform infrastructure team. Happy to mentor NSU juniors starting out in systems careers.", experience: [{ title: 'Engineering Manager', company: 'Shopify', duration: '2023 - Present' }, { title: 'Senior Engineer', company: 'Shopify', duration: '2019 - 2023' }] },
+    { id: 7, name: 'Nabil Ahmed', role: 'Senior Software Engineer', company: 'bKash', dept: 'CSE', skills: ['Kotlin', 'Microservices', 'Kafka'], batch: 'Batch 18', location: 'Dhaka, BD', followers: '4.1k', blood: 'B+', verified: true, about: "Building payment rails used by millions every day. Happy to review CVs for juniors applying to fintech.", experience: [{ title: 'Senior Software Engineer', company: 'bKash', duration: '2021 - Present' }, { title: 'Software Engineer', company: 'Chaldal', duration: '2018 - 2021' }] },
+    { id: 8, name: 'Rumana Akter', role: 'Machine Learning Engineer', company: 'Meta', dept: 'CSE', skills: ['PyTorch', 'Recommender Systems', 'Python'], batch: 'Batch 17', location: 'London, UK', followers: '7.3k', blood: 'A+', verified: true, about: "Working on ranking models for feeds. I run a monthly ML reading circle for NSU students.", experience: [{ title: 'ML Engineer', company: 'Meta', duration: '2022 - Present' }, { title: 'Research Assistant', company: 'NSU CSE', duration: '2016 - 2017' }] },
+    { id: 9, name: 'Tanvir Hasan', role: 'Cloud Solutions Architect', company: 'AWS', dept: 'CSE', skills: ['AWS', 'Kubernetes', 'Terraform'], batch: 'Batch 15', location: 'Singapore, SG', followers: '6.8k', blood: 'O-', verified: true, about: "Helping enterprises move to the cloud across APAC. Ask me about certifications and remote careers.", experience: [{ title: 'Solutions Architect', company: 'AWS', duration: '2020 - Present' }, { title: 'DevOps Engineer', company: 'Grameenphone', duration: '2016 - 2020' }] },
+    { id: 10, name: 'Ishrat Jahan', role: 'Hardware Design Engineer', company: 'Intel', dept: 'ECE', skills: ['Verilog', 'ASIC Design', 'Timing Analysis'], batch: 'Batch 16', location: 'Portland, OR', followers: '3.9k', blood: 'AB+', verified: true, about: "Designing the next generation of low-power silicon. Former VLSI lab TA at NSU.", experience: [{ title: 'Hardware Design Engineer', company: 'Intel', duration: '2021 - Present' }] },
+    { id: 11, name: 'Mahir Faisal', role: 'Network Planning Lead', company: 'Robi Axiata', dept: 'ECE', skills: ['5G', 'RF Planning', 'LTE'], batch: 'Batch 17', location: 'Dhaka, BD', followers: '2.2k', blood: 'B+', verified: true, about: "Planning the 5G rollout across Dhaka division. Always hiring sharp ECE interns.", experience: [{ title: 'Network Planning Lead', company: 'Robi Axiata', duration: '2020 - Present' }] },
+    { id: 12, name: 'Priyanka Das', role: 'Embedded Systems Engineer', company: 'Samsung R&D', dept: 'ECE', skills: ['Embedded C', 'RTOS', 'IoT'], batch: 'Batch 19', location: 'Dhaka, BD', followers: '1.6k', blood: 'O+', verified: true, about: "Firmware for wearables. Robotics club alumna and competition mentor.", experience: [{ title: 'Embedded Engineer', company: 'Samsung R&D', duration: '2022 - Present' }] },
+    { id: 13, name: 'Shahriar Kabir', role: 'Investment Analyst', company: 'BRAC Bank', dept: 'BBA', skills: ['Valuation', 'Financial Modeling', 'Equity Research'], batch: 'Batch 18', location: 'Dhaka, BD', followers: '2.9k', blood: 'A-', verified: true, about: "Covering banking and telecom equities. CFA Level III candidate.", experience: [{ title: 'Investment Analyst', company: 'BRAC Bank', duration: '2021 - Present' }, { title: 'Analyst Intern', company: 'IDLC Finance', duration: 'Summer 2019' }] },
+    { id: 14, name: 'Farhana Mim', role: 'Brand Manager', company: 'Unilever Bangladesh', dept: 'BBA', skills: ['Brand Strategy', 'Consumer Insights', 'Marketing'], batch: 'Batch 17', location: 'Dhaka, BD', followers: '5.4k', blood: 'B+', verified: true, about: "Leading a personal-care brand portfolio. Mentor in the Unilever Future Leaders programme.", experience: [{ title: 'Brand Manager', company: 'Unilever Bangladesh', duration: '2022 - Present' }, { title: 'Management Trainee', company: 'Unilever Bangladesh', duration: '2020 - 2022' }] },
+    { id: 15, name: 'Kamrul Islam', role: 'Audit Senior', company: 'KPMG', dept: 'BBA', skills: ['Audit', 'IFRS', 'Risk Advisory'], batch: 'Batch 19', location: 'Dhaka, BD', followers: '1.2k', blood: 'O+', verified: false, about: "Audit and assurance for financial services clients. ACCA affiliate.", experience: [{ title: 'Audit Senior', company: 'KPMG', duration: '2022 - Present' }] },
+    { id: 16, name: 'Rafia Sultana', role: 'Associate Architect', company: 'Delta Design Studio', dept: 'Architecture', skills: ['Revit', 'Sustainable Design', 'Urban Housing'], batch: 'Batch 16', location: 'Dhaka, BD', followers: '2.4k', blood: 'A+', verified: true, about: "Designing climate-responsive low-income housing. Thesis jury member at NSU.", experience: [{ title: 'Associate Architect', company: 'Delta Design Studio', duration: '2020 - Present' }] },
+    { id: 17, name: 'Ayon Rahman', role: 'Urban Designer', company: 'Dhaka Urban Lab', dept: 'Architecture', skills: ['Urban Design', 'GIS', 'Public Space'], batch: 'Batch 15', location: 'Dhaka, BD', followers: '1.9k', blood: 'B-', verified: true, about: "Reimagining Dhaka's public spaces and waterfronts. Runs a walking-tour series for students.", experience: [{ title: 'Urban Designer', company: 'Dhaka Urban Lab', duration: '2019 - Present' }] },
+    { id: 18, name: 'Sabbir Hossain', role: 'DevOps Engineer', company: 'Chaldal', dept: 'CSE', skills: ['Docker', 'CI/CD', 'Linux'], batch: 'Batch 20', location: 'Dhaka, BD', followers: '980', blood: 'A+', verified: true, about: "Keeping groceries moving with reliable infrastructure. Open to mentoring final-year students.", experience: [{ title: 'DevOps Engineer', company: 'Chaldal', duration: '2023 - Present' }] }
   ];
 
   const globalFacultyData = [
@@ -3326,7 +3497,15 @@ export default function App() {
     { id: 104, name: 'Ms. Nabila Rahman', role: 'Lecturer', company: 'North South University', dept: 'BBA', skills: ['Corporate Finance', 'Investment', 'Accounting'], batch: 'Faculty', location: 'Dhaka, BD', followers: '980', blood: 'O-', verified: true, about: "Passionate about teaching financial literacy and corporate investment strategies.", experience: [{ title: 'Lecturer', company: 'NSU', duration: '2021 - Present' }] },
     { id: 105, name: 'Dr. Tanzima Hashem', role: 'Associate Professor', company: 'North South University', dept: 'CSE', skills: ['Databases', 'Spatial Computing', 'Privacy'], batch: 'Faculty', location: 'Dhaka, BD', followers: '1.3k', blood: 'B+', verified: true, about: "Researching privacy-preserving location services and spatial query processing.", experience: [{ title: 'Assoc. Professor', company: 'NSU', duration: '2016 - Present' }] },
     { id: 106, name: 'Mr. Rashedul Karim', role: 'Senior Lecturer', company: 'North South University', dept: 'CSE', skills: ['Software Engineering', 'Web Systems', 'DevOps'], batch: 'Faculty', location: 'Dhaka, BD', followers: '870', blood: 'O+', verified: true, about: "Teaching software engineering and web systems. Coordinator for the CSE industry internship programme.", experience: [{ title: 'Senior Lecturer', company: 'NSU', duration: '2018 - Present' }] },
-    { id: 107, name: 'Dr. Farhana Sarker', role: 'Assistant Professor', company: 'North South University', dept: 'CSE', skills: ['Health Informatics', 'Data Mining', 'R'], batch: 'Faculty', location: 'Dhaka, BD', followers: '1.1k', blood: 'A+', verified: true, about: "Working at the intersection of health informatics and applied data mining.", experience: [{ title: 'Asst. Professor', company: 'NSU', duration: '2019 - Present' }] }
+    { id: 107, name: 'Dr. Farhana Sarker', role: 'Assistant Professor', company: 'North South University', dept: 'CSE', skills: ['Health Informatics', 'Data Mining', 'R'], batch: 'Faculty', location: 'Dhaka, BD', followers: '1.1k', blood: 'A+', verified: true, about: "Working at the intersection of health informatics and applied data mining.", experience: [{ title: 'Asst. Professor', company: 'NSU', duration: '2019 - Present' }] },
+    { id: 108, name: 'Dr. Shamim Ahsan', role: 'Professor', company: 'North South University', dept: 'BBA', skills: ['Strategic Management', 'Corporate Governance', 'Finance'], batch: 'Faculty', location: 'Dhaka, BD', followers: '1.7k', blood: 'B+', verified: true, about: "Chair of the Department of Accounting & Finance. 20 years in corporate governance research.", experience: [{ title: 'Professor & Chair', company: 'NSU', duration: '2012 - Present' }] },
+    { id: 109, name: 'Ar. Nusrat Farzana', role: 'Associate Professor', company: 'North South University', dept: 'Architecture', skills: ['Heritage Conservation', 'Climate Design', 'Studio Pedagogy'], batch: 'Faculty', location: 'Dhaka, BD', followers: '1.2k', blood: 'O+', verified: true, about: "Chair of the Department of Architecture. Leads the delta-housing research studio.", experience: [{ title: 'Assoc. Professor & Chair', company: 'NSU', duration: '2014 - Present' }] },
+    { id: 110, name: 'Dr. Mahfuza Begum', role: 'Assistant Professor', company: 'North South University', dept: 'ECE', skills: ['Signal Processing', 'Wireless Communication', 'MATLAB'], batch: 'Faculty', location: 'Dhaka, BD', followers: '760', blood: 'A+', verified: true, about: "Researching energy-efficient wireless sensor networks.", experience: [{ title: 'Asst. Professor', company: 'NSU', duration: '2019 - Present' }] },
+    { id: 111, name: 'Mr. Imran Hossain', role: 'Lecturer', company: 'North South University', dept: 'CSE', skills: ['Data Structures', 'Competitive Programming', 'C++'], batch: 'Faculty', location: 'Dhaka, BD', followers: '640', blood: 'O+', verified: true, about: "Coach of the NSU ACM ICPC teams. Teaches CSE 225 and CSE 373.", experience: [{ title: 'Lecturer', company: 'NSU', duration: '2021 - Present' }] },
+    { id: 112, name: 'Ms. Farzana Yasmin', role: 'Senior Lecturer', company: 'North South University', dept: 'BBA', skills: ['Marketing Analytics', 'Consumer Behaviour', 'Research Methods'], batch: 'Faculty', location: 'Dhaka, BD', followers: '820', blood: 'AB-', verified: true, about: "Teaching marketing analytics and advising the NSU Marketing Club.", experience: [{ title: 'Senior Lecturer', company: 'NSU', duration: '2017 - Present' }] },
+    { id: 113, name: 'Ar. Kazi Tanvir Ahmed', role: 'Assistant Professor', company: 'North South University', dept: 'Architecture', skills: ['Parametric Design', 'Rhino', 'Fabrication'], batch: 'Faculty', location: 'Dhaka, BD', followers: '590', blood: 'B+', verified: true, about: "Runs the digital fabrication workshop and the annual thesis exhibition.", experience: [{ title: 'Asst. Professor', company: 'NSU', duration: '2018 - Present' }] },
+    { id: 114, name: 'Dr. Rubaiyat Chowdhury', role: 'Associate Professor', company: 'North South University', dept: 'ECE', skills: ['Power Systems', 'Renewable Energy', 'Smart Grid'], batch: 'Faculty', location: 'Dhaka, BD', followers: '910', blood: 'O-', verified: true, about: "Working on grid integration of rooftop solar across Bangladesh.", experience: [{ title: 'Assoc. Professor', company: 'NSU', duration: '2013 - Present' }] },
+    { id: 115, name: 'Ms. Sumaiya Tabassum', role: 'Lecturer', company: 'North South University', dept: 'Architecture', skills: ['Architectural Drawing', 'Theory', 'History'], batch: 'Faculty', location: 'Dhaka, BD', followers: '430', blood: 'A+', verified: true, about: "Teaches first-year design studio and architectural history.", experience: [{ title: 'Lecturer', company: 'NSU', duration: '2022 - Present' }] }
   ];
 
   const globalStudentData = [
@@ -3336,7 +3515,20 @@ export default function App() {
     { id: 204, name: 'Mehzabin Oishee', role: 'Student', company: 'North South University', dept: 'ECE', skills: ['IoT', 'Arduino', 'C'], batch: 'Batch 221', location: 'Dhaka, BD', followers: '250', blood: 'O+', verified: true, about: "Robotics enthusiast. Building smart home solutions for my final year project.", experience: [{ title: 'Project Lead', company: 'NSU Robotics Club', duration: '2023 - Present' }] },
     { id: 205, name: 'Zayed Khan', role: 'Student', company: 'North South University', dept: 'BBA', skills: ['Marketing', 'Communication', 'Sales'], batch: 'Batch 241', location: 'Dhaka, BD', followers: '85', blood: 'B-', verified: false, about: "Freshman majoring in BBA. Looking to explore the world of digital marketing.", experience: [{ title: 'Volunteer', company: 'NSU YES', duration: '2025 - Present' }] },
     { id: 206, name: 'Nafis Anwar', role: 'Student', company: 'North South University', dept: 'CSE', skills: ['Java', 'Spring Boot', 'SQL'], batch: 'Batch 233', location: 'Dhaka, BD', followers: '96', blood: 'O+', verified: true, about: "Backend-leaning CS student. Interested in distributed systems and clean architecture.", experience: [{ title: 'Backend Intern', company: 'Brain Station 23', duration: 'Summer 2025' }] },
-    { id: 207, name: 'Samira Haque', role: 'Student', company: 'North South University', dept: 'CSE', skills: ['Flutter', 'UI Engineering', 'Firebase'], batch: 'Batch 222', location: 'Dhaka, BD', followers: '318', blood: 'AB+', verified: true, about: "Final year CS student building cross-platform apps. TA for CSE 115 lab sections.", experience: [{ title: 'Teaching Assistant', company: 'NSU CSE', duration: '2025 - Present' }] }
+    { id: 207, name: 'Samira Haque', role: 'Student', company: 'North South University', dept: 'CSE', skills: ['Flutter', 'UI Engineering', 'Firebase'], batch: 'Batch 222', location: 'Dhaka, BD', followers: '318', blood: 'AB+', verified: true, about: "Final year CS student building cross-platform apps. TA for CSE 115 lab sections.", experience: [{ title: 'Teaching Assistant', company: 'NSU CSE', duration: '2025 - Present' }] },
+    { id: 208, name: 'Tasnim Ara', role: 'Student', company: 'North South University', dept: 'CSE', skills: ['Python', 'Machine Learning', 'PyTorch'], batch: 'Batch 231', location: 'Dhaka, BD', followers: '210', blood: 'A+', verified: true, about: "ML enthusiast working on Bangla NLP for my capstone.", experience: [{ title: 'Research Assistant', company: 'NSU CSE NLP Lab', duration: '2025 - Present' }] },
+    { id: 209, name: 'Rakib Hasan', role: 'Student', company: 'North South University', dept: 'CSE', skills: ['C', 'Problem Solving', 'Git'], batch: 'Batch 241', location: 'Dhaka, BD', followers: '64', blood: 'O+', verified: false, about: "First-year CS student. Learning the ropes of competitive programming.", experience: [{ title: 'Member', company: 'NSU ACM SC', duration: '2025 - Present' }] },
+    { id: 210, name: 'Nusaiba Karim', role: 'Student', company: 'North South University', dept: 'CSE', skills: ['Figma', 'React', 'UI Design'], batch: 'Batch 223', location: 'Dhaka, BD', followers: '290', blood: 'B+', verified: true, about: "Design-minded frontend developer. I love turning messy flows into simple ones.", experience: [{ title: 'Frontend Intern', company: 'Brain Station 23', duration: 'Summer 2025' }] },
+    { id: 211, name: 'Fardin Islam', role: 'Student', company: 'North South University', dept: 'CSE', skills: ['Cybersecurity', 'Linux', 'Networking'], batch: 'Batch 221', location: 'Dhaka, BD', followers: '180', blood: 'AB+', verified: true, about: "CTF player and security club lead. Interested in blue-team operations.", experience: [{ title: 'Security Intern', company: 'Grameenphone', duration: 'Summer 2025' }] },
+    { id: 212, name: 'Adiba Rahman', role: 'Student', company: 'North South University', dept: 'ECE', skills: ['Signal Processing', 'MATLAB', 'Python'], batch: 'Batch 232', location: 'Dhaka, BD', followers: '140', blood: 'B+', verified: true, about: "Working on ECG signal denoising for my junior design project.", experience: [{ title: 'Lab Volunteer', company: 'NSU ECE', duration: '2025 - Present' }] },
+    { id: 213, name: 'Shafin Chowdhury', role: 'Student', company: 'North South University', dept: 'ECE', skills: ['PCB Design', 'Verilog', 'VLSI'], batch: 'Batch 222', location: 'Dhaka, BD', followers: '230', blood: 'O-', verified: true, about: "Final-year ECE student taping out a small RISC-V core.", experience: [{ title: 'Hardware Intern', company: 'Samsung R&D', duration: 'Summer 2025' }] },
+    { id: 214, name: 'Lamia Hoque', role: 'Student', company: 'North South University', dept: 'ECE', skills: ['Arduino', 'C', 'Robotics'], batch: 'Batch 241', location: 'Dhaka, BD', followers: '75', blood: 'A-', verified: false, about: "Freshman, robotics club rookie, building my first line follower.", experience: [{ title: 'Member', company: 'NSU Robotics Club', duration: '2025 - Present' }] },
+    { id: 215, name: 'Ishmam Kabir', role: 'Student', company: 'North South University', dept: 'BBA', skills: ['Financial Modeling', 'Excel', 'Valuation'], batch: 'Batch 222', location: 'Dhaka, BD', followers: '260', blood: 'B+', verified: true, about: "Finance major, CFA Level I candidate and case-competition regular.", experience: [{ title: 'Finance Intern', company: 'IDLC Finance', duration: 'Summer 2025' }] },
+    { id: 216, name: 'Raisa Tabassum', role: 'Student', company: 'North South University', dept: 'BBA', skills: ['HR', 'Communication', 'Event Management'], batch: 'Batch 231', location: 'Dhaka, BD', followers: '190', blood: 'O+', verified: true, about: "HR major and events lead at the NSU Business Club.", experience: [{ title: 'Events Lead', company: 'NSU Business Club', duration: '2024 - Present' }] },
+    { id: 217, name: 'Tahsin Alam', role: 'Student', company: 'North South University', dept: 'BBA', skills: ['Supply Chain', 'Data Analysis', 'Power BI'], batch: 'Batch 223', location: 'Dhaka, BD', followers: '110', blood: 'A+', verified: true, about: "Supply chain major. Interested in analytics for retail logistics.", experience: [{ title: 'Operations Intern', company: 'Daraz', duration: 'Summer 2025' }] },
+    { id: 218, name: 'Maliha Rahman', role: 'Student', company: 'North South University', dept: 'Architecture', skills: ['Revit', 'Rhino', 'Sketching'], batch: 'Batch 231', location: 'Dhaka, BD', followers: '205', blood: 'B+', verified: true, about: "Third-year architecture student exploring bamboo as a structural material.", experience: [{ title: 'Studio Assistant', company: 'NSU Architecture', duration: '2025 - Present' }] },
+    { id: 219, name: 'Arnob Das', role: 'Student', company: 'North South University', dept: 'Architecture', skills: ['AutoCAD', 'Model Making', 'Photography'], batch: 'Batch 241', location: 'Dhaka, BD', followers: '58', blood: 'O+', verified: false, about: "First-year design student. Photographing old Dhaka on weekends.", experience: [{ title: 'Member', company: 'NSU Photography Club', duration: '2025 - Present' }] },
+    { id: 220, name: 'Zarin Tasnim', role: 'Student', company: 'North South University', dept: 'Architecture', skills: ['Urban Design', 'GIS', 'Research'], batch: 'Batch 213', location: 'Dhaka, BD', followers: '330', blood: 'A-', verified: true, about: "Thesis on flood-adaptive neighbourhoods in Sylhet.", experience: [{ title: 'Research Intern', company: 'Dhaka Urban Lab', duration: '2025 - Present' }] }
   ];
 
   const globalJobsData = [
@@ -4289,12 +4481,16 @@ export default function App() {
                      </p>
                    </div>
                  </div>
-                 <div 
-                   onClick={() => setIsAvailable(!isAvailable)} 
-                   className={`w-12 h-7 rounded-full flex items-center px-1 transition-colors cursor-pointer border ${isAvailable ? 'bg-green-500 border-green-500' : (isDark ? 'bg-white/10 border-white/20' : 'bg-gray-200 border-gray-300')}`}
+                 <button
+                   type="button"
+                   role="switch"
+                   aria-checked={isAvailable}
+                   aria-label="Available to donate"
+                   onClick={() => setIsAvailable(!isAvailable)}
+                   className="group/switch rounded-full outline-none focus-visible:ring-2 focus-visible:ring-green-500"
                  >
-                    <div className={`w-5 h-5 bg-white rounded-full shadow-sm transform transition-transform ${isAvailable ? 'translate-x-5' : 'translate-x-0'}`}></div>
-                 </div>
+                   <SwitchVisual checked={isAvailable} isDark={isDark} color="bg-green-500" size="lg" />
+                 </button>
               </div>
 
               <div className="flex justify-between items-center pt-2">
@@ -4481,10 +4677,6 @@ export default function App() {
 
     const viewKind = isDepartments ? 'departments' : 'people';
     const view = directoryView[viewKind];
-    const viewModes = [
-      { id: 'card', label: 'Card view', icon: LayoutGrid },
-      { id: 'list', label: 'List view', icon: ListIcon },
-    ];
 
     let displayData = isDepartments ? globalDepartments :
                       directorySegment === 'Alumni' ? globalAlumniData : 
@@ -4515,17 +4707,16 @@ export default function App() {
             </button>
           </div>
 
-          <div className={`flex p-1 rounded-xl ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft} mb-2`}>
-            {availableTabs.map(seg => (
-              <button 
-                key={seg} 
-                onClick={() => setDirectorySegment(seg)}
-                className={`flex-1 py-2 rounded-lg text-[11px] font-extrabold transition-all truncate ${directorySegment === seg ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'} border` : `text-gray-500 hover:${t.text}`}`}
-              >
-                {seg === 'Departments' ? 'Depts' : seg}
-              </button>
-            ))}
-          </div>
+          <SegmentedPill
+            options={availableTabs.map(seg => ({ id: seg, label: seg === 'Departments' ? 'Depts' : seg }))}
+            value={directorySegment}
+            onChange={setDirectorySegment}
+            t={t}
+            isDark={isDark}
+            textSize="text-[11px]"
+            ariaLabel="Directory lens"
+            className="mb-2"
+          />
           
           {/* The results line carries the view switch — it changes how these
               results are laid out, so it sits with them. */}
@@ -4533,24 +4724,12 @@ export default function App() {
             <p className="text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider">
               Showing {displayData.length} results • {directorySegment}
             </p>
-            <div role="radiogroup" aria-label="View mode" className={`inline-flex p-0.5 rounded-lg ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft}`}>
-              {viewModes.map(mode => {
-                const active = view === mode.id;
-                const ModeIcon = mode.icon;
-                return (
-                  <button
-                    key={mode.id}
-                    role="radio"
-                    aria-checked={active}
-                    aria-label={mode.label}
-                    onClick={() => setDirectoryView(prev => ({ ...prev, [viewKind]: mode.id }))}
-                    className={`w-8 h-7 rounded-md flex items-center justify-center border transition-all active:scale-95 ${active ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'}` : `border-transparent ${t.textMuted}`}`}
-                  >
-                    <ModeIcon className="w-3.5 h-3.5" strokeWidth={2.5} />
-                  </button>
-                );
-              })}
-            </div>
+            <ViewModeSwitch
+              value={view}
+              onChange={(mode) => setDirectoryView(prev => ({ ...prev, [viewKind]: mode }))}
+              t={t}
+              isDark={isDark}
+            />
           </div>
         </div>
 
@@ -4574,6 +4753,7 @@ export default function App() {
             return (
               <DepartmentView
                 departments={displayData}
+                departmentEvents={departmentEvents}
                 t={t}
                 isDark={isDark}
                 onOpen={handleOpenDepartment}
@@ -4890,25 +5070,22 @@ export default function App() {
             />
           </div>
 
-          <div className={`flex p-1 rounded-xl ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft}`}>
-            {(viewerDeptAccess.isAdmin ? ['All Chats', 'Requests', 'Help Desk'] : ['All Chats', 'Requests']).map(seg => {
-              const badge = seg === 'Requests' ? 1 : seg === 'Help Desk' ? waitingCount : 0;
-              return (
-              <button 
-                key={seg} 
-                onClick={() => setChatSegment(seg)}
-                className={`flex-1 py-2 rounded-lg text-[11px] font-extrabold transition-all flex items-center justify-center truncate ${chatSegment === seg ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'} border` : `text-gray-500 hover:${t.text}`}`}
-              >
-                {seg}
-                {badge > 0 && (
-                  <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-black ${chatSegment === seg ? 'bg-[#1D9BF0] text-white' : 'bg-[#1D9BF0]/20 text-[#1D9BF0]'}`}>
-                    {badge}
-                  </span>
-                )}
-              </button>
-              );
-            })}
-          </div>
+          {/* MessagesTab owns hooks, so it stays a component and remounts
+              with <App/>; the memoryKey keeps its pill gliding anyway. */}
+          <SegmentedPill
+            options={(viewerDeptAccess.isAdmin ? ['All Chats', 'Requests', 'Help Desk'] : ['All Chats', 'Requests']).map(seg => ({
+              id: seg,
+              label: seg,
+              badge: seg === 'Requests' ? 1 : seg === 'Help Desk' ? waitingCount : 0,
+            }))}
+            value={chatSegment}
+            onChange={setChatSegment}
+            t={t}
+            isDark={isDark}
+            textSize="text-[11px]"
+            memoryKey="messages-segment"
+            ariaLabel="Conversations"
+          />
         </div>
 
         <div className="flex-1 overflow-y-auto pb-36 px-4 pt-3 relative z-10">
@@ -5625,7 +5802,13 @@ export default function App() {
               <div className="flex flex-col h-full relative z-10">
                 <div className="flex-1 overflow-hidden relative">
                   {activeTab === 'home' && <HomeTab />}
-                  {activeTab === 'directory' && <DirectoryTab />}
+                  {/* DirectoryTab and EmergencyTab are declared inside <App/> and
+                      hold no hooks, so they are CALLED, not mounted: as
+                      <DirectoryTab /> they were a new component type on every
+                      App render, remounting the whole tab — every pill and
+                      switch snapped instead of animating, and the tab re-ran
+                      its fade-in on each tap. */}
+                  {activeTab === 'directory' && DirectoryTab()}
                   {activeTab === 'jobs' && <JobsTab
                     t={t} isDark={isDark} authRole={authRole}
                     jobs={globalJobsData} directoryUsers={allDirectoryUsers}
@@ -5650,7 +5833,7 @@ export default function App() {
                     onClearSeekingFilters={handleClearSeekingFilters}
                     onViewAllTalent={handleViewAllTalent}
                   />}
-                  {activeTab === 'emergency' && <EmergencyTab />}
+                  {activeTab === 'emergency' && EmergencyTab()}
                   {activeTab === 'emergency_directory' && <EmergencyDirectoryTab />}
                   {activeTab === 'messages' && <MessagesTab />}
                   {activeTab === 'profile' && <ProfileTab 
@@ -5781,19 +5964,25 @@ export default function App() {
             )}
             {/* --- END MOMENTS OVERLAYS --- */}
             {/* --- GLOBAL EVENT DETAILS OVERLAY --- */}
+            {/* EventDetailsScreen is an in-flow screen (it normally lives inside
+                the Events module's surface), so this wrapper supplies the
+                opaque surface — and z-[70] lands it above a department hub
+                (z-50) or its console (z-[65]) that opened it. */}
             {selectedGlobalEvent && (
-              <EventDetailsScreen 
-                event={selectedGlobalEvent} 
-                navigateTo={() => {}} 
-                onBack={() => setSelectedGlobalEvent(null)} 
-                t={t} isDark={isDark} setToastMsg={setToastMsg}
-                registeredEventIds={registeredEventIds} setRegisteredEventIds={setRegisteredEventIds}
-                goingEventIds={goingEventIds} setGoingEventIds={setGoingEventIds}
-                interestedEventIds={interestedEventIds} setInterestedEventIds={setInterestedEventIds}
-                reminderEventIds={reminderEventIds} setReminderEventIds={setReminderEventIds}
-                followedOrganizerIds={followedOrganizerIds} setFollowedOrganizerIds={setFollowedOrganizerIds}
-                allEvents={globalEventsData}
-              />
+              <div className={`absolute inset-0 z-[70] flex flex-col overflow-hidden animate-slide-up ${t.bg}`}>
+                <EventDetailsScreen
+                  event={selectedGlobalEvent}
+                  navigateTo={() => {}}
+                  onBack={() => setSelectedGlobalEvent(null)}
+                  t={t} isDark={isDark} setToastMsg={setToastMsg}
+                  registeredEventIds={registeredEventIds} setRegisteredEventIds={setRegisteredEventIds}
+                  goingEventIds={goingEventIds} setGoingEventIds={setGoingEventIds}
+                  interestedEventIds={interestedEventIds} setInterestedEventIds={setInterestedEventIds}
+                  reminderEventIds={reminderEventIds} setReminderEventIds={setReminderEventIds}
+                  followedOrganizerIds={followedOrganizerIds} setFollowedOrganizerIds={setFollowedOrganizerIds}
+                  allEvents={globalEventsData}
+                />
+              </div>
             )}
             {selectedJob && (
               <JobDetailView job={selectedJob} onBack={() => setSelectedJob(null)} />
@@ -5872,6 +6061,12 @@ export default function App() {
                 adminIds={departmentAdminIds[selectedDepartment.id]}
                 peopleByCohort={{ students: globalStudentData, alumni: globalAlumniData, faculty: globalFacultyData }}
                 findUserById={(id) => allDirectoryUsers.find(u => u.id === id) || null}
+                events={departmentEvents[selectedDepartment.id] || []}
+                renderEventStatus={(e) => (
+                  <EventStatusBadge status={registeredEventIds.has(e.id) ? 'Registered' : e.registrationStatus} isDark={isDark} />
+                )}
+                onOpenEvent={setSelectedGlobalEvent}
+                onCreateEvent={setCreateEventDept}
                 onBack={() => setSelectedDepartment(null)}
                 onSelectUser={setSelectedUser}
                 onOpenChannel={handleOpenDepartmentChannel}
@@ -5906,6 +6101,8 @@ export default function App() {
                 }}
                 onPostJob={(d) => { setPostJobAsDept(d); setIsPostJobOpen(true); }}
                 onPostBlood={setBloodSheetDept}
+                onCreateEvent={setCreateEventDept}
+                upcomingEventCount={(departmentEvents[manageDepartment.id] || []).length}
                 onToast={showToast}
               />
             )}
@@ -5927,6 +6124,19 @@ export default function App() {
                 onManage={(d) => { setDepartmentChannel(null); setManageDepartment(d); }}
                 onToast={showToast}
               />
+            )}
+
+            {/* Hosting an event as a department — opened from the hub or its
+                console, so it sits above both. */}
+            {createEventDept && (
+              <div className="absolute inset-0 z-[80]">
+                <CreateEventScreen
+                  hostDept={createEventDept}
+                  t={t}
+                  isDark={isDark}
+                  onClose={() => setCreateEventDept(null)}
+                />
+              </div>
             )}
 
             {/* Sits above the manage console, which opened it. */}

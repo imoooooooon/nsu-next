@@ -1,15 +1,25 @@
 import { LayoutGrid, List } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeContext';
+import { useSlidingPill } from './motion';
 
 /* ---------------------------------------------------------------------------
    Selection controls — segmented tabs, chips, toggles.
 --------------------------------------------------------------------------- */
 
-/* The rounded-rectangle segmented control (Account/Settings, Alumni/Student/Faculty…). */
-export const SegmentedControl = ({ options, value, onChange, rounded = 'rounded-xl', itemRounded = 'rounded-lg', className = '' }) => {
+/* The rounded-rectangle segmented control (Account/Settings, Alumni/Student/Faculty…).
+   One pill travels between options on a spring (useSlidingPill) instead of
+   the active option repainting in place. `memoryKey` keeps the glide alive
+   across a remount (see motion.js). */
+export const SegmentedControl = ({ options, value, onChange, rounded = 'rounded-xl', itemRounded = 'rounded-lg', memoryKey, className = '' }) => {
   const { t, isDark } = useTheme();
+  const { trackRef, pillRef } = useSlidingPill(value, { memoryKey });
   return (
-    <div className={`flex p-1 ${rounded} ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft} ${className}`} role="tablist">
+    <div ref={trackRef} className={`relative flex p-1 ${rounded} ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft} ${className}`} role="tablist">
+      <span
+        ref={pillRef}
+        aria-hidden="true"
+        className={`sliding-pill ${itemRounded} border ${isDark ? 'bg-[#1A1A1A] border-white/10' : 'bg-white shadow-sm border-white'}`}
+      />
       {options.map((opt) => {
         const o = typeof opt === 'string' ? { id: opt, label: opt } : opt;
         const active = value === o.id;
@@ -18,16 +28,18 @@ export const SegmentedControl = ({ options, value, onChange, rounded = 'rounded-
             key={o.id}
             role="tab"
             aria-selected={active}
+            data-pill-key={o.id}
+            data-pill-active={active}
             onClick={() => onChange(o.id)}
-            className={`flex-1 py-2 ${itemRounded} text-xs font-extrabold transition-all flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0] active:scale-[0.98] ${
+            className={`relative z-10 flex-1 py-2 ${itemRounded} border border-transparent text-xs font-extrabold transition-[color,transform] duration-300 flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0] active:scale-[0.97] ${
               active
-                ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'} border`
-                : `text-gray-500 hover:${t.text}`
+                ? (isDark ? 'text-white' : 'text-black')
+                : `text-gray-500 ${isDark ? 'hover:text-white' : 'hover:text-black'}`
             }`}
           >
             {o.label}
             {o.badge != null && (
-              <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-black ${active ? 'bg-[#1D9BF0] text-white' : 'bg-[#1D9BF0]/20 text-[#1D9BF0]'}`}>
+              <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-black transition-colors duration-300 ${active ? 'bg-[#1D9BF0] text-white' : 'bg-[#1D9BF0]/20 text-[#1D9BF0]'}`}>
                 {o.badge}
               </span>
             )}
@@ -47,10 +59,16 @@ const VIEW_MODES = [
   { id: 'list', label: 'List view', icon: List },
 ];
 
-export const ViewModeToggle = ({ value, onChange, className = '' }) => {
+export const ViewModeToggle = ({ value, onChange, memoryKey, className = '' }) => {
   const { t, isDark } = useTheme();
+  const { trackRef, pillRef } = useSlidingPill(value, { memoryKey });
   return (
-    <div role="radiogroup" aria-label="View mode" className={`inline-flex p-0.5 rounded-lg ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft} ${className}`}>
+    <div ref={trackRef} role="radiogroup" aria-label="View mode" className={`relative inline-flex p-0.5 rounded-lg ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft} ${className}`}>
+      <span
+        ref={pillRef}
+        aria-hidden="true"
+        className={`sliding-pill rounded-md border ${isDark ? 'bg-[#1A1A1A] border-white/10' : 'bg-white shadow-sm border-white'}`}
+      />
       {VIEW_MODES.map((mode) => {
         const active = value === mode.id;
         return (
@@ -61,11 +79,13 @@ export const ViewModeToggle = ({ value, onChange, className = '' }) => {
             aria-checked={active}
             aria-label={mode.label}
             title={mode.label}
+            data-pill-key={mode.id}
+            data-pill-active={active}
             onClick={() => onChange(mode.id)}
-            className={`w-8 h-7 rounded-md flex items-center justify-center border transition-all outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0] active:scale-95 ${
+            className={`relative z-10 w-8 h-7 rounded-md flex items-center justify-center border border-transparent transition-[color,transform] duration-300 outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0] active:scale-90 ${
               active
-                ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'}`
-                : `border-transparent ${t.textMuted} ${isDark ? 'hover:text-white' : 'hover:text-black'}`
+                ? (isDark ? 'text-white' : 'text-black')
+                : `${t.textMuted} ${isDark ? 'hover:text-white' : 'hover:text-black'}`
             }`}
           >
             <mode.icon className="w-3.5 h-3.5" strokeWidth={2.5} />
@@ -112,23 +132,41 @@ export const Pill = ({ className = '', children }) => (
   </span>
 );
 
-/* iOS-style switch, same geometry as mobile. */
-export const Toggle = ({ checked, onChange, color = 'bg-[#1D9BF0]', size = 'md' }) => {
+/* iOS-style switch, same geometry as mobile. The knob glides on a spring
+   and stretches while pressed (the iOS "squish"), growing toward the side
+   it is about to leave so it never overflows the track. The squish keys
+   off the named group `group/switch`, so a SwitchVisual inside a larger
+   pressable (a whole settings strip) squishes when that strip is pressed. */
+const SWITCH_SIZES = {
+  md: { track: 'w-10 h-6', knob: 'w-4 h-4 group-active/switch:w-5', on: 'translate-x-4 group-active/switch:translate-x-3' },
+  lg: { track: 'w-12 h-7', knob: 'w-5 h-5 group-active/switch:w-6', on: 'translate-x-5 group-active/switch:translate-x-4' },
+};
+
+export const SwitchVisual = ({ checked, color = 'bg-[#1D9BF0]', size = 'md', className = '' }) => {
   const { isDark } = useTheme();
-  const dims = size === 'lg'
-    ? { track: 'w-12 h-7', knob: 'w-5 h-5', move: 'translate-x-5' }
-    : { track: 'w-10 h-6', knob: 'w-4 h-4', move: 'translate-x-4' };
+  const dims = SWITCH_SIZES[size] || SWITCH_SIZES.md;
   return (
-    <button
-      role="switch"
-      aria-checked={checked}
-      onClick={(e) => { e.stopPropagation(); onChange && onChange(); }}
-      className={`${dims.track} rounded-full flex items-center px-1 transition-colors cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0] ${checked ? color : (isDark ? 'bg-white/20' : 'bg-gray-300')}`}
+    <span
+      aria-hidden="true"
+      className={`${dims.track} rounded-full flex items-center px-1 shrink-0 transition-colors duration-300 ease-out ${checked ? color : (isDark ? 'bg-white/20' : 'bg-gray-300')} ${className}`}
     >
-      <div className={`${dims.knob} bg-white rounded-full shadow-sm transform transition-transform ${checked ? dims.move : 'translate-x-0'}`}></div>
-    </button>
+      <span className={`${dims.knob} switch-knob block bg-white rounded-full shadow-sm ${checked ? dims.on : 'translate-x-0'}`} />
+    </span>
   );
 };
+
+export const Toggle = ({ checked, onChange, color = 'bg-[#1D9BF0]', size = 'md', label }) => (
+  <button
+    type="button"
+    role="switch"
+    aria-checked={checked}
+    aria-label={label}
+    onClick={(e) => { e.stopPropagation(); onChange && onChange(); }}
+    className="group/switch rounded-full cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+  >
+    <SwitchVisual checked={checked} color={color} size={size} />
+  </button>
+);
 
 /* Carousel dot indicators. */
 export const Dots = ({ count, index, onSelect, activeColor = 'bg-[#1D9BF0]', className = '' }) => (

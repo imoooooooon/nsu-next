@@ -45,6 +45,32 @@ export const getDepartmentAccess = (dept, authRole) => {
   };
 };
 
+/* The hub's officials list, in the order it is read: the Department Chair
+   first (the academic head), then the Official if that is someone else, then
+   the admins the Official delegated to. One person holding two roles appears
+   once, carrying both titles — a Chair who also holds the master key is one
+   row, not two. */
+export const LEADERSHIP_TITLES = {
+  chair: 'Department Chair',
+  official: 'Department Official',
+  admin: 'Department Admin',
+};
+
+export const getDepartmentLeadership = (dept, adminIds) => {
+  if (!dept) return [];
+  const rows = [];
+  const add = (id, role) => {
+    if (id == null) return;
+    const existing = rows.find(r => r.id === id);
+    if (existing) existing.roles.push(role);
+    else rows.push({ id, roles: [role] });
+  };
+  add(dept.chairId, 'chair');
+  add(dept.officialId, 'official');
+  (adminIds || dept.adminIds || []).forEach(id => add(id, 'admin'));
+  return rows;
+};
+
 /* The department the signed-in demo user belongs to. */
 export const getViewerDepartmentId = () => VIEWER_DEPARTMENT_ID;
 

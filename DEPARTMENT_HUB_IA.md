@@ -96,6 +96,7 @@ are browsed rarely and entered mostly by *link*, not by *hunting*.
 | `/messages/dept-:deptId-helpdesk` | `ChatOverlay kind='helpdesk'` | any user ↔ admins |
 | `/messages/helpdesk-:threadId` | `ChatOverlay kind='helpdesk-thread'` | Admin only |
 | `/jobs/post?as=:deptId` | `PostJobOverlay asDepartment` | Official / Admin |
+| `/events/create?as=:deptId` | `CreateEventScreen hostDept` | Official / Admin |
 
 Job posting and blood requests **reuse the existing modules** with a department
 identity attached. Forking them would give the campus two job boards, which is
@@ -138,8 +139,8 @@ Decisions worth naming:
 2. **Grouped by school.** It is the university's real org chart and how
    students already navigate campus; it also scales to ~15 departments where a
    flat card grid would become a wall.
-3. **Rows differ where departments differ.** Signal chips (open roles, blood
-   requests) render only when true, so an active department reads as active at
+3. **Rows differ where departments differ.** Signal chips (upcoming events,
+   open roles, blood requests) render only when true, so an active department reads as active at
    a glance. Always-on decoration (Est. year pill, dashed stat strip) moved to
    the hub, where it's context rather than noise.
 4. **The room number is a first-class fact.** "Where do I physically go?" is
@@ -176,7 +177,8 @@ detail-route rule (`lg:grid-cols-3`, content + sticky rail).
 └─────────────────────────────────────────────────────────┘
         rail (lg+) / stacked below (mobile):
         · Contact & office hours
-        · Department officials (Official + Admins)
+        · Department officials (Chair first, then Official + Admins)
+        · Upcoming events hosted by this department
         · Open positions from this department
         · Active blood requests
 ```
@@ -199,6 +201,21 @@ detail-route rule (`lg:grid-cols-3`, content + sticky rail).
 4. **Admins get a strip, not a different page.** The management entry sits in
    the hero as a labelled band ("You are the Department Official"), so an admin
    always sees the public page exactly as students see it, plus one door.
+5. **The roster scales.** Departments grow every term, so the web roster
+   carries the Directory's card ⇄ list `ViewModeToggle` on its results line
+   (sharing the remembered `people` mode) and pages in 12 at a time behind a
+   "Show more" button instead of rendering every member at once.
+6. **The Chair leads the officials.** Who leads the department (the Chair),
+   who holds the hub's master key (the Official) and who helps run it (the
+   Admins) are three questions, so three fields — `chairId`, `officialId`,
+   `adminIds` — resolved in order by `getDepartmentLeadership`. The Chair is a
+   tinted tile at the top, the one a student, parent or recruiter is looking
+   for; one person answering two questions is one entry carrying both titles.
+7. **Events are published like jobs.** A department hosts events on the one
+   campus calendar: an event carries `deptId`, so it appears in Events *and*
+   on the hub, in the directory's signal chips and in the Manage console —
+   never on a second, department-only calendar. Officials/Admins create them
+   through `/events/create?as=:deptId`.
 
 ---
 
@@ -255,7 +272,7 @@ one small thing):
 
 | Section | Official | Admin |
 |---|---|---|
-| **Overview** — help-desk backlog, broadcast reach, quick actions (New broadcast · Post job · Post blood request) | ✅ | ✅ |
+| **Overview** — help-desk backlog, broadcast reach, quick actions (New broadcast · Open Help Desk · Create event · Post job · Post blood request) | ✅ | ✅ |
 | **Admin Access** — current team, grant to a verified faculty member, revoke | ✅ grant + revoke | 👁 read-only roster |
 | **Department Profile** — description, contact, office hours, **Department ID** | ✅ | 👁 read-only |
 
@@ -276,6 +293,7 @@ Overview links to them.
 department = {
   id, code, name, school, departmentId,     // departmentId = the official ID the Official holds
   verified, about, established,
+  chairId,                                  // the Department Chair — tops the officials list
   office, email, phone, website, officeHours,
   accent,                                   // reuses getDeptStyle()
   stats: { students, alumni, faculty },

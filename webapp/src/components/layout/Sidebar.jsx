@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Home, Compass, Briefcase, UserSearch, MessageSquare, User, CalendarDays,
+  Home, Compass, Briefcase, MessageSquare, User, CalendarDays,
   Building2, Droplet, Bell, Settings, LogOut,
 } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeContext';
@@ -18,10 +18,13 @@ import { Verified } from '../ui';
    true on a 4K screen.
 --------------------------------------------------------------------------- */
 
-/* Active state is computed rather than left to NavLink: `/jobs` would claim
-   `/jobs/seeking`, and Departments lives at a *query* on /network, which
-   NavLink cannot see. One matcher per item keeps exactly one row lit. */
-const isSeeking = ({ pathname }) => pathname.startsWith('/jobs/seeking');
+/* Active state is computed rather than left to NavLink: Departments lives at
+   a *query* on /network, which NavLink cannot see. One matcher per item keeps
+   exactly one row lit.
+
+   Seeking is not a rail item. It is a MODE of Jobs (the Hiring | Seeking
+   pill at the top of /jobs), so it lights Jobs — a second row for the same
+   surface split one place into two and pushed Campus further down the rail. */
 const isDepartments = ({ pathname, search }) =>
   pathname.startsWith('/departments') ||
   (pathname === '/network' && new URLSearchParams(search).get('segment') === 'Departments');
@@ -29,8 +32,7 @@ const isDepartments = ({ pathname, search }) =>
 const NAV_MAIN = [
   { to: '/home', icon: Home, label: 'Home', match: (l) => l.pathname.startsWith('/home') },
   { to: '/network', icon: Compass, label: 'Explore', match: (l) => l.pathname.startsWith('/network') && !isDepartments(l) },
-  { to: '/jobs', icon: Briefcase, label: 'Jobs', badge: 3, match: (l) => l.pathname.startsWith('/jobs') && !isSeeking(l) },
-  { to: '/jobs/seeking', icon: UserSearch, label: 'Seeking', match: isSeeking },
+  { to: '/jobs', icon: Briefcase, label: 'Jobs', badge: 3, match: (l) => l.pathname.startsWith('/jobs') },
   { to: '/messages', icon: MessageSquare, label: 'Messages', match: (l) => l.pathname.startsWith('/messages') },
 ];
 
@@ -56,7 +58,7 @@ const NavItem = ({ item, isDark, collapsed, active }) => (
       <item.icon
         className={`w-[22px] h-[22px] transition-colors duration-300 ${!active && item.accent ? item.accent : ''}`}
         strokeWidth={active ? 2.5 : 2}
-        fill={active && !item.dot && item.icon !== Compass && item.icon !== UserSearch && item.icon !== Building2 ? 'currentColor' : 'none'}
+        fill={active && !item.dot && item.icon !== Compass && item.icon !== Building2 ? 'currentColor' : 'none'}
       />
       {item.badge && !active && (
         <div className={`absolute top-[8px] right-[10px] w-[14px] h-[14px] bg-red-500 rounded-full flex items-center justify-center border-[1.5px] ${isDark ? 'border-[#1c1c1e]' : 'border-white'}`}>

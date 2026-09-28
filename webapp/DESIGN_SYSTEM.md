@@ -15,7 +15,7 @@ re-architected for desktop with proper routing. **Every page must follow this do
 | Semantic accents | jobs = emerald, emergency = red, alumni = amber, faculty = maroon `#800000` (rose-400 in dark), events/brand = `#1D9BF0` |
 | Radii | cards `rounded-2xl`, inputs/buttons `rounded-xl`, chips `rounded-md`/`rounded-lg`, nav capsules `rounded-[2rem]+` |
 | Type scale | page titles `text-2xl/3xl font-extrabold tracking-tight`; card titles `text-lg font-extrabold`; body `text-sm font-medium/bold`; micro-labels `text-[10px]/[11px] font-extrabold uppercase tracking-wider` |
-| Motion | `animate-fade-in`, `animate-fade-in-up`, `animate-slide-up`, `animate-scale-up`, `active:scale-[0.97]` on pressables (all defined in `src/index.css`) |
+| Motion | `animate-fade-in`, `animate-fade-in-up`, `animate-slide-up`, `animate-scale-up`, `active:scale-[0.97]` on pressables (all defined in `src/index.css`); spring curves `--ease-spring-soft` / `--ease-spring-bouncy` for selection controls — see "Motion — springs" below |
 | Elevation | **A whisper.** One hairline shadow app-wide (`--ugrads-shadow`); separation comes from borders and the glass surfaces. See "Shadows" below. |
 
 ### Shadows — a whisper, the same on both apps
@@ -47,6 +47,35 @@ per element.
   **inset** hairlines draw the glass edge and are not cast shadows.
 - Text `drop-shadow-*` stays on mobile, where it keeps white text legible over
   photos (the moment viewer), and off on the web, where nothing needs it.
+
+### Motion — springs, not swaps
+
+Selection controls never repaint their active option in place. That blink —
+old option off, new option on — is what read as cheap.
+
+- **One travelling pill.** `SegmentedControl`, `ViewModeToggle` and the Jobs
+  `Hiring | Seeking` pill render a single `.sliding-pill` that glides to the
+  chosen option (`useSlidingPill` in `components/ui/motion.js`), the way a
+  Framer Motion `layoutId` indicator does. Options are `relative z-10` above
+  it and only change colour. Build any new segmented control on the hook.
+- **Springs from physics.** `--ease-spring-soft` (ζ≈0.8, ~1% overshoot, 460ms)
+  moves pills; `--ease-spring-bouncy` (ζ≈0.64) settles switch knobs. Both are
+  sampled spring curves expressed as CSS `linear()`, with a cubic-bezier
+  fallback — no motion library, and it runs on the compositor.
+- **Switches squish.** `Toggle` / `SwitchVisual` stretch the knob while
+  pressed and glide on the bouncy spring. The squish keys off the named
+  group `group/switch`, so a whole pressable strip can own it.
+- **Remounts keep the glide.** A control that remounts on selection passes
+  `enterFrom` (the key it came from) or `memoryKey` (remembered last key).
+  Hiring ⇄ Seeking are two routes, so the page you land on glides in from
+  the other mode, and both pages skip their whole-page fade when
+  `location.state.jobsModeSwitch` is set — only the feed cross-fades.
+- **Tailwind v4 note.** `translate-x-*` writes the CSS `translate` property,
+  not `transform`; transition `translate` when animating those utilities.
+- `prefers-reduced-motion` zeroes both.
+
+The mobile prototype mirrors this in `../src/components/ui/` (`SegmentedPill`,
+`ViewModeSwitch`, `SwitchVisual`).
 
 ### Theme access — never hardcode theme conditionals ad hoc
 
@@ -89,11 +118,12 @@ Toast is already rendered by the shells — just call `showToast('...')`.
 - `Card` — glass card (`interactive`, `padded`)
 - `TintedCard` — gradient hero card: `tint: blue|blueSoft|emerald|red`, `interactive`, `contentClassName`
 - `CardGlow` — blurred corner glow inside relative cards
-- `SegmentedControl` — `options` (strings or `{id,label,badge}`), `value`, `onChange`
-- `ViewModeToggle` — icon-only card ⇄ list switch (`value: 'card'|'list'`, `onChange`); SegmentedControl's track, one size down. Lives on a collection's **results line**, never with the filters.
+- `SegmentedControl` — `options` (strings or `{id,label,badge}`), `value`, `onChange`, optional `memoryKey`; sliding spring pill
+- `ViewModeToggle` — icon-only card ⇄ list switch (`value: 'card'|'list'`, `onChange`); SegmentedControl's track, one size down. Lives on a collection's **results line**, never with the filters. Wherever people are listed in bulk (Directory, a department hub's roster) it is present, and the mode is remembered per kind via `useDirectoryView(kind)` (`lib/directoryView.js`).
 - `ChipTabs` — solid-accent chip row (`options`, `value`, `onChange`)
 - `Pill` — static tinted pill; pass color classes via `className`
-- `Toggle` — switch (`checked, onChange, color, size`)
+- `Toggle` — switch (`checked, onChange, color, size, label`); `SwitchVisual` is the same switch, visual only, for when a larger element is the control
+- `useSlidingPill(activeKey, { enterFrom, memoryKey })` — the travelling-pill hook behind every segmented control
 - `Dots` — carousel indicators
 - `Field, FieldLabel, FieldHint, TextInput (icon), SelectInput, TextArea, SearchInput (value, onChange, onClear)`
 - `Avatar` (`size xs–3xl`, `online`), `RoleAvatar` (`role: Student|Alumni|Faculty`), `Verified`, `RoleTag`
@@ -135,7 +165,7 @@ no gradient) holding hairline-divided rows, sectioned by school.
 | Part | Rule |
 |---|---|
 | Row | `EntityAvatar md` · name (`text-[15px] font-extrabold`, clamps to 2 lines) · meta `members · room` (mobile) / `members · Est.` + a right-aligned **Office** column (md+) · trailing Message icon button (`rounded-xl`, 40px). Whole row opens the hub — on the web via a stretched `Link` so the Message button stays its own target. |
-| Signals | A chip appears **only when true**: open roles (emerald, `Briefcase`), blood requests (red, `Droplet`) — the app's semantic colours, same geometry as `AccessBadge`. Rows are meant to differ; never add a chip that is always present. |
+| Signals | A chip appears **only when true**: upcoming events (brand blue, `CalendarDays`), open roles (emerald, `Briefcase`), blood requests (red, `Droplet`) — the app's semantic colours, same geometry as `AccessBadge`, in the hub rail's order. Rows are meant to differ; never add a chip that is always present. |
 | Verification | Stated **once** in the list header ("Verified by NSU"). Rows carry an icon-only `BadgeCheck` glued to the name's last word. Everywhere outside the register (hub hero, messages) the worded `EntityVerified` still applies. |
 | Access | Lives on `MyDepartmentPanel`, not on rows — only the viewer's own department ever has a non-visitor level, and the panel sits directly above it. |
 | View modes | The Directory's `ViewModeToggle` switches **card ⇄ list** and remembers the mode **per kind of object**: the three people lenses share one (default **card** — `PersonCard` / `PersonList`), Departments keep their own (default **list** — `DepartmentList` / `DepartmentGrid`). A global mode would flip the register into tiles whenever someone browsed people as cards. |
@@ -191,12 +221,15 @@ rail because labels do not fit, `xl+` shows labels. The toggle lives in the
 TopBar beside the brand, and `AppShell` mirrors the width in its left padding
 (`lg:pl-[108px]`, `xl:pl-[280px]` only while expanded).
 
-Rail destinations: **Menu** — Home · Explore · Jobs · Seeking · Messages;
+Rail destinations: **Menu** — Home · Explore · Jobs · Messages;
 **Campus** — Events · Departments · Emergency · Notifications; footer —
-Settings · the viewer's profile. Active state is **computed per item**
-(`match(location)`), not left to `NavLink`: `/jobs` would otherwise claim
-`/jobs/seeking`, and Departments lives at a *query* (`/network?segment=Departments`)
-that `NavLink` cannot see. Exactly one row is ever lit.
+Settings · the viewer's profile. **Seeking is not a rail item**: it is a mode
+of Jobs (the `Hiring | Seeking` pill), so `/jobs/seeking` lights Jobs — a
+second row for one surface split it in two. Home's quick actions still offer
+it as a shortcut. Active state is **computed per item** (`match(location)`),
+not left to `NavLink`: Departments lives at a *query*
+(`/network?segment=Departments`) that `NavLink` cannot see. Exactly one row
+is ever lit.
 - Home's quick-action row carries six destinations — Network, Jobs, Seeking,
   Events, Messages, Emergency — drawn as 32×32 line-art in
   `components/icons/CustomIcons.jsx`. Keep new icons in that style: 2.5 stroke
@@ -292,7 +325,7 @@ App (in `AppShell`): `/home` · `/network` (`?segment=Alumni|Student|Faculty|Dep
 `/departments/:deptId/manage` (Official/Admin only; others bounce to the hub) · `/jobs` ·
 `/jobs/post` (`?as=:deptId` posts as a department hub) · `/jobs/seeking` · `/jobs/seeking/new` · `/jobs/seeking/my-posts` ·
 `/jobs/seeking/:talentId` · `/jobs/:jobId` · `/events` · `/events/browse` ·
-`/events/calendar` · `/events/my` · `/events/create` · `/events/:eventId` ·
+`/events/calendar` · `/events/my` · `/events/create` (`?as=:deptId` hosts as a department hub) · `/events/:eventId` ·
 `/emergency` · `/emergency/donors/:bloodGroup` · `/emergency/requests/:requestId` ·
 `/messages` (index = empty pane, `:chatId` = chat, split-view ≥lg; `:chatId` also
 resolves the department channels `dept-:deptId-broadcast` / `dept-:deptId-helpdesk`

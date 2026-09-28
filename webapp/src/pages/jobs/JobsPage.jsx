@@ -9,7 +9,7 @@ import {
   DropdownPanel, DropdownHeading, DropdownItem, DropdownDivider,
 } from '../../components/ui';
 import { JobCard } from '../../features/jobs/JobCard';
-import { JobsModeToggle } from '../../features/jobs/JobsModeToggle';
+import { JobsModeToggle, useArrivedByModeSwitch } from '../../features/jobs/JobsModeToggle';
 import { globalJobsData } from '../../data/jobs';
 
 /* /jobs — the Hiring feed. Same records, segments and filter voice as the
@@ -29,6 +29,7 @@ export default function JobsPage() {
   const [search, setSearch] = useState('');
 
   const canPost = authRole === 'alumni' || authRole === 'faculty';
+  const modeSwitch = useArrivedByModeSwitch();
 
   /* Same order as mobile: segment → filter, then the (web-wired) search. */
   let displayedJobs = globalJobsData;
@@ -45,7 +46,7 @@ export default function JobsPage() {
   }
 
   return (
-    <PageContainer className="animate-fade-in">
+    <PageContainer className={modeSwitch ? '' : 'animate-fade-in'}>
       <PageHeader title="Jobs" subtitle="Opportunities from the verified NSU network">
         {jobFilter && (
           <div className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg ${isDark ? 'bg-white/10' : 'bg-[#1D9BF0]/10'} border ${t.borderSoft} animate-fade-in`}>
@@ -102,6 +103,9 @@ export default function JobsPage() {
 
       <JobsModeToggle mode="hiring" className="max-w-sm mb-4" />
 
+      {/* Arriving from the mode pill, only the feed cross-fades — the header
+          and the pill stay put, so Hiring ⇄ Seeking reads as one control. */}
+      <div className={modeSwitch ? 'animate-fade-in' : ''}>
       <div className="flex flex-col md:flex-row md:items-center gap-3 mb-6">
         <SearchInput
           value={search}
@@ -122,6 +126,7 @@ export default function JobsPage() {
       ) : (
         <EmptyState icon={Briefcase} title="No jobs found for this filter" className={t.text} />
       )}
+      </div>
 
       {canPost && (
         <Fab

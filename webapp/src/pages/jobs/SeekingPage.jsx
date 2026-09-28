@@ -5,7 +5,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
 import { PageContainer, PageHeader } from '../../components/layout/AppShell';
 import { Button, ChipTabs, Fab, IconButton, SearchInput } from '../../components/ui';
-import { JobsModeToggle } from '../../features/jobs/JobsModeToggle';
+import { JobsModeToggle, useArrivedByModeSwitch } from '../../features/jobs/JobsModeToggle';
 import { SeekingFeed } from '../../features/seeking/SeekingFeed';
 import { SeekingFiltersSheet } from '../../features/seeking/SeekingFiltersSheet';
 import { globalSeekingData } from '../../features/seeking/data';
@@ -30,6 +30,7 @@ export default function SeekingPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const isStudent = authRole === 'student';
+  const modeSwitch = useArrivedByModeSwitch();
   const filterCount = countSeekingFilters(seekingFilters);
 
   const handleApplyFilters = (next) => {
@@ -68,7 +69,7 @@ export default function SeekingPage() {
   };
 
   return (
-    <PageContainer className="animate-fade-in">
+    <PageContainer className={modeSwitch ? '' : 'animate-fade-in'}>
       <PageHeader title="Jobs" subtitle="Verified student talent, open to work">
         {isStudent && (
           <div className="hidden lg:block">
@@ -88,6 +89,7 @@ export default function SeekingPage() {
 
       <JobsModeToggle mode="seeking" className="max-w-sm" />
 
+      <div className={modeSwitch ? 'animate-fade-in' : ''}>
       <SearchInput
         className="mt-4"
         value={search}
@@ -118,6 +120,7 @@ export default function SeekingPage() {
         onClearFilters={handleClearFilters}
         onViewAll={handleViewAll}
       />
+      </div>
 
       {isStudent && (
         <Fab

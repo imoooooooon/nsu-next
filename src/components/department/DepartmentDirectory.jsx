@@ -1,4 +1,4 @@
-import { Mail, Megaphone, Settings2, ArrowUpRight, BadgeCheck, Briefcase, Droplet, MailCheck } from 'lucide-react';
+import { Mail, Megaphone, Settings2, ArrowUpRight, BadgeCheck, Briefcase, Droplet, MailCheck, CalendarDays } from 'lucide-react';
 import { EntityAvatar, AccessBadge } from './DepartmentPrimitives';
 import { departmentBroadcasts, departmentJobs, departmentBloodRequests } from './data';
 import { getDepartmentAccess, formatCount } from './access';
@@ -12,9 +12,10 @@ import { getDepartmentAccess, formatCount } from './access';
    department is an office you look up — like the directory board in a
    campus lobby — so it reads as a dense list: square code tile, name,
    reach, room number. Grouped by school (the university's real org chart),
-   and a signal chip only appears when it's true (open roles, blood
-   requests), so rows differ where
-   departments differ instead of repeating one template.
+   and a signal chip only appears when it's true (upcoming events, open
+   roles, blood requests), so rows differ where departments differ instead
+   of repeating one template. Upcoming events arrive as `departmentEvents`
+   ({ [deptId]: events }) from <App/>, which owns the campus calendar.
 
    Membership is the relationship that makes an entity different from a
    person, so the viewer's own department leads as its own panel — and the
@@ -60,6 +61,7 @@ const SignalChip = (props) => {
   const { tone, isDark, children } = props;
   const Icon = props.icon;
   const tones = {
+    blue: isDark ? 'bg-[#1D9BF0]/10 text-[#7CC4F6] border-[#1D9BF0]/25' : 'bg-[#1D9BF0]/[0.06] text-[#1A8CD8] border-[#1D9BF0]/20',
     emerald: isDark ? 'bg-emerald-400/10 text-emerald-300 border-emerald-400/20' : 'bg-emerald-50 text-emerald-700 border-emerald-200',
     red: isDark ? 'bg-red-400/10 text-red-300 border-red-400/20' : 'bg-red-50 text-red-600 border-red-200',
   };
@@ -68,6 +70,26 @@ const SignalChip = (props) => {
       <Icon className="w-3 h-3" strokeWidth={2.5} />
       {children}
     </span>
+  );
+};
+
+/* What a department has live right now, in the hub's order: events, roles,
+   blood. Each chip renders only when its count is > 0. */
+const getSignals = (dept, departmentEvents = {}) => ({
+  events: (departmentEvents[dept.id] || []).length,
+  jobs: (departmentJobs[dept.id] || []).length,
+  blood: (departmentBloodRequests[dept.id] || []).length,
+});
+
+const Signals = ({ signals, isDark, className = '' }) => {
+  const { events, jobs, blood } = signals;
+  if (!events && !jobs && !blood) return null;
+  return (
+    <div className={`flex flex-wrap gap-1.5 ${className}`}>
+      {events > 0 && <SignalChip tone="blue" icon={CalendarDays} isDark={isDark}>{events} upcoming {events === 1 ? 'event' : 'events'}</SignalChip>}
+      {jobs > 0 && <SignalChip tone="emerald" icon={Briefcase} isDark={isDark}>{jobs} open {jobs === 1 ? 'role' : 'roles'}</SignalChip>}
+      {blood > 0 && <SignalChip tone="red" icon={Droplet} isDark={isDark}>{blood} blood {blood === 1 ? 'request' : 'requests'}</SignalChip>}
+    </div>
   );
 };
 
@@ -89,10 +111,8 @@ const VerifiedByNsu = () => (
   </span>
 );
 
-export const DepartmentRow = ({ dept, t, isDark, onOpen, onMessage }) => {
-  const jobs = (departmentJobs[dept.id] || []).length;
-  const blood = (departmentBloodRequests[dept.id] || []).length;
-  const hasSignals = jobs > 0 || blood > 0;
+export const DepartmentRow = ({ dept, departmentEvents, t, isDark, onOpen, onMessage }) => {
+  const signals = getSignals(dept, departmentEvents);
 
   return (
     <li
@@ -108,12 +128,7 @@ export const DepartmentRow = ({ dept, t, isDark, onOpen, onMessage }) => {
         <p className={`text-xs font-bold ${t.textMuted} mt-0.5 truncate`}>
           {formatCount(dept.memberCount)} members · {getOfficeRoom(dept)}
         </p>
-        {hasSignals && (
-          <div className="flex flex-wrap gap-1.5 mt-2.5">
-            {jobs > 0 && <SignalChip tone="emerald" icon={Briefcase} isDark={isDark}>{jobs} open {jobs === 1 ? 'role' : 'roles'}</SignalChip>}
-            {blood > 0 && <SignalChip tone="red" icon={Droplet} isDark={isDark}>{blood} blood {blood === 1 ? 'request' : 'requests'}</SignalChip>}
-          </div>
-        )}
+        <Signals signals={signals} isDark={isDark} className="mt-2.5" />
       </div>
 
       <MessageDepartmentButton dept={dept} isDark={isDark} onMessage={onMessage} />
@@ -123,7 +138,7 @@ export const DepartmentRow = ({ dept, t, isDark, onOpen, onMessage }) => {
 
 /* The register: one glass surface, school sections inset as headers.
    Verification is stated once here instead of repeated on every row. */
-export const DepartmentList = ({ departments, t, isDark, onOpen, onMessage }) => {
+export const DepartmentList = ({ departments, departmentEvents, t, isDark, onOpen, onMessage }) => {
   const divider = isDark ? 'divide-white/[0.06] border-white/[0.06]' : 'divide-black/[0.05] border-black/[0.05]';
 
   return (
@@ -144,6 +159,7 @@ export const DepartmentList = ({ departments, t, isDark, onOpen, onMessage }) =>
               <DepartmentRow
                 key={dept.id}
                 dept={dept}
+                departmentEvents={departmentEvents}
                 t={t}
                 isDark={isDark}
                 onOpen={onOpen}
@@ -160,9 +176,8 @@ export const DepartmentList = ({ departments, t, isDark, onOpen, onMessage }) =>
 /* Card mode — the same register as tiles. Still NOT the person card: plain
    glass, the code tile leads, and the footer is the office rather than a
    stat strip. Still grouped by school, still verified once. */
-export const DepartmentCard = ({ dept, t, isDark, onOpen, onMessage }) => {
-  const jobs = (departmentJobs[dept.id] || []).length;
-  const blood = (departmentBloodRequests[dept.id] || []).length;
+export const DepartmentCard = ({ dept, departmentEvents, t, isDark, onOpen, onMessage }) => {
+  const signals = getSignals(dept, departmentEvents);
   const divider = isDark ? 'border-white/[0.06]' : 'border-black/[0.05]';
 
   return (
@@ -180,12 +195,7 @@ export const DepartmentCard = ({ dept, t, isDark, onOpen, onMessage }) => {
       <p className={`text-xs font-bold ${t.textMuted} mt-1`}>
         {formatCount(dept.memberCount)} members · Est. {dept.established}
       </p>
-      {(jobs > 0 || blood > 0) && (
-        <div className="flex flex-wrap gap-1.5 mt-3">
-          {jobs > 0 && <SignalChip tone="emerald" icon={Briefcase} isDark={isDark}>{jobs} open {jobs === 1 ? 'role' : 'roles'}</SignalChip>}
-          {blood > 0 && <SignalChip tone="red" icon={Droplet} isDark={isDark}>{blood} blood {blood === 1 ? 'request' : 'requests'}</SignalChip>}
-        </div>
-      )}
+      <Signals signals={signals} isDark={isDark} className="mt-3" />
       <div className={`flex items-end justify-between gap-3 mt-4 pt-4 border-t ${divider}`}>
         <div>
           <p className={`text-sm font-extrabold tabular-nums ${t.text}`}>{getOfficeRoom(dept)}</p>
@@ -199,7 +209,7 @@ export const DepartmentCard = ({ dept, t, isDark, onOpen, onMessage }) => {
   );
 };
 
-export const DepartmentGrid = ({ departments, t, isDark, onOpen, onMessage }) => (
+export const DepartmentGrid = ({ departments, departmentEvents, t, isDark, onOpen, onMessage }) => (
   <div>
     <div className="flex items-center justify-between gap-2 mb-4">
       <h3 className={`text-base font-extrabold tracking-tight ${t.text}`}>All departments</h3>
@@ -214,7 +224,7 @@ export const DepartmentGrid = ({ departments, t, isDark, onOpen, onMessage }) =>
           </div>
           <div className="space-y-4">
             {depts.map(dept => (
-              <DepartmentCard key={dept.id} dept={dept} t={t} isDark={isDark} onOpen={onOpen} onMessage={onMessage} />
+              <DepartmentCard key={dept.id} dept={dept} departmentEvents={departmentEvents} t={t} isDark={isDark} onOpen={onOpen} onMessage={onMessage} />
             ))}
           </div>
         </section>

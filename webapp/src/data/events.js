@@ -37,9 +37,10 @@ export const globalEventsData = [
     shortDescription: 'Exploring ethical considerations in deploying LLMs in healthcare.',
     description: 'Join Dr. Aminul Islam as he discusses the ethical deployment of large language models in healthcare settings, addressing bias, privacy, and regulatory compliance.',
     category: 'Research',
+    deptId: 'cse',
     organizer: {
       id: 'org-2', name: 'CSE Department', type: 'Department', verified: true,
-      description: 'Department of Electrical & Computer Engineering.'
+      description: 'Department of Computer Science & Engineering.'
     },
     date: '2026-07-14', endDate: '2026-07-14', time: '3:00 PM', endTime: '4:30 PM',
     venue: 'AUDI 801', venueDetails: 'Admin Building, Level 8.',
@@ -122,7 +123,147 @@ export const globalEventsData = [
     registrationInfo: 'Event cancelled due to unavoidable circumstances.',
     tags: ['Ambassador', 'Jobs', 'Networking'],
     notificationType: 'cancelled', notificationMessage: 'Event has been cancelled by the organizer.'
+  },
+  {
+    id: 'event-cse-hackathon',
+    title: 'CSE Project Showcase & Hackathon',
+    shortDescription: 'Thirty-six hours, 60 teams, and the best capstone projects of the semester on show.',
+    description: 'The CSE Department’s flagship end-of-semester event. Capstone teams demo their projects to faculty and industry judges on day one; day two is an open hackathon on the theme “Tech for Bangladesh”. Prizes for the top three teams and internship interviews with partner companies.',
+    category: 'Competition',
+    deptId: 'cse',
+    organizer: {
+      id: 'org-2', name: 'CSE Department', type: 'Department', verified: true,
+      description: 'Department of Computer Science & Engineering.'
+    },
+    date: '2026-07-30', endDate: '2026-07-31', time: '9:00 AM', endTime: '9:00 PM',
+    venue: 'SAC Atrium', venueDetails: 'South Academic Building, Ground Floor.',
+    image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&auto=format&fit=crop',
+    registrationStatus: 'Open', registrationDeadline: '2026-07-26T23:59:00', capacity: 300,
+    goingCount: 184, interestedCount: 410, featured: false, popular: true,
+    recommendationReason: 'From your department',
+    schedule: [
+      { time: 'Day 1 - 9:00 AM', title: 'Capstone Showcase' },
+      { time: 'Day 1 - 3:00 PM', title: 'Hackathon Kick-off' },
+      { time: 'Day 2 - 6:00 PM', title: 'Judging & Awards' }
+    ],
+    registrationInfo: 'Teams of 2–4. At least one member must be a current CSE student.',
+    tags: ['Hackathon', 'Capstone', 'CSE'],
+    notificationType: null, notificationMessage: null
+  },
+  {
+    id: 'event-cse-alumni-talk',
+    title: 'Alumni Tech Talk: Careers in Cloud',
+    shortDescription: 'Tanvir Hasan (AWS, Batch 15) on building a cloud career from Dhaka.',
+    description: 'CSE alumnus Tanvir Hasan, Cloud Solutions Architect at AWS Singapore, talks about certifications, remote roles and what hiring managers look for. Followed by an open Q&A and CV clinic with the CSE industry internship coordinator.',
+    category: 'Career',
+    deptId: 'cse',
+    organizer: {
+      id: 'org-2', name: 'CSE Department', type: 'Department', verified: true,
+      description: 'Department of Computer Science & Engineering.'
+    },
+    date: '2026-08-05', endDate: '2026-08-05', time: '2:30 PM', endTime: '4:30 PM',
+    venue: 'SAC 1042 Seminar Room', venueDetails: 'South Academic Building, Level 10.',
+    image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&auto=format&fit=crop',
+    registrationStatus: 'Open', registrationDeadline: '2026-08-04T23:59:00', capacity: 120,
+    goingCount: 62, interestedCount: 140, featured: false, popular: false,
+    recommendationReason: 'From your department',
+    schedule: [
+      { time: '2:30 PM', title: 'Talk: Careers in Cloud' },
+      { time: '3:30 PM', title: 'Q&A and CV Clinic' }
+    ],
+    registrationInfo: 'Free for NSU students and alumni. Seats are first come, first served.',
+    tags: ['Alumni', 'Cloud', 'Career'],
+    notificationType: null, notificationMessage: null
+  },
+  {
+    id: 'event-ece-iot-expo',
+    title: 'ECE IoT & Robotics Expo',
+    shortDescription: 'Live demos from the VLSI, IoT and robotics labs — open to the whole campus.',
+    description: 'The ECE Department opens its labs for a day of live demos: smart-farming sensors, line-following robots, a RISC-V core on FPGA and more. Industry partners from Samsung R&D and Robi Axiata judge the student project track.',
+    category: 'Research',
+    deptId: 'ece',
+    organizer: {
+      id: 'org-dept-ece', name: 'ECE Department', type: 'Department', verified: true,
+      description: 'Department of Electrical & Computer Engineering.'
+    },
+    date: '2026-07-28', endDate: '2026-07-28', time: '10:00 AM', endTime: '4:00 PM',
+    venue: 'SAC 0915 Lab Wing', venueDetails: 'South Academic Building, Level 9.',
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop',
+    registrationStatus: 'Free Entry', registrationDeadline: null, capacity: 400,
+    goingCount: 96, interestedCount: 220, featured: false, popular: false,
+    recommendationReason: null,
+    schedule: [
+      { time: '10:00 AM', title: 'Labs Open' },
+      { time: '1:00 PM', title: 'Student Project Judging' }
+    ],
+    registrationInfo: 'No registration needed. Bring your NSU ID.',
+    tags: ['IoT', 'Robotics', 'ECE'],
+    notificationType: null, notificationMessage: null
+  },
+  {
+    id: 'event-bba-case-competition',
+    title: 'SBE Case Competition 2026',
+    shortDescription: 'Crack a live business case from a partner bank in 48 hours.',
+    description: 'Teams of four receive a live case from a partner bank and present their recommendation to a panel of senior bankers and faculty. Winners receive a cash prize and fast-track interviews for the partner’s management-trainee programme.',
+    category: 'Competition',
+    deptId: 'bba',
+    organizer: {
+      id: 'org-dept-bba', name: 'Accounting & Finance Department', type: 'Department', verified: true,
+      description: 'Department of Accounting & Finance, School of Business & Economics.'
+    },
+    date: '2026-08-02', endDate: '2026-08-02', time: '10:00 AM', endTime: '5:00 PM',
+    venue: 'NAC Auditorium', venueDetails: 'North Academic Building, Level 2.',
+    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&auto=format&fit=crop',
+    registrationStatus: 'Closing Soon', registrationDeadline: '2026-07-18T23:59:00', capacity: 160,
+    goingCount: 128, interestedCount: 260, featured: false, popular: true,
+    recommendationReason: null,
+    schedule: [
+      { time: '10:00 AM', title: 'Case Release' },
+      { time: '3:00 PM', title: 'Final Presentations' }
+    ],
+    registrationInfo: 'Teams of four. Open to all SBE students.',
+    tags: ['Case Competition', 'Finance', 'Business'],
+    notificationType: null, notificationMessage: null
+  },
+  {
+    id: 'event-arc-thesis-exhibition',
+    title: 'Architecture Thesis Exhibition 2026',
+    shortDescription: 'Final-year thesis projects on building for a delta — models, drawings and juries.',
+    description: 'The annual thesis exhibition of the Department of Architecture. Twenty-four final-year projects on climate-responsive housing, heritage and waterfront design, with public juries every afternoon. Open to the whole campus.',
+    category: 'Cultural',
+    deptId: 'architecture',
+    organizer: {
+      id: 'org-dept-architecture', name: 'Architecture Department', type: 'Department', verified: true,
+      description: 'Department of Architecture.'
+    },
+    date: '2026-07-20', endDate: '2026-07-24', time: '11:00 AM', endTime: '6:00 PM',
+    venue: 'NAC Gallery', venueDetails: 'North Academic Building, Level 4.',
+    image: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&auto=format&fit=crop',
+    registrationStatus: 'Free Entry', registrationDeadline: null, capacity: 600,
+    goingCount: 210, interestedCount: 380, featured: false, popular: false,
+    recommendationReason: null,
+    schedule: [
+      { time: '11:00 AM', title: 'Gallery Opens' },
+      { time: '3:00 PM', title: 'Public Thesis Jury' }
+    ],
+    registrationInfo: 'Free entry for everyone with a campus ID.',
+    tags: ['Architecture', 'Exhibition', 'Thesis'],
+    notificationType: null, notificationMessage: null
   }
 ];
 
 export const findEventById = (id) => globalEventsData.find(e => e.id === id) || null;
+
+/* Events a department hosts. There is ONE campus calendar: a department event
+   is an ordinary event carrying `deptId`, so it shows on /events and on the
+   hub without two lists that could drift apart (the same rule the hub
+   follows for jobs and blood requests). "Upcoming" = ends on or after the
+   reference date and not cancelled — soonest first. */
+export const isUpcomingEvent = (event) =>
+  event.registrationStatus !== 'Cancelled' &&
+  new Date(`${event.endDate || event.date}T23:59:59`) >= EVENTS_REFERENCE_DATE;
+
+export const getDepartmentEvents = (deptId) =>
+  globalEventsData
+    .filter(e => e.deptId === deptId && isUpcomingEvent(e))
+    .sort((a, b) => a.date.localeCompare(b.date));

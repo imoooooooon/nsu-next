@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import {
-  ShieldCheck, KeyRound, UserPlus, Megaphone, LifeBuoy, Briefcase, Droplet,
+  ShieldCheck, KeyRound, UserPlus, Megaphone, LifeBuoy, Briefcase, Droplet, CalendarPlus,
   Copy, Building2, Users, Mail, ArrowUpRight, Trash2, Search, Check, Info,
 } from 'lucide-react';
 import { PageContainer, DetailHeader } from '../../components/layout/AppShell';
@@ -15,6 +15,7 @@ import {
   findDepartmentById, departmentHelpDeskThreads, departmentJobs,
 } from '../../data/departments';
 import { globalFacultyData, findUserById } from '../../data/people';
+import { getDepartmentEvents } from '../../data/events';
 import {
   getDepartmentAccess, formatCount, broadcastChannelId, helpDeskChannelId,
 } from '../../lib/departmentAccess';
@@ -156,6 +157,7 @@ export default function DepartmentManagePage() {
   const helpDesk = departmentHelpDeskThreads[dept.id] || [];
   const openThreads = helpDesk.filter(x => x.unread).length;
   const jobs = departmentJobs[dept.id] || [];
+  const upcomingEvents = getDepartmentEvents(dept.id);
   const broadcastsSent = (sentBroadcasts[dept.id] || []).length;
 
   const excludedIds = [dept.officialId, ...adminIds].filter(Boolean);
@@ -170,6 +172,7 @@ export default function DepartmentManagePage() {
   const quickActions = [
     { icon: Megaphone, label: 'New Broadcast', hint: 'Post a notice to every member', onClick: () => navigate(`/messages/${broadcastChannelId(dept.id)}`) },
     { icon: LifeBuoy, label: 'Open Help Desk', hint: `${openThreads} question${openThreads === 1 ? '' : 's'} waiting`, onClick: () => navigate(`/messages/${helpDeskChannelId(dept.id)}?view=admin`) },
+    { icon: CalendarPlus, label: 'Create an Event', hint: 'Talk, workshop or showcase — on the campus calendar', onClick: () => navigate(`/events/create?as=${dept.id}`) },
     { icon: Briefcase, label: 'Post a Job', hint: 'RA, TA or lab position', onClick: () => navigate(`/jobs/post?as=${dept.id}`) },
     { icon: Droplet, label: 'Post Blood Request', hint: 'On behalf of a member', onClick: () => setIsBloodOpen(true), danger: true },
   ];
@@ -211,11 +214,14 @@ export default function DepartmentManagePage() {
           <div>
             <MicroHeading>Quick Actions</MicroHeading>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {quickActions.map(action => (
+              {/* An odd count leaves the last action alone on its row; it
+                  takes the full width instead — and the last one is the
+                  emergency request, which earns the emphasis. */}
+              {quickActions.map((action, idx) => (
                 <button
                   key={action.label}
                   onClick={action.onClick}
-                  className={`flex items-center gap-4 p-4 rounded-2xl ${t.card} border ${t.border} text-left transition-all hover:-translate-y-0.5 active:scale-[0.99] outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}
+                  className={`${quickActions.length % 2 === 1 && idx === quickActions.length - 1 ? 'md:col-span-2' : ''} flex items-center gap-4 p-4 rounded-2xl ${t.card} border ${t.border} text-left transition-all hover:-translate-y-0.5 active:scale-[0.99] outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}
                 >
                   <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
                     action.danger
@@ -275,6 +281,10 @@ export default function DepartmentManagePage() {
                 <div className="flex items-center justify-between">
                   <span className={`text-xs font-bold ${t.textMuted}`}>Broadcasts sent this session</span>
                   <span className={`text-sm font-extrabold ${t.text}`}>{broadcastsSent}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className={`text-xs font-bold ${t.textMuted}`}>Upcoming events</span>
+                  <span className={`text-sm font-extrabold ${t.text}`}>{upcomingEvents.length}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className={`text-xs font-bold ${t.textMuted}`}>Open positions live</span>

@@ -1,13 +1,14 @@
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Mail, Megaphone, Settings2, ArrowUpRight, ChevronRight, BadgeCheck,
-  Briefcase, Droplet, MailCheck,
+  Briefcase, Droplet, MailCheck, CalendarDays,
 } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
 import { Button, Card } from '../../components/ui';
 import { EntityAvatar, AccessBadge } from './DepartmentPrimitives';
 import { departmentBroadcasts, departmentJobs, departmentBloodRequests } from '../../data/departments';
+import { getDepartmentEvents } from '../../data/events';
 import {
   getDepartmentAccess, formatCount, broadcastChannelId, helpDeskChannelId,
 } from '../../lib/departmentAccess';
@@ -23,9 +24,9 @@ import {
 
    · Grouped by school — the university's real org chart, and the way
      students already navigate the campus.
-   · Rows vary — a signal chip only appears when it's true (open roles,
-     blood requests), so rows differ where departments differ
-     instead of repeating one template four times.
+   · Rows vary — a signal chip only appears when it's true (upcoming
+     events, open roles, blood requests), so rows differ where departments
+     differ instead of repeating one template four times.
 
    Membership is the relationship that makes an entity different from a
    person, so the viewer's own department leads as its own panel — and the
@@ -71,6 +72,7 @@ const VerifiedName = ({ name, verified }) => {
 const SignalChip = ({ tone, icon: Icon, children }) => {
   const { isDark } = useTheme();
   const tones = {
+    blue: isDark ? 'bg-[#1D9BF0]/10 text-[#7CC4F6] border-[#1D9BF0]/25' : 'bg-[#1D9BF0]/[0.06] text-[#1A8CD8] border-[#1D9BF0]/20',
     emerald: isDark ? 'bg-emerald-400/10 text-emerald-300 border-emerald-400/20' : 'bg-emerald-50 text-emerald-700 border-emerald-200',
     red: isDark ? 'bg-red-400/10 text-red-300 border-red-400/20' : 'bg-red-50 text-red-600 border-red-200',
   };
@@ -79,6 +81,26 @@ const SignalChip = ({ tone, icon: Icon, children }) => {
       <Icon className="w-3 h-3" strokeWidth={2.5} />
       {children}
     </span>
+  );
+};
+
+/* What a department has live right now, in the order the hub's rail shows
+   it: events, roles, blood. Each chip renders only when its count is > 0. */
+const getSignals = (dept) => ({
+  events: getDepartmentEvents(dept.id).length,
+  jobs: (departmentJobs[dept.id] || []).length,
+  blood: (departmentBloodRequests[dept.id] || []).length,
+});
+
+const Signals = ({ signals, className = '' }) => {
+  const { events, jobs, blood } = signals;
+  if (!events && !jobs && !blood) return null;
+  return (
+    <div className={`flex flex-wrap gap-1.5 ${className}`}>
+      {events > 0 && <SignalChip tone="blue" icon={CalendarDays}>{events} upcoming {events === 1 ? 'event' : 'events'}</SignalChip>}
+      {jobs > 0 && <SignalChip tone="emerald" icon={Briefcase}>{jobs} open {jobs === 1 ? 'role' : 'roles'}</SignalChip>}
+      {blood > 0 && <SignalChip tone="red" icon={Droplet}>{blood} blood {blood === 1 ? 'request' : 'requests'}</SignalChip>}
+    </div>
   );
 };
 
@@ -111,10 +133,8 @@ const VerifiedByNsu = () => (
    hub while the Message button stays its own target above it. */
 export const DepartmentRow = ({ dept }) => {
   const { t, isDark } = useTheme();
-  const jobs = (departmentJobs[dept.id] || []).length;
-  const blood = (departmentBloodRequests[dept.id] || []).length;
+  const signals = getSignals(dept);
   const room = getOfficeRoom(dept);
-  const hasSignals = jobs > 0 || blood > 0;
 
   return (
     <li
@@ -136,12 +156,7 @@ export const DepartmentRow = ({ dept }) => {
           <span className="hidden md:inline"> · Est. {dept.established}</span>
         </p>
 
-        {hasSignals && (
-          <div className="flex flex-wrap gap-1.5 mt-2.5">
-            {jobs > 0 && <SignalChip tone="emerald" icon={Briefcase}>{jobs} open {jobs === 1 ? 'role' : 'roles'}</SignalChip>}
-            {blood > 0 && <SignalChip tone="red" icon={Droplet}>{blood} blood {blood === 1 ? 'request' : 'requests'}</SignalChip>}
-          </div>
-        )}
+        <Signals signals={signals} className="mt-2.5" />
       </div>
 
       {/* The lobby-board column: where you physically go. */}
@@ -192,8 +207,7 @@ export const DepartmentList = ({ departments, className = '' }) => {
 --------------------------------------------------------------------------- */
 export const DepartmentCard = ({ dept }) => {
   const { t, isDark } = useTheme();
-  const jobs = (departmentJobs[dept.id] || []).length;
-  const blood = (departmentBloodRequests[dept.id] || []).length;
+  const signals = getSignals(dept);
   const divider = isDark ? 'border-white/[0.06]' : 'border-black/[0.05]';
 
   return (
@@ -216,12 +230,7 @@ export const DepartmentCard = ({ dept }) => {
         {formatCount(dept.memberCount)} members · Est. {dept.established}
       </p>
 
-      {(jobs > 0 || blood > 0) && (
-        <div className="flex flex-wrap gap-1.5 mt-3">
-          {jobs > 0 && <SignalChip tone="emerald" icon={Briefcase}>{jobs} open {jobs === 1 ? 'role' : 'roles'}</SignalChip>}
-          {blood > 0 && <SignalChip tone="red" icon={Droplet}>{blood} blood {blood === 1 ? 'request' : 'requests'}</SignalChip>}
-        </div>
-      )}
+      <Signals signals={signals} className="mt-3" />
 
       <div className="mt-auto pt-4">
         <div className={`flex items-end justify-between gap-3 pt-4 border-t ${divider}`}>

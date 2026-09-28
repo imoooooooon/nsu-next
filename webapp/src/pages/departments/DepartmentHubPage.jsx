@@ -1,25 +1,27 @@
 import { useMemo, useState } from 'react';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
   Share, Mail, Megaphone, Settings2, Building2, MapPin, Phone, Globe, Clock,
-  Users, Briefcase, Droplet, ArrowUpRight, Plus, ChevronRight,
+  Users, Briefcase, ArrowUpRight, Plus, ChevronDown,
 } from 'lucide-react';
 import { PageContainer, DetailHeader } from '../../components/layout/AppShell';
 import {
   IconButton, Button, Card, TintedCard, SegmentedControl, SearchInput,
-  EmptyState, Pill, MicroHeading,
+  EmptyState, Pill, MicroHeading, ViewModeToggle,
 } from '../../components/ui';
-import { PersonCard } from '../../features/network/PersonCard';
+import { PersonCard, PersonList } from '../../features/network/PersonCard';
 import {
   EntityAvatar, EntityVerified, AccessBadge, DepartmentStats, DepartmentInfoRow,
 } from '../../features/departments/DepartmentPrimitives';
 import { DepartmentBloodRequestModal } from '../../features/departments/DepartmentBloodRequestModal';
+import { DepartmentOfficials, DepartmentEvents } from '../../features/departments/DepartmentHubSections';
 import {
   findDepartmentById, departmentJobs, departmentBloodRequests,
 } from '../../data/departments';
-import { globalAlumniData, globalFacultyData, globalStudentData, findUserById } from '../../data/people';
+import { getDepartmentEvents } from '../../data/events';
+import { globalAlumniData, globalFacultyData, globalStudentData } from '../../data/people';
 import { getDepartmentAccess, formatCount, broadcastChannelId, helpDeskChannelId } from '../../lib/departmentAccess';
-import { getRoleStyles } from '../../lib/roleStyles';
+import { useDirectoryView } from '../../lib/directoryView';
 import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
 import { useCloseTo } from '../../lib/navigation';
@@ -29,10 +31,16 @@ import { useCloseTo } from '../../lib/navigation';
 
    Page order is fixed by the brief: identity → About (the department
    description) → the three directory tabs → the scrollable list of profile
-   cards. Everything secondary (contact, officials, open roles, blood
-   requests) goes to the sticky rail on lg and stacks below on mobile, so the
-   brief's order survives at every width.
+   cards. Everything secondary (contact, officials, upcoming events, open
+   roles, blood requests) goes to the sticky rail on lg and stacks below on
+   mobile, so the brief's order survives at every width.
+
+   The roster is built for departments that grow every term: the same
+   card ⇄ list toggle as the Directory (sharing its remembered `people`
+   mode), and a page of PAGE_SIZE at a time rather than every member at once.
 --------------------------------------------------------------------------- */
+
+const PAGE_SIZE = 12;
 
 const TABS = [
   { id: 'students', label: 'Students', statKey: 'students' },
@@ -59,7 +67,9 @@ export default function DepartmentHubPage() {
   const tab = TABS.some(x => x.id === tabParam) ? tabParam : 'students';
 
   const [search, setSearch] = useState('');
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [isBloodOpen, setIsBloodOpen] = useState(false);
+  const [view, setView] = useDirectoryView('people');
 
   const access = getDepartmentAccess(dept, authRole);
 
@@ -90,18 +100,18 @@ export default function DepartmentHubPage() {
     );
   }
 
-  /* Live delegation, not the seed record — an admin granted in the console
-     has to appear here immediately or the two screens contradict each other. */
-  const officials = [dept.officialId, ...(departmentAdminIds[dept.id] || [])]
-    .map(id => findUserById(id))
-    .filter(Boolean);
+  const events = getDepartmentEvents(dept.id);
   const jobs = departmentJobs[dept.id] || [];
   const bloodRequests = departmentBloodRequests[dept.id] || [];
   const activeTab = TABS.find(x => x.id === tab);
   const totalInCohort = dept.stats[activeTab.statKey];
 
+  const shownPeople = people.slice(0, visibleCount);
+  const remaining = people.length - shownPeople.length;
+
   const setTab = (next) => {
     setSearch('');
+    setVisibleCount(PAGE_SIZE);
     setSearchParams(next === 'students' ? {} : { tab: next }, { replace: true });
   };
 
@@ -207,16 +217,21 @@ export default function DepartmentHubPage() {
                 />
                 <SearchInput
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  onClear={() => setSearch('')}
+                  onChange={(e) => { setSearch(e.target.value); setVisibleCount(PAGE_SIZE); }}
+                  onClear={() => { setSearch(''); setVisibleCount(PAGE_SIZE); }}
                   placeholder={`Search ${activeTab.label.toLowerCase()} in ${dept.code}...`}
                   aria-label={`Search ${activeTab.label} in ${dept.code}`}
                 />
               </div>
             </div>
 
-            <div className="flex items-center text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider mb-4">
-              Showing {people.length} of {formatCount(totalInCohort)} {activeTab.label.toLowerCase()}
+            {/* The results line carries the view switch, exactly as in the
+                Directory — it changes how these results look, not which. */}
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <p className="text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider">
+                Showing {shownPeople.length} of {formatCount(totalInCohort)} {activeTab.label.toLowerCase()}
+              </p>
+              <ViewModeToggle value={view} onChange={setView} />
             </div>
 
             {people.length === 0 ? (
@@ -227,9 +242,22 @@ export default function DepartmentHubPage() {
                 className={t.text}
               />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {people.map(person => <PersonCard key={person.id} person={person} variant="full" />)}
-              </div>
+              <>
+                {view === 'list' ? (
+                  <PersonList people={shownPeople} />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {shownPeople.map(person => <PersonCard key={person.id} person={person} variant="full" />)}
+                  </div>
+                )}
+                {remaining > 0 && (
+                  <div className="flex justify-center pt-5">
+                    <Button variant="secondary" size="sm" onClick={() => setVisibleCount(c => c + PAGE_SIZE)}>
+                      Show {Math.min(remaining, PAGE_SIZE)} more <ChevronDown className="w-4 h-4 ml-1.5" strokeWidth={2.5} />
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -247,36 +275,18 @@ export default function DepartmentHubPage() {
             </div>
           </Card>
 
-          <Card>
-            <MicroHeading>Department Officials</MicroHeading>
-            {officials.length === 0 ? (
-              <p className={`text-xs font-bold ${t.textMuted}`}>No official assigned yet.</p>
-            ) : (
-              <div className="space-y-2">
-                {officials.map((person, idx) => {
-                  const { icon: RoleIcon, colorClass, bgClass } = getRoleStyles('Faculty', isDark);
-                  return (
-                    <Link
-                      key={person.id}
-                      to={`/network/${person.id}`}
-                      className={`flex items-center gap-3 p-2.5 rounded-xl ${isDark ? 'hover:bg-white/5' : 'hover:bg-black/[0.03]'} transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}
-                    >
-                      <div className={`w-10 h-10 rounded-full ${bgClass} border ${isDark ? 'border-white/5' : 'border-black/5'} flex items-center justify-center shrink-0`}>
-                        <RoleIcon className={`w-5 h-5 ${colorClass}`} strokeWidth={2} />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className={`text-sm font-extrabold ${t.text} truncate`}>{person.name}</p>
-                        <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} truncate`}>
-                          {idx === 0 ? 'Department Official' : 'Department Admin'}
-                        </p>
-                      </div>
-                      <ChevronRight className={`w-4 h-4 ${t.textMuted} shrink-0`} strokeWidth={2.5} />
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-          </Card>
+          {/* The Chair leads; live delegation (not the seed record) follows, so
+              an admin granted in the console appears here immediately. */}
+          <DepartmentOfficials dept={dept} adminIds={departmentAdminIds[dept.id]} />
+
+          {/* Upcoming events — hosted by the department, drawn from the one
+              campus calendar, so they are on /events too. */}
+          <DepartmentEvents
+            events={events}
+            canManage={access.canManage}
+            onCreate={() => navigate(`/events/create?as=${dept.id}`)}
+            onBrowse={() => navigate('/events')}
+          />
 
           {/* Open positions — brief §4: the hub posts into the campus board */}
           <Card>

@@ -10,6 +10,7 @@ import { globalDepartments, findDepartmentById } from '../../data/departments';
 import { getDepartmentAccess, getViewerDepartmentId } from '../../lib/departmentAccess';
 import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
+import { useDirectoryView } from '../../lib/directoryView';
 
 /* ---------------------------------------------------------------------------
    /network — the Directory (mobile DirectoryTab), re-laid for desktop:
@@ -27,25 +28,6 @@ const SEGMENT_DATA = {
   Alumni: globalAlumniData,
   Student: globalStudentData,
   Faculty: globalFacultyData,
-};
-
-/* The view mode is remembered per KIND of object, not globally: the three
-   people lenses share one mode (cards by default — you size a person up),
-   Departments keep their own (the register by default — you look an office
-   up). One global switch would flip the department list into cards the
-   moment someone browsed people in card view. It is a per-viewer
-   convenience, so it lives in localStorage and falls back to the defaults
-   whenever storage is unavailable. */
-const VIEW_KEY = 'ugrads-directory-view';
-const DEFAULT_VIEW = { people: 'card', departments: 'list' };
-
-const readView = () => {
-  try {
-    const saved = JSON.parse(localStorage.getItem(VIEW_KEY) || 'null');
-    return { ...DEFAULT_VIEW, ...(saved || {}) };
-  } catch {
-    return DEFAULT_VIEW;
-  }
 };
 
 export default function NetworkPage() {
@@ -79,14 +61,13 @@ export default function NetworkPage() {
 
   const isDepartments = segment === 'Departments';
 
-  const [viewByKind, setViewByKind] = useState(readView);
-  const viewKind = isDepartments ? 'departments' : 'people';
-  const view = viewByKind[viewKind];
-  const setView = (mode) => {
-    const next = { ...viewByKind, [viewKind]: mode };
-    setViewByKind(next);
-    try { localStorage.setItem(VIEW_KEY, JSON.stringify(next)); } catch { /* storage blocked — keep it for this visit */ }
-  };
+  /* The view mode is remembered per KIND of object (lib/directoryView.js):
+     the people lenses share one mode with every department roster, and
+     Departments keep their own. */
+  const [peopleView, setPeopleView] = useDirectoryView('people');
+  const [departmentView, setDepartmentView] = useDirectoryView('departments');
+  const view = isDepartments ? departmentView : peopleView;
+  const setView = isDepartments ? setDepartmentView : setPeopleView;
 
   /* The viewer's own department leads the Departments lens — membership is
      the relationship that sets an entity apart from a person. */
