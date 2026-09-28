@@ -34,7 +34,7 @@ import {
   globalDepartments, findDepartmentById,
   departmentHelpDeskThreads, departmentBroadcasts,
   VIEWER_DEPARTMENT_ID, getDepartmentAccess, formatCount,
-  DepartmentCard, EntityAvatar,
+  DepartmentList, MyDepartmentPanel, EntityAvatar,
   DepartmentProfileOverlay, DepartmentChannelOverlay,
   DepartmentManageOverlay, DepartmentBloodRequestSheet,
 } from './components/department';
@@ -3511,6 +3511,7 @@ export default function App() {
       'CSE': isDark ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' : 'bg-blue-50 text-blue-600 border-blue-200',
       'ECE': isDark ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' : 'bg-purple-50 text-purple-600 border-purple-200',
       'BBA': isDark ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-amber-50 text-amber-600 border-amber-200',
+      'Architecture': isDark ? 'bg-teal-500/20 text-teal-300 border-teal-500/30' : 'bg-teal-50 text-teal-700 border-teal-200',
     };
     return styles[dept] || (isDark ? 'bg-white/10 text-white border-white/20' : 'bg-[#1D9BF0]/10 text-[#1D9BF0] border-[#1D9BF0]/20');
   };
@@ -4519,17 +4520,29 @@ export default function App() {
         </div>
 
         <div className="flex-1 overflow-y-auto pb-36 px-5 pt-6 relative z-10 space-y-5">
-          {isDepartments && displayData.map((dept) => (
-            <DepartmentCard
-              key={dept.id}
-              dept={dept}
+          {/* Departments are a register, not a card grid — the viewer's own
+              department leads, then every department grouped by school. */}
+          {isDepartments && viewerDepartment && viewerDeptAccess.isMember && (
+            <MyDepartmentPanel
+              dept={viewerDepartment}
               authRole={authRole}
+              sentBroadcasts={sentBroadcasts}
+              t={t}
+              isDark={isDark}
+              onOpen={handleOpenDepartment}
+              onOpenChannel={handleOpenDepartmentChannel}
+              onManage={setManageDepartment}
+            />
+          )}
+          {isDepartments && (
+            <DepartmentList
+              departments={displayData}
               t={t}
               isDark={isDark}
               onOpen={handleOpenDepartment}
               onMessage={(d) => handleOpenDepartmentChannel(d, 'helpdesk')}
             />
-          ))}
+          )}
 
           {!isDepartments && displayData.map((person) => (
             <div 

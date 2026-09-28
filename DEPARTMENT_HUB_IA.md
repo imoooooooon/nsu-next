@@ -78,7 +78,7 @@ are browsed rarely and entered mostly by *link*, not by *hunting*.
 
 | From | Affordance |
 |---|---|
-| Directory ▸ Departments | department cards |
+| Directory ▸ Departments | **Your department** panel + the department register (§3.4) |
 | Any person's profile / card | the **department chip is a link** to that hub |
 | Messages | the broadcast channel header links to the hub |
 | Profile tab | **My Department** row — the one-tap path for members |
@@ -100,6 +100,53 @@ are browsed rarely and entered mostly by *link*, not by *hunting*.
 Job posting and blood requests **reuse the existing modules** with a department
 identity attached. Forking them would give the campus two job boards, which is
 the exact opposite of brief §4 ("full access to the broader ecosystem").
+
+### 3.4 The Departments lens — a register, not a card grid
+
+The first build rendered departments as the same blue gradient card as people,
+with a square avatar swapped in. It was correct and monotonous: four departments
+looked like four people, which contradicts §1 — a department is a different
+*kind* of object, and the directory should show it before the user reads a word.
+
+People are cards because you **size a person up** before connecting. A
+department is an office you **look up**, so the lens borrows from the lobby
+directory board and from LinkedIn's Pages list rather than from profiles:
+
+```
+┌ Your department ───────────────── [Member | Official] ┐
+│ [CSE] Computer Science & Engineering                   │
+│ 📣 Latest notice · 35m ago · Also emailed              │
+│    URGENT: Registration closes tonight…                │
+│ [ Open hub ↗ ]  [ Message | Manage ]                   │
+└────────────────────────────────────────────────────────┘
+┌ All departments ────────────────────── ✓ Verified by NSU ┐
+│ SCHOOL OF ENGINEERING & PHYSICAL SCIENCES            2 │
+│ [CSE] Computer Science & Engineering ✓   SAC 1042  ✉  › │
+│       12,122 members · Est. 1993          OFFICE        │
+│       [2 open roles] [1 blood request]                  │
+│ [ECE] Electrical & Computer Engineering ✓ SAC 0915 ✉  › │
+│ SCHOOL OF BUSINESS & ECONOMICS                       1 │
+│ …                                                       │
+└─────────────────────────────────────────────────────────┘
+```
+
+Decisions worth naming:
+
+1. **Membership leads.** The one relationship a person can't have — you are
+   *in* a department — gets its own panel above the list, carrying the thing a
+   member checks most (the latest notice) rather than a stat row.
+2. **Grouped by school.** It is the university's real org chart and how
+   students already navigate campus; it also scales to ~15 departments where a
+   flat card grid would become a wall.
+3. **Rows differ where departments differ.** Signal chips (open roles, blood
+   requests) render only when true, so an active department reads as active at
+   a glance. Always-on decoration (Est. year pill, dashed stat strip) moved to
+   the hub, where it's context rather than noise.
+4. **The room number is a first-class fact.** "Where do I physically go?" is
+   the question a directory of offices answers; on desktop it gets its own
+   right-aligned column, like a lobby board.
+5. **Verification is said once**, in the list header, not per row — every
+   department is verified, so repeating it carried no information.
 
 ---
 

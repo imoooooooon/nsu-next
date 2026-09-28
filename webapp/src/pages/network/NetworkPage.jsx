@@ -4,10 +4,12 @@ import { Users, Building2 } from 'lucide-react';
 import { PageContainer, PageHeader } from '../../components/layout/AppShell';
 import { SearchInput, SegmentedControl, EmptyState } from '../../components/ui';
 import { PersonCard } from '../../features/network/PersonCard';
-import { DepartmentCard } from '../../features/departments/DepartmentCard';
+import { DepartmentList, MyDepartmentPanel } from '../../features/departments/DepartmentDirectory';
 import { globalAlumniData, globalFacultyData, globalStudentData } from '../../data/people';
-import { globalDepartments } from '../../data/departments';
+import { globalDepartments, findDepartmentById } from '../../data/departments';
+import { getDepartmentAccess, getViewerDepartmentId } from '../../lib/departmentAccess';
 import { useTheme } from '../../theme/ThemeContext';
+import { useAppState } from '../../context/AppStateContext';
 
 /* ---------------------------------------------------------------------------
    /network — the Directory (mobile DirectoryTab), re-laid for desktop:
@@ -28,6 +30,7 @@ const SEGMENT_DATA = {
 
 export default function NetworkPage() {
   const { t } = useTheme();
+  const { authRole } = useAppState();
   const [searchParams] = useSearchParams();
   const q = searchParams.get('q') || '';
   const segmentParam = searchParams.get('segment');
@@ -55,6 +58,11 @@ export default function NetworkPage() {
   }
 
   const isDepartments = segment === 'Departments';
+
+  /* The viewer's own department leads the Departments lens — membership is
+     the relationship that sets an entity apart from a person. */
+  const viewerDept = findDepartmentById(getViewerDepartmentId());
+  const myDept = viewerDept && getDepartmentAccess(viewerDept, authRole).isMember ? viewerDept : null;
 
   const results = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -98,17 +106,28 @@ export default function NetworkPage() {
         Showing {results.length} results • {segment}
       </div>
 
-      {results.length === 0 ? (
-        <EmptyState
-          icon={isDepartments ? Building2 : Users}
-          title={isDepartments ? 'No departments match your search' : 'No people match your search'}
-          className={t.text}
-        />
+      {isDepartments ? (
+        /* Register + rail. The panel comes first in the DOM so it leads on
+           mobile, and moves to a sticky right rail from lg. */
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start pb-4">
+          {myDept && (
+            <aside className="lg:col-start-3 lg:row-start-1 lg:sticky lg:top-20 min-w-0">
+              <MyDepartmentPanel dept={myDept} />
+            </aside>
+          )}
+          <div className={`min-w-0 lg:row-start-1 ${myDept ? 'lg:col-span-2 lg:col-start-1' : 'lg:col-span-3'}`}>
+            {results.length === 0 ? (
+              <EmptyState icon={Building2} title="No departments match your search" subtitle="Try a department code, name or school." className={t.text} />
+            ) : (
+              <DepartmentList departments={results} />
+            )}
+          </div>
+        </div>
+      ) : results.length === 0 ? (
+        <EmptyState icon={Users} title="No people match your search" className={t.text} />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5">
-          {isDepartments
-            ? results.map(dept => <DepartmentCard key={dept.id} dept={dept} />)
-            : results.map(person => <PersonCard key={person.id} person={person} variant="full" />)}
+          {results.map(person => <PersonCard key={person.id} person={person} variant="full" />)}
         </div>
       )}
     </PageContainer>

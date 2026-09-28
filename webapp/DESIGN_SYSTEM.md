@@ -106,12 +106,31 @@ and never give a person a square.
 
 Department primitives live in `features/departments/DepartmentPrimitives.jsx`
 (`EntityAvatar` size `xs–3xl`, `EntityVerified`, `AccessBadge level=official|admin|member`,
-`DepartmentStats`, `DepartmentInfoRow`) with `DepartmentCard` and
-`DepartmentBloodRequestModal` beside them, and the asymmetric channel view in
+`DepartmentStats`, `DepartmentInfoRow`) with the directory lens in
+`features/departments/DepartmentDirectory.jsx` (`DepartmentList`, `DepartmentRow`,
+`MyDepartmentPanel`) and `DepartmentBloodRequestModal` beside them, and the asymmetric channel view in
 `features/messages/DepartmentChannelView.jsx`. Permissions come from **one**
 resolver — `getDepartmentAccess(dept, authRole)` in `lib/departmentAccess.js`
 (`level, isOfficial, isAdmin, canManage, canBroadcast, canGrantAccess, isMember`).
 Never re-derive department permissions inside a screen.
+
+**People are cards; entities are a register.** The blue `TintedCard` is the
+*person/post* surface — jobs, people, talent. Departments never use it in a
+list. The Departments lens renders as a **register**: one `Card` (plain glass,
+no gradient) holding hairline-divided rows, sectioned by school.
+
+| Part | Rule |
+|---|---|
+| Row | `EntityAvatar md` · name (`text-[15px] font-extrabold`, clamps to 2 lines) · meta `members · room` (mobile) / `members · Est.` + a right-aligned **Office** column (md+) · trailing Message icon button (`rounded-xl`, 40px). Whole row opens the hub — on the web via a stretched `Link` so the Message button stays its own target. |
+| Signals | A chip appears **only when true**: open roles (emerald, `Briefcase`), blood requests (red, `Droplet`) — the app's semantic colours, same geometry as `AccessBadge`. Rows are meant to differ; never add a chip that is always present. |
+| Verification | Stated **once** in the list header ("Verified by NSU"). Rows carry an icon-only `BadgeCheck` glued to the name's last word. Everywhere outside the register (hub hero, messages) the worded `EntityVerified` still applies. |
+| Access | Lives on `MyDepartmentPanel`, not on rows — only the viewer's own department ever has a non-visitor level, and the panel sits directly above it. |
+| Your department | `MyDepartmentPanel` leads the lens (mobile: above the list; lg: sticky right rail, `lg:grid-cols-3`). It carries identity + `AccessBadge`, the **latest notice** (seed + session broadcasts, with the "Also emailed" mark) linking to the broadcast channel, and two doors: Open hub + Message (members) or Manage (Official/Admin). |
+
+Department accents (`getDeptStyle` / mobile `getDeptAccent`): CSE blue, ECE
+purple, BBA amber, **Architecture teal**. Every department in the demo data has
+its own accent — the tile is the only colour a register row owns, so two
+departments must never share one.
 
 Shared feature components already built: `features/events/EventPrimitives.jsx`
 (`EventStatusBadge`, `EventCard` with `standard|compact|horizontal|recommended`, `useEventStatus`),
