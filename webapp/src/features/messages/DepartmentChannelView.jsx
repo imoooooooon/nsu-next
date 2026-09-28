@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
-import { Button, Modal, DropdownPanel, DropdownItem } from '../../components/ui';
+import { Button, Modal, DropdownPanel, DropdownItem, SwitchVisual } from '../../components/ui';
 import { EntityAvatar } from '../departments/DepartmentPrimitives';
 import { findDepartmentById, departmentBroadcasts } from '../../data/departments';
 import { getDepartmentAccess, formatCount } from '../../lib/departmentAccess';
@@ -364,7 +364,7 @@ export default function DepartmentChannelView({ conversation }) {
                   type="button"
                   onClick={() => setEmailArmed(v => !v)}
                   aria-pressed={emailArmed}
-                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl border mb-3 transition-all text-left outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0] ${
+                  className={`group/switch w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl border mb-3 transition-all text-left outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0] ${
                     emailArmed
                       ? (isDark ? 'bg-red-500/10 border-red-500/30' : 'bg-red-50 border-red-200')
                       : (isDark ? 'bg-white/5 border-white/10' : 'bg-black/[0.03] border-black/[0.06]')
@@ -383,12 +383,7 @@ export default function DepartmentChannelView({ conversation }) {
                   </div>
                   {/* Visual only: the whole strip is the control, so a real
                       <Toggle> here would nest a button inside a button. */}
-                  <span
-                    aria-hidden="true"
-                    className={`w-10 h-6 rounded-full flex items-center px-1 transition-colors shrink-0 ${emailArmed ? 'bg-red-500' : (isDark ? 'bg-white/20' : 'bg-gray-300')}`}
-                  >
-                    <span className={`w-4 h-4 bg-white rounded-full shadow-sm block transform transition-transform ${emailArmed ? 'translate-x-4' : 'translate-x-0'}`} />
-                  </span>
+                  <SwitchVisual checked={emailArmed} color="bg-red-500" />
                 </button>
               )}
 

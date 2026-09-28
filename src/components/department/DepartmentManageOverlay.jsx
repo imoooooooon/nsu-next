@@ -2,10 +2,12 @@ import { useMemo, useState } from 'react';
 import {
   ArrowLeft, ShieldCheck, KeyRound, UserPlus, Megaphone, LifeBuoy, Briefcase,
   Droplet, Copy, Users, Mail, ArrowUpRight, Trash2, Search, Check, Info, User,
+  CalendarPlus,
 } from 'lucide-react';
 import { EntityAvatar, AccessBadge, DepartmentSheet } from './DepartmentPrimitives';
 import { getDepartmentAccess, formatCount } from './access';
 import { departmentHelpDeskThreads, departmentJobs } from './data';
+import { SegmentedPill } from '../ui/controls';
 
 /* ---------------------------------------------------------------------------
    The Official's / Admin's console (brief §2).
@@ -50,7 +52,8 @@ export const DepartmentManageOverlay = ({
   facultyData, findUserById,
   adminIds, aboutOverride, broadcastsSent,
   onBack, onGrantAccess, onRevokeAccess, onSaveAbout,
-  onOpenChannel, onOpenHelpDeskInbox, onPostJob, onPostBlood, onToast,
+  onOpenChannel, onOpenHelpDeskInbox, onPostJob, onPostBlood, onCreateEvent,
+  upcomingEventCount = 0, onToast,
 }) => {
   const [section, setSection] = useState('overview');
   const [isGrantOpen, setIsGrantOpen] = useState(false);
@@ -87,6 +90,7 @@ export const DepartmentManageOverlay = ({
   const quickActions = [
     { icon: Megaphone, label: 'New Broadcast', hint: 'Post a notice to every member', onClick: () => onOpenChannel(dept, 'broadcast') },
     { icon: LifeBuoy, label: 'Open Help Desk', hint: `${openThreads} question${openThreads === 1 ? '' : 's'} waiting`, onClick: () => onOpenHelpDeskInbox(dept) },
+    { icon: CalendarPlus, label: 'Create an Event', hint: 'Talk, workshop or showcase — on the campus calendar', onClick: () => onCreateEvent(dept) },
     { icon: Briefcase, label: 'Post a Job', hint: 'RA, TA or lab position', onClick: () => onPostJob(dept) },
     { icon: Droplet, label: 'Post Blood Request', hint: 'On behalf of a member', onClick: () => onPostBlood(dept), danger: true },
   ];
@@ -115,17 +119,15 @@ export const DepartmentManageOverlay = ({
           <AccessBadge level={access.level} isDark={isDark} />
         </div>
 
-        <div className={`flex p-1 rounded-xl ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft} mb-6`}>
-          {SECTIONS.map(seg => (
-            <button
-              key={seg.id}
-              onClick={() => setSection(seg.id)}
-              className={`flex-1 py-2 rounded-lg text-xs font-extrabold transition-all ${section === seg.id ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'} border` : 'text-gray-500'}`}
-            >
-              {seg.label}
-            </button>
-          ))}
-        </div>
+        <SegmentedPill
+          options={SECTIONS}
+          value={section}
+          onChange={setSection}
+          t={t}
+          isDark={isDark}
+          ariaLabel="Console section"
+          className="mb-6"
+        />
 
         {/* ----------------------------------------------------- overview */}
         {section === 'overview' && (
@@ -172,6 +174,10 @@ export const DepartmentManageOverlay = ({
                 <div className="flex items-center justify-between">
                   <span className={`text-xs font-bold ${t.textMuted}`}>Broadcasts sent this session</span>
                   <span className={`text-sm font-extrabold ${t.text}`}>{broadcastsSent}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className={`text-xs font-bold ${t.textMuted}`}>Upcoming events</span>
+                  <span className={`text-sm font-extrabold ${t.text}`}>{upcomingEventCount}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className={`text-xs font-bold ${t.textMuted}`}>Open positions live</span>

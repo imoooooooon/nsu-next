@@ -64,7 +64,48 @@ body {
   100% { transform: translateY(-120px) scale(1) rotate(15deg); opacity: 0; }
 }
 
+/* Springs — sampled from real spring physics (stiffness/damping), the curves
+   Framer Motion would produce, expressed as CSS linear() so they run on the
+   compositor with no JS. `soft` (ζ≈0.8) settles with a ~1% overshoot and
+   drives every sliding selection pill; `bouncy` (ζ≈0.64) gives switch knobs
+   their small, physical settle. Browsers without linear() fall back to the
+   ease-out-expo curve on the line above each one. */
+:root {
+  --ease-spring-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring-soft: linear(0, 0.0201, 0.0717, 0.1437, 0.2275, 0.3164, 0.4056, 0.4915, 0.572, 0.6454, 0.7111, 0.7687, 0.8185, 0.8607, 0.8961, 0.9251, 0.9486, 0.9672, 0.9817, 0.9927, 1.0008, 1.0065, 1.0103, 1.0126, 1.0138, 1.0141, 1.0138, 1.013, 1.012, 1.0108, 1.0095, 1.0083, 1.0071, 1.006, 1.0049, 1.004, 1.0032, 1.0025, 1.0019, 1.0014, 1);
+  --ease-spring-bouncy: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --ease-spring-bouncy: linear(0, 0.0297, 0.1057, 0.2106, 0.3304, 0.4541, 0.5736, 0.6835, 0.7801, 0.8619, 0.9284, 0.9802, 1.0184, 1.0449, 1.0613, 1.0697, 1.0717, 1.0692, 1.0635, 1.0558, 1.0471, 1.0382, 1.0297, 1.0219, 1.0151, 1.0094, 1.0047, 1.0011, 0.9984, 0.9966, 0.9955, 0.995, 0.9949, 0.9951, 0.9955, 0.9961, 0.9967, 0.9973, 0.9979, 0.9985, 1);
+}
+
 .ease-spring { transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+/* The travelling "active" pill of every selection control (useSlidingPill).
+   Positioned by transform from the top-left of its relative track. */
+.sliding-pill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition-property: transform, width, height;
+  transition-duration: 460ms;
+  transition-timing-function: var(--ease-spring-soft);
+  will-change: transform;
+}
+
+/* Switch knob: glides on the bouncy spring, and stretches while pressed
+   (the iOS "squish") — width eases on its own, shorter curve. */
+.switch-knob {
+  /* Tailwind v4's translate-x-* writes the `translate` property, not
+     `transform` — transition the one that actually moves. */
+  transition:
+    translate 480ms var(--ease-spring-bouncy),
+    width 260ms var(--ease-spring-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sliding-pill, .switch-knob { transition-duration: 0ms !important; }
+}
 .animate-heart-fly { animation: heartFly 0.8s ease-out forwards; }
 .animate-scale-up { animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-slide-up { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }

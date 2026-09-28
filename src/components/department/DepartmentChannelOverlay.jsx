@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { EntityAvatar, DepartmentSheet } from './DepartmentPrimitives';
 import { getDepartmentAccess, formatCount } from './access';
+import { SwitchVisual } from '../ui/controls';
 import { departmentBroadcasts } from './data';
 
 /* ---------------------------------------------------------------------------
@@ -301,7 +302,7 @@ export const DepartmentChannelOverlay = ({
                 type="button"
                 onClick={() => setEmailArmed(v => !v)}
                 aria-pressed={emailArmed}
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl border mb-3 transition-all text-left active:scale-[0.99] ${
+                className={`group/switch w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl border mb-3 transition-all text-left active:scale-[0.99] ${
                   emailArmed
                     ? (isDark ? 'bg-red-500/10 border-red-500/30' : 'bg-red-50 border-red-200')
                     : (isDark ? 'bg-white/5 border-white/10' : 'bg-black/[0.03] border-black/[0.06]')
@@ -318,9 +319,7 @@ export const DepartmentChannelOverlay = ({
                       : 'Off — this notice appears in the app only'}
                   </p>
                 </div>
-                <div className={`w-10 h-6 rounded-full flex items-center px-1 transition-colors shrink-0 ${emailArmed ? 'bg-red-500' : (isDark ? 'bg-white/20' : 'bg-gray-300')}`}>
-                  <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform ${emailArmed ? 'translate-x-4' : 'translate-x-0'}`} />
-                </div>
+                <SwitchVisual checked={emailArmed} isDark={isDark} color="bg-red-500" />
               </button>
             )}
 

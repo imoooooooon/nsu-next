@@ -19,6 +19,7 @@ export const globalDepartments = [
     website: 'northsouth.edu/cse',
     officeHours: 'Sun – Thu · 9:00 AM – 5:00 PM',
     stats: { students: 3120, alumni: 8940, faculty: 62 },
+    chairId: 101,
     officialId: 101,
     adminIds: [106],
     broadcastChannelId: 'dept-cse-broadcast',
@@ -42,6 +43,7 @@ export const globalDepartments = [
     website: 'northsouth.edu/ece',
     officeHours: 'Sun – Thu · 9:00 AM – 4:30 PM',
     stats: { students: 1840, alumni: 4210, faculty: 38 },
+    chairId: 103,
     officialId: 103,
     adminIds: [],
     broadcastChannelId: 'dept-ece-broadcast',
@@ -65,6 +67,7 @@ export const globalDepartments = [
     website: 'northsouth.edu/sbe',
     officeHours: 'Sun – Thu · 8:30 AM – 5:00 PM',
     stats: { students: 4380, alumni: 11260, faculty: 74 },
+    chairId: 108,
     officialId: 104,
     adminIds: [],
     broadcastChannelId: 'dept-bba-broadcast',
@@ -88,6 +91,7 @@ export const globalDepartments = [
     website: 'northsouth.edu/architecture',
     officeHours: 'Sun – Thu · 9:00 AM – 5:00 PM',
     stats: { students: 620, alumni: 1140, faculty: 21 },
+    chairId: 109,
     officialId: null,
     adminIds: [],
     broadcastChannelId: 'dept-architecture-broadcast',
@@ -96,6 +100,13 @@ export const globalDepartments = [
     emailReach: 1702,
   },
 ];
+
+/* `chairId` is the Department Chair — the academic head, who always tops the
+   hub's officials list. `officialId` is whoever holds the hub's master key
+   (often the Chair, sometimes a coordinator the Chair appointed), and
+   `adminIds` are the faculty the Official delegated to. Three different
+   questions — who leads, who owns the account, who helps run it — so three
+   fields, even when one person answers two of them. */
 
 export const findDepartmentById = (id) =>
   globalDepartments.find(d => String(d.id) === String(id)) || null;

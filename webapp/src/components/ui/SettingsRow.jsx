@@ -18,7 +18,7 @@ export const SettingsRow = ({ icon: Icon, label, value, isToggle, toggleState, o
       <div className="flex items-center">
         {value && <span className={`text-xs font-bold ${t.textMuted} mr-2`}>{value}</span>}
         {isToggle ? (
-          <Toggle checked={toggleState} onChange={onToggle} />
+          <Toggle checked={toggleState} onChange={onToggle} label={label} />
         ) : (
           <ChevronRight className={`w-4 h-4 ${t.textMuted} group-hover:${t.text} transition-colors`} strokeWidth={2.5} />
         )}

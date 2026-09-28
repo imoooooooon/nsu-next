@@ -65,6 +65,7 @@ export default function EmergencyPage() {
                     onChange={() => setIsDonorAvailable(!isDonorAvailable)}
                     color="bg-green-500"
                     size="lg"
+                    label="Available to donate"
                   />
                 </div>
 

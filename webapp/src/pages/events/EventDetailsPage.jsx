@@ -1,11 +1,13 @@
-import { useNavigate, useParams } from 'react-router-dom';
-import { AlertTriangle, ArrowLeft, BadgeCheck, Bell, Building2, CalendarDays, CheckCircle2, Clock, Heart, MapPin } from 'lucide-react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { AlertTriangle, ArrowLeft, ArrowUpRight, BadgeCheck, Bell, Building2, CalendarDays, CheckCircle2, Clock, Heart, MapPin } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
 import { PageContainer } from '../../components/layout/AppShell';
 import { Card, EmptyState, SmartImage } from '../../components/ui';
 import { EventCard, EventStatusBadge, useEventStatus } from '../../features/events/EventPrimitives';
 import { findEventById, globalEventsData } from '../../data/events';
+import { findDepartmentById } from '../../data/departments';
+import { EntityAvatar } from '../../features/departments/DepartmentPrimitives';
 import { useCloseTo } from '../../lib/navigation';
 
 /* /events/:eventId — ported from EventDetailsScreen in the mobile app,
@@ -50,6 +52,7 @@ const EventDetailsView = ({ event }) => {
   const isInterested = interestedEventIds.has(event.id);
   const hasReminder = reminderEventIds.has(event.id);
   const isFollowingOrg = followedOrganizerIds.has(event.organizer.id);
+  const hostDept = findDepartmentById(event.deptId);
 
   const dateObj = new Date(event.date);
   const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
@@ -283,9 +286,15 @@ const EventDetailsView = ({ event }) => {
             <Card padded={false} className="p-5 flex flex-col">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center space-x-3">
-                  <div className={`w-12 h-12 rounded-xl ${isDark ? 'bg-white/10' : 'bg-black/5'} border ${t.borderSoft} flex items-center justify-center shrink-0`}>
-                    <Building2 className={`w-6 h-6 ${t.textMuted}`} strokeWidth={1.5} />
-                  </div>
+                  {/* A department host is an Entity: its code tile, never a
+                      generic building — the same mark as the hub and inbox. */}
+                  {hostDept ? (
+                    <EntityAvatar dept={hostDept} size="md" />
+                  ) : (
+                    <div className={`w-12 h-12 rounded-xl ${isDark ? 'bg-white/10' : 'bg-black/5'} border ${t.borderSoft} flex items-center justify-center shrink-0`}>
+                      <Building2 className={`w-6 h-6 ${t.textMuted}`} strokeWidth={1.5} />
+                    </div>
+                  )}
                   <div className="flex flex-col">
                     <div className="flex items-center space-x-1.5 mb-0.5">
                       <h4 className={`text-base font-extrabold ${t.text} leading-tight`}>{event.organizer.name}</h4>
@@ -306,6 +315,14 @@ const EventDetailsView = ({ event }) => {
               >
                 {isFollowingOrg ? 'Following' : 'Follow Organizer'}
               </button>
+              {hostDept && (
+                <Link
+                  to={`/departments/${hostDept.id}`}
+                  className="mt-3 text-[#1D9BF0] text-[11px] font-extrabold hover:underline inline-flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0] rounded"
+                >
+                  Open the {hostDept.short} Department hub <ArrowUpRight className="w-3.5 h-3.5 ml-1" strokeWidth={3} />
+                </Link>
+              )}
             </Card>
           </div>
 

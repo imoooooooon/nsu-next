@@ -1,16 +1,31 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2, Plus, Trash2 } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeContext';
+import { useAppState } from '../../context/AppStateContext';
 import { PageContainer, PageHeader, FormColumn } from '../../components/layout/AppShell';
 import { Button, Card, Field, IconButton, SelectInput, TextArea, TextInput } from '../../components/ui';
 import { useCloseTo } from '../../lib/navigation';
+import { findDepartmentById } from '../../data/departments';
+import { getDepartmentAccess } from '../../lib/departmentAccess';
+import { EntityAvatar } from '../../features/departments/DepartmentPrimitives';
 
-/* /events/create — ported from CreateEventScreen in the mobile app. */
+/* /events/create — ported from CreateEventScreen in the mobile app.
+
+   `?as=<deptId>` hosts the event as a department hub, exactly like
+   `/jobs/post?as=` — the campus keeps ONE calendar and the event lands on
+   both /events and the hub; only the host identity changes. Only the
+   department's Official / Admins can host as it; anyone else silently
+   falls back to hosting as themselves. */
 export default function CreateEventPage() {
-  const { t } = useTheme();
+  const { t, isDark } = useTheme();
+  const { authRole } = useAppState();
   const navigate = useNavigate();
-  const goBack = useCloseTo('/events');
+  const [searchParams] = useSearchParams();
+
+  const asDept = findDepartmentById(searchParams.get('as'));
+  const hostingAsDept = asDept && getDepartmentAccess(asDept, authRole).canManage ? asDept : null;
+  const goBack = useCloseTo(hostingAsDept ? `/departments/${hostingAsDept.id}` : '/events');
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [schedules, setSchedules] = useState([{ time: '', title: '' }]);
@@ -26,8 +41,28 @@ export default function CreateEventPage() {
       <FormColumn>
       <div className="flex items-center gap-3">
         <IconButton icon={ArrowLeft} label="Back" onClick={goBack} />
-        <PageHeader className="flex-1" title={isSubmitted ? 'Status' : 'Create Event'} />
+        <PageHeader
+          className="flex-1"
+          title={isSubmitted ? 'Status' : 'Create Event'}
+          subtitle={!isSubmitted && hostingAsDept ? `Hosting as ${hostingAsDept.code} Department` : undefined}
+        />
       </div>
+
+      {!isSubmitted && hostingAsDept && (
+        <div className={`flex items-center gap-3 p-3.5 rounded-2xl mb-4 ${isDark ? 'bg-[#1D9BF0]/10 border-[#1D9BF0]/20' : 'bg-[#1D9BF0]/[0.07] border-[#1D9BF0]/20'} border`}>
+          <EntityAvatar dept={hostingAsDept} size="sm" />
+          <div className="min-w-0 flex-1">
+            <p className={`text-[10px] font-extrabold ${t.textMuted} uppercase tracking-wider`}>Hosting as</p>
+            <p className={`text-sm font-extrabold ${t.text} truncate`}>{hostingAsDept.code} Department</p>
+          </div>
+          <button
+            onClick={() => navigate('/events/create', { replace: true })}
+            className="text-[#1D9BF0] text-[11px] font-extrabold hover:underline shrink-0"
+          >
+            Host as myself
+          </button>
+        </div>
+      )}
 
       {!isSubmitted ? (
         <Card className="space-y-5 mb-8">
@@ -129,10 +164,17 @@ export default function CreateEventPage() {
           </div>
           <h3 className={`text-2xl font-extrabold ${t.text} tracking-tight mb-2 text-center`}>Event Created!</h3>
           <p className={`text-sm font-bold ${t.textMuted} text-center mb-8 max-w-xs leading-relaxed`}>
-            Your event has been successfully published and is now live for students to register.
+            {hostingAsDept
+              ? `Your event is live on the campus calendar and on the ${hostingAsDept.code} Department hub.`
+              : 'Your event has been successfully published and is now live for students to register.'}
           </p>
-          <Button variant="neutral" size="lg" className="w-full max-w-xs" onClick={() => navigate('/events')}>
-            Back to Events
+          <Button
+            variant="neutral"
+            size="lg"
+            className="w-full max-w-xs"
+            onClick={() => navigate(hostingAsDept ? `/departments/${hostingAsDept.id}` : '/events')}
+          >
+            {hostingAsDept ? `Back to ${hostingAsDept.code} Hub` : 'Back to Events'}
           </Button>
         </Card>
       )}

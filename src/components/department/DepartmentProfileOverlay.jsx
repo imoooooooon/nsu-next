@@ -2,18 +2,21 @@ import { useMemo, useState } from 'react';
 import {
   ArrowLeft, Share, Mail, Megaphone, Settings2, Users, MapPin, Phone, Globe,
   Clock, Search, ChevronRight, Briefcase, Plus, ArrowUpRight, User,
+  GraduationCap, KeyRound, ShieldCheck,
 } from 'lucide-react';
 import { EntityAvatar, EntityVerified, AccessBadge, DepartmentStats, DepartmentInfoRow } from './DepartmentPrimitives';
-import { getDepartmentAccess, formatCount } from './access';
+import { getDepartmentAccess, getDepartmentLeadership, LEADERSHIP_TITLES, formatCount } from './access';
 import { departmentJobs, departmentBloodRequests } from './data';
+import { SegmentedPill } from '../ui/controls';
 
 /* ---------------------------------------------------------------------------
    The Department Hub (brief §1 and flow §3).
 
    Content order is fixed by the brief: identity → About (the department
    description) → the three directory tabs → the scrollable list of profile
-   cards. Everything else (contact, officials, open roles, blood requests)
-   stacks below, so the brief's order is what you meet on first scroll.
+   cards. Everything else (contact, officials, upcoming events, open roles,
+   blood requests) stacks below, so the brief's order is what you meet on
+   first scroll. Mirrors `webapp/src/pages/departments/DepartmentHubPage.jsx`.
 --------------------------------------------------------------------------- */
 
 const TABS = [
@@ -47,9 +50,38 @@ const PersonRow = ({ person, t, isDark, onClick }) => (
   </button>
 );
 
+const ROLE_ICONS = { chair: GraduationCap, official: KeyRound, admin: ShieldCheck };
+
+const RoleChip = ({ role, isDark }) => {
+  const Icon = ROLE_ICONS[role];
+  const tone = role === 'official'
+    ? (isDark ? 'bg-amber-400/15 text-amber-300 border-amber-400/30' : 'bg-amber-50 text-amber-700 border-amber-200')
+    : (isDark ? 'bg-emerald-400/15 text-emerald-300 border-emerald-400/30' : 'bg-emerald-50 text-emerald-700 border-emerald-200');
+  return (
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider border ${tone}`}>
+      <Icon className="w-2.5 h-2.5" strokeWidth={3} />
+      {role === 'official' ? 'Official' : 'Admin'}
+    </span>
+  );
+};
+
+/* A calendar-leaf date tile — month over day. */
+const DateLeaf = ({ date, isDark }) => {
+  const d = new Date(`${date}T12:00:00`);
+  return (
+    <div className={`w-12 h-12 rounded-xl border flex flex-col items-center justify-center shrink-0 ${isDark ? 'bg-[#1D9BF0]/10 border-[#1D9BF0]/20' : 'bg-[#1D9BF0]/[0.06] border-[#1D9BF0]/15'}`}>
+      <span className="text-[9px] font-extrabold uppercase tracking-wider text-[#1D9BF0] leading-none">
+        {d.toLocaleString('en-US', { month: 'short' })}
+      </span>
+      <span className={`text-lg font-black leading-none mt-1 ${isDark ? 'text-white' : 'text-[#0F1419]'}`}>{d.getDate()}</span>
+    </div>
+  );
+};
+
 export const DepartmentProfileOverlay = ({
   dept, authRole, t, isDark, aboutOverride, adminIds,
   peopleByCohort, findUserById,
+  events = [], renderEventStatus, onOpenEvent, onCreateEvent,
   onBack, onSelectUser, onOpenChannel, onManage, onPostJob, onPostBlood, onToast,
 }) => {
   const [tab, setTab] = useState('students');
@@ -71,7 +103,10 @@ export const DepartmentProfileOverlay = ({
 
   /* Live delegation, not the seed record — an admin granted in the console
      has to appear here immediately or the two screens contradict each other. */
-  const officials = [dept.officialId, ...(adminIds || dept.adminIds)].map(findUserById).filter(Boolean);
+  const leadership = getDepartmentLeadership(dept, adminIds)
+    .map(row => ({ ...row, person: findUserById(row.id) }))
+    .filter(row => row.person);
+  const [lead, ...team] = leadership[0]?.roles.includes('chair') ? leadership : [null, ...leadership];
   const jobs = departmentJobs[dept.id] || [];
   const bloodRequests = departmentBloodRequests[dept.id] || [];
 
@@ -177,17 +212,15 @@ export const DepartmentProfileOverlay = ({
             detaches and hangs over the cards reads as a glitch — and the
             cards it covered were the thing you came to read. */}
         <div className={`mx-5 mt-4 p-4 rounded-2xl ${t.card} border ${t.border}`}>
-          <div className={`flex p-1 rounded-xl ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft} mb-3`}>
-            {TABS.map(seg => (
-              <button
-                key={seg.id}
-                onClick={() => { setTab(seg.id); setSearch(''); }}
-                className={`flex-1 py-2 rounded-lg text-xs font-extrabold transition-all ${tab === seg.id ? `${isDark ? 'bg-[#1A1A1A] text-white border-white/10' : 'bg-white text-black shadow-sm border-white'} border` : `text-gray-500`}`}
-              >
-                {seg.label}
-              </button>
-            ))}
-          </div>
+          <SegmentedPill
+            options={TABS}
+            value={tab}
+            onChange={(next) => { setTab(next); setSearch(''); }}
+            t={t}
+            isDark={isDark}
+            ariaLabel="Department cohort"
+            className="mb-3"
+          />
 
           <div className="relative">
             <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4`} strokeWidth={2.5} />
@@ -236,13 +269,41 @@ export const DepartmentProfileOverlay = ({
           </div>
 
           {/* ---------------------------------------------------- officials */}
+          {/* The Department Chair leads as a tinted tile — who a student,
+              parent or recruiter is looking for. The Official and Admins
+              follow; one person holding two roles is one entry. */}
           <div className={`rounded-2xl p-5 ${t.card} border ${t.border}`}>
             <h3 className={`text-sm font-extrabold ${t.textMuted} uppercase tracking-wider mb-4`}>Department Officials</h3>
-            {officials.length === 0 ? (
+            {leadership.length === 0 && (
               <p className={`text-xs font-bold ${t.textMuted}`}>No official assigned yet.</p>
-            ) : (
-              <div className="space-y-2">
-                {officials.map((person, idx) => (
+            )}
+            {lead && (
+              <button
+                onClick={() => onSelectUser(lead.person)}
+                className={`w-full flex items-start gap-3.5 p-3.5 rounded-2xl border text-left active:scale-[0.99] transition-transform ${isDark ? 'bg-rose-400/[0.06] border-rose-400/15' : 'bg-[#800000]/[0.035] border-[#800000]/10'}`}
+              >
+                <div className={`relative w-12 h-12 rounded-full shrink-0 ${isDark ? 'bg-rose-400/10' : 'bg-[#800000]/10'} flex items-center justify-center`}>
+                  <User className={`w-6 h-6 ${isDark ? 'text-rose-400' : 'text-[#800000]'}`} strokeWidth={2} />
+                  <span className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center border-2 ${isDark ? 'bg-rose-400 border-[#121212]' : 'bg-[#800000] border-white'}`}>
+                    <GraduationCap className="w-2.5 h-2.5 text-white" strokeWidth={3} />
+                  </span>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className={`text-[10px] font-extrabold uppercase tracking-wider ${isDark ? 'text-rose-300' : 'text-[#800000]'}`}>{LEADERSHIP_TITLES.chair}</p>
+                  <p className={`text-[15px] font-extrabold ${t.text} leading-snug mt-0.5 truncate`}>{lead.person.name}</p>
+                  <p className={`text-[11px] font-bold ${t.textMuted} truncate`}>{lead.person.role}</p>
+                  {lead.roles.length > 1 && (
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {lead.roles.filter(r => r !== 'chair').map(r => <RoleChip key={r} role={r} isDark={isDark} />)}
+                    </div>
+                  )}
+                </div>
+                <ChevronRight className={`w-4 h-4 ${t.textMuted} shrink-0 self-center`} strokeWidth={2.5} />
+              </button>
+            )}
+            {team.length > 0 && (
+              <div className={`space-y-1 ${lead ? 'mt-3' : ''}`}>
+                {team.map(({ person, roles }) => (
                   <button
                     key={person.id}
                     onClick={() => onSelectUser(person)}
@@ -253,9 +314,44 @@ export const DepartmentProfileOverlay = ({
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className={`text-sm font-extrabold ${t.text} truncate`}>{person.name}</p>
-                      <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted}`}>
-                        {idx === 0 ? 'Department Official' : 'Department Admin'}
+                      <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} truncate`}>
+                        {roles.map(r => LEADERSHIP_TITLES[r]).join(' · ')}
                       </p>
+                    </div>
+                    <ChevronRight className={`w-4 h-4 ${t.textMuted} shrink-0`} strokeWidth={2.5} />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* ----------------------------------------------- upcoming events */}
+          {/* Hosted by the department, drawn from the one campus calendar —
+              so every row here is also in the Events module. */}
+          <div className={`rounded-2xl p-5 ${t.card} border ${t.border}`}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className={`text-sm font-extrabold ${t.textMuted} uppercase tracking-wider`}>Upcoming Events</h3>
+              {access.canManage && onCreateEvent && (
+                <button onClick={() => onCreateEvent(dept)} className="text-[#1D9BF0] text-[11px] font-extrabold flex items-center">
+                  <Plus className="w-3.5 h-3.5 mr-0.5" strokeWidth={3} /> Create
+                </button>
+              )}
+            </div>
+            {events.length === 0 ? (
+              <p className={`text-xs font-bold ${t.textMuted}`}>No upcoming events from this department.</p>
+            ) : (
+              <div className="space-y-2">
+                {events.map(event => (
+                  <button
+                    key={event.id}
+                    onClick={() => onOpenEvent && onOpenEvent(event)}
+                    className={`w-full flex items-center gap-3 p-2.5 rounded-xl border ${t.borderSoft} ${isDark ? 'bg-white/[0.03] active:bg-white/[0.07]' : 'bg-black/[0.02] active:bg-black/[0.05]'} text-left active:scale-[0.99] transition-all`}
+                  >
+                    <DateLeaf date={event.date} isDark={isDark} />
+                    <div className="min-w-0 flex-1">
+                      <p className={`text-xs font-extrabold ${t.text} leading-snug line-clamp-2`}>{event.title}</p>
+                      <p className={`text-[10px] font-bold ${t.textMuted} mt-1 truncate`}>{event.time} · {event.venue}</p>
+                      {renderEventStatus && <div className="mt-1.5 inline-flex">{renderEventStatus(event)}</div>}
                     </div>
                     <ChevronRight className={`w-4 h-4 ${t.textMuted} shrink-0`} strokeWidth={2.5} />
                   </button>
@@ -327,7 +423,7 @@ export const DepartmentProfileOverlay = ({
           </div>
 
           <p className={`text-[10px] font-bold ${t.textMuted} text-center px-4 leading-relaxed pb-2`}>
-            Posts from this hub go to the campus-wide Job Board and Emergency network
+            Posts from this hub go to the campus-wide Events calendar, Job Board and Emergency network
             <ArrowUpRight className="w-3 h-3 inline ml-1" strokeWidth={3} />
           </p>
         </div>
