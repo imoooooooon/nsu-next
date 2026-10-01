@@ -20,6 +20,9 @@ import {
   HandHeart, CircleDollarSign, ListFilter, RotateCcw, Sparkles
 } from 'lucide-react';
 
+// --- EVENT CREATION (start/end range, auto day-by-day schedule, organizers) ---
+import { CreateEventScreen } from './components/events/CreateEventScreen';
+
 // --- SELECTION CONTROLS (sliding spring pill + switch, shared with the web) ---
 import { SegmentedPill, ViewModeSwitch, SwitchVisual } from './components/ui/controls';
 
@@ -97,6 +100,10 @@ const CustomEventsIcon = ({ className }) => (
 );
 // --- GLOBAL DEMO EVENTS DATA ---
 const EVENTS_REFERENCE_DATE = new Date('2026-07-12T12:00:00');
+
+/* The signed-in demo identity's name — the default host of an event. */
+const viewerFullName = (authRole) =>
+  authRole === 'student' ? 'Hasan Tarik' : authRole === 'alumni' ? 'Nusrat Jahan' : 'Dr. Hasan Mahmud';
 
 const globalEventsData = [
   {
@@ -1923,6 +1930,7 @@ const EventsHomeScreen = ({ navigateTo, events, t, isDark, registeredEventIds })
       {/* FLOATING ACTION BUTTON */}
       <button 
         onClick={() => navigateTo('create')}
+        aria-label="Create event"
         className="absolute bottom-6 right-5 w-14 h-14 bg-[#1D9BF0] text-white rounded-full flex items-center justify-center shadow-lg shadow-[#1D9BF0]/40 active:scale-95 transition-transform z-50"
       >
         <Plus className="w-6 h-6" strokeWidth={2.5} />
@@ -2458,152 +2466,6 @@ const EventDetailsScreen = ({
   );
 };
 
-/* `hostDept` hosts the event as a department hub (its Official / Admins only)
-   — same form, one calendar; the host identity is what changes. */
-const CreateEventScreen = ({ onClose, t, isDark, hostDept = null }) => {
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [schedules, setSchedules] = useState([{ time: '', title: '' }]);
-
-  const addSchedule = () => setSchedules([...schedules, { time: '', title: '' }]);
-  const removeSchedule = (idx) => setSchedules(schedules.filter((_, i) => i !== idx));
-  const updateSchedule = (idx, field, value) => {
-    const newSchedules = [...schedules];
-    newSchedules[idx][field] = value;
-    setSchedules(newSchedules);
-};
-  return (
-    <div className={`absolute inset-0 z-50 flex flex-col animate-slide-up ${t.bg}`}>
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden transition-opacity duration-500">
-        <div className={`absolute top-[-5%] right-[-10%] w-[80%] h-[60%] bg-[#1D9BF0] rounded-full mix-blend-screen filter blur-[140px] ${isDark ? 'opacity-10' : 'opacity-[0.15]'}`}></div>
-      </div>
-
-      <div className={`px-4 pt-12 pb-3 flex items-center justify-between ${t.glass} border-b sticky top-0 z-20 shadow-sm`}>
-        <button onClick={onClose} className={`w-10 h-10 flex items-center justify-center rounded-lg ${t.card} border ${t.borderSoft} transition-colors`}>
-          <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
-        </button>
-        <div className="flex flex-col items-center min-w-0 px-3">
-          <h2 className={`text-base font-extrabold ${t.text} leading-tight`}>
-            {isSubmitted ? 'Status' : 'Create Event'}
-          </h2>
-          {!isSubmitted && hostDept && (
-            <p className={`text-[10px] font-bold ${t.textMuted} truncate`}>Hosting as {hostDept.code} Department</p>
-          )}
-        </div>
-        <div className="w-10 h-10"></div>
-      </div>
-
-      {!isSubmitted ? (
-        <>
-          <div className="flex-1 overflow-y-auto pb-32 relative z-10 px-5 pt-6 space-y-5">
-            {hostDept && (
-              <div className={`flex items-center gap-3 p-3.5 rounded-2xl ${isDark ? 'bg-[#1D9BF0]/10 border-[#1D9BF0]/20' : 'bg-[#1D9BF0]/[0.07] border-[#1D9BF0]/20'} border`}>
-                <EntityAvatar dept={hostDept} size="sm" isDark={isDark} />
-                <div className="min-w-0 flex-1">
-                  <p className={`text-[10px] font-extrabold ${t.textMuted} uppercase tracking-wider`}>Hosting as</p>
-                  <p className={`text-sm font-extrabold ${t.text} truncate`}>{hostDept.code} Department</p>
-                </div>
-              </div>
-            )}
-            <div>
-              <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Event Title</label>
-              <input type="text" placeholder="e.g. Annual Tech Symposium" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Category</label>
-                <select className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} appearance-none focus:outline-none transition-all shadow-sm`}>
-                  <option>Academic</option><option>Workshop</option><option>Competition</option>
-                  <option>Career</option><option>Cultural</option><option>Sports</option>
-                </select>
-              </div>
-              <div>
-                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Capacity</label>
-                <input type="number" placeholder="e.g. 150" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Event Date</label>
-                <input type="date" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm [&::-webkit-calendar-picker-indicator]:opacity-50`} />
-              </div>
-              <div>
-                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Reg. Deadline</label>
-                <input type="date" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm [&::-webkit-calendar-picker-indicator]:opacity-50`} />
-              </div>
-            </div>
-
-            {/* Dynamic Event Schedule Builder */}
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider block`}>Event Schedule</label>
-                <button onClick={addSchedule} className="text-[#1D9BF0] text-[10px] font-extrabold flex items-center bg-[#1D9BF0]/10 px-2 py-1 rounded-md active:scale-95 transition-transform"><Plus className="w-3 h-3 mr-1"/> Add Item</button>
-              </div>
-              <div className="space-y-3">
-                {schedules.map((sch, idx) => (
-                  <div key={idx} className="flex items-center space-x-2">
-                    <input type="time" value={sch.time} onChange={(e) => updateSchedule(idx, 'time', e.target.value)} className={`w-28 ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-2 text-xs font-bold ${t.text} focus:outline-none transition-all shadow-sm [&::-webkit-calendar-picker-indicator]:opacity-50`} />
-                    <input type="text" placeholder="Agenda title" value={sch.title} onChange={(e) => updateSchedule(idx, 'title', e.target.value)} className={`flex-1 ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-3 text-xs font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
-                    {schedules.length > 1 && (
-                      <button onClick={() => removeSchedule(idx)} className="w-10 h-12 flex items-center justify-center text-red-500 bg-red-500/10 rounded-xl shrink-0 active:scale-95 transition-transform"><Trash2 className="w-4 h-4"/></button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Venue</label>
-              <input type="text" placeholder="e.g. AUDI 801" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm mb-3`} />
-              <input type="text" placeholder="Venue Details (e.g. Admin Building, Level 8)" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
-            </div>
-
-            <div>
-              <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Cover Image URL</label>
-              <input type="url" placeholder="https://..." className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
-            </div>
-
-            <div>
-              <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Description</label>
-              <textarea rows="4" placeholder="What is this event about?" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl p-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm resize-none`}></textarea>
-            </div>
-            
-            <div>
-              <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Registration Info</label>
-              <textarea rows="2" placeholder="e.g. Free for CSE students" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl p-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm resize-none`}></textarea>
-            </div>
-          </div>
-
-          <div className={`absolute bottom-0 w-full p-5 pt-4 pb-8 ${t.glass} border-t z-20`}>
-             <button onClick={() => setIsSubmitted(true)} className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/40`}>
-               Publish Event
-             </button>
-          </div>
-        </>
-      ) : (
-        <div className="flex-1 flex flex-col items-center justify-center px-6 relative z-10 animate-fade-in-up pb-20">
-          <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mb-6 border border-emerald-500/20 shadow-xl shadow-emerald-500/10">
-            <CheckCircle2 className="w-12 h-12 text-emerald-500" strokeWidth={2.5} />
-          </div>
-          <h3 className={`text-2xl font-extrabold ${t.text} tracking-tight mb-2 text-center`}>Event Created!</h3>
-          <p className={`text-sm font-bold ${t.textMuted} text-center mb-8 max-w-xs leading-relaxed`}>
-            {hostDept
-              ? `Your event is live on the campus calendar and on the ${hostDept.code} Department hub.`
-              : 'Your event has been successfully published and is now live for students to register.'}
-          </p>
-          <button 
-            onClick={onClose} 
-            className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] ${isDark ? 'bg-white/10 text-white' : 'bg-black/5 text-black'} border ${t.borderSoft} shadow-sm`}
-          >
-            {hostDept ? `Back to ${hostDept.code} Hub` : 'Back to Events'}
-          </button>
-        </div>
-      )}
-    </div>
-  );
-};
-
 const EventsModuleOverlay = ({
   onClose, t, isDark, authRole, setToastMsg,
   registeredEventIds, setRegisteredEventIds,
@@ -2680,7 +2542,7 @@ const EventsModuleOverlay = ({
       )}
       {/* PASTE THIS NEW BLOCK HERE */}
       {eventsScreen === 'create' && (
-        <CreateEventScreen onClose={handleBack} t={t} isDark={isDark} />
+        <CreateEventScreen onClose={handleBack} t={t} isDark={isDark} viewerName={viewerFullName(authRole)} />
       )}
     </div>
   );
@@ -6132,6 +5994,7 @@ export default function App() {
               <div className="absolute inset-0 z-[80]">
                 <CreateEventScreen
                   hostDept={createEventDept}
+                  viewerName={viewerFullName(authRole)}
                   t={t}
                   isDark={isDark}
                   onClose={() => setCreateEventDept(null)}

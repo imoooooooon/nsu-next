@@ -230,9 +230,12 @@ it as a shortcut. Active state is **computed per item** (`match(location)`),
 not left to `NavLink`: Departments lives at a *query*
 (`/network?segment=Departments`) that `NavLink` cannot see. Exactly one row
 is ever lit.
-- Home's quick-action row carries six destinations — Network, Jobs, Seeking,
-  Events, Messages, Emergency — drawn as 32×32 line-art in
-  `components/icons/CustomIcons.jsx`. Keep new icons in that style: 2.5 stroke
+- Home's quick-action row carries six destinations — Network, Jobs,
+  Departments, Events, Messages, Emergency — drawn as 32×32 line-art in
+  `components/icons/CustomIcons.jsx`. Seeking left the row as it left the
+  rail (it is a mode of Jobs); Departments took the slot with
+  `CustomDepartmentsIcon` and the label "Depts" below `sm`, where six labels
+  share ~55px each. Keep new icons in that style: 2.5 stroke
   for the outer shape, 2 for interior detail, and check them at 36px before
   shipping (fine detail blobs at that size).
 
@@ -294,6 +297,7 @@ they are expressed as ratios, not fixed heights:
 | Surface | Mobile geometry | Web class |
 |---|---|---|
 | Featured carousel | 390 × 240 | `aspect-[13/8]` |
+| Home ad carousel | 390 × 130 | `aspect-[3/1]`, capped `max-w-3xl`; slide content sized in `cqw` of the 390px design so it scales with the slot |
 | Event card (standard) | 390 × 144 | `aspect-[65/24]` |
 | Event card (recommended/rail) | 260 × 112 | `aspect-[65/28]` |
 | Event details hero | 430 × 260 | `aspect-[43/26]` |
@@ -313,6 +317,32 @@ Two rules keep those ratios from silently breaking:
 
 `SmartImage` also degrades a dead URL to a themed placeholder instead of the
 browser's broken-image glyph — remote demo assets do expire.
+
+## 3b. Event creation
+
+`/events/create` (and the mobile `CreateEventScreen`) is five numbered
+sections in the order an organiser decides things, then the details:
+
+1. **The event** — title, category (`Other` reveals "Name the category"), capacity.
+2. **Organizers** — the host (you, or the department with `?as=`) is a fixed
+   chip; co-organizers are typed in by hand with a type (Club, Department,
+   University Office, External Partner, Individual) and removed with ✕.
+3. **When** — Starting + Ending date. The range alone sets the length,
+   echoed as "3-day event · Thu, Oct 1 – Sat, Oct 3". Picking a start fills
+   an empty end with the same day.
+4. **Registration deadline** — a date AND a time (default 11:59 PM),
+   previewed as "October 1, 2026 - 11:59 PM".
+5. **Event schedule** — generated from the range: one section per day
+   ("Day 1 · October 1, 2026 · Thursday"), each with any number of
+   activities (start time, end time, details). Activities are keyed by day
+   number, so correcting the dates keeps Day 1's agenda on Day 1.
+
+The date/schedule rules live in `features/events/eventForm.js` (mirrored by
+`../src/components/events/eventForm.js`): local-date parsing, inclusive day
+count, a 31-day cap, and `validateEventDraft` (title, "Other" named, range
+valid, deadline not after the event ends, no activity ending before it
+starts). Errors appear inline and as a summary only after a publish attempt —
+except the deadline and an over-long range, which warn as soon as they happen.
 
 ## 4. Route map (basename `/webapp`)
 

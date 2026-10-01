@@ -5,7 +5,7 @@ import { useAppState } from '../context/AppStateContext';
 import { PageContainer } from '../components/layout/AppShell';
 import {
   CustomAlumniIcon, CustomJobsIcon, CustomEventsIcon, CustomEmergencyIcon,
-  CustomMessagesIcon, CustomSeekingIcon,
+  CustomMessagesIcon, CustomDepartmentsIcon,
 } from '../components/icons/CustomIcons';
 import { SectionHeading } from '../components/ui';
 import { MomentsRow } from '../features/moments/MomentsRow';
@@ -31,10 +31,14 @@ export default function HomePage() {
   const demoAds = useDemoAds();
   const viewer = getViewerIdentity(authRole);
 
+  /* Seeking left this row (as it left the sidebar): it is a mode of Jobs,
+     one tap away on the Hiring | Seeking pill. Departments take the slot —
+     the hub is where notices, events, roles and help live, and it had no
+     front door on Home. */
   const quickActions = [
     { icon: CustomAlumniIcon, label: 'Network', to: '/network' },
     { icon: CustomJobsIcon, label: 'Jobs', to: '/jobs' },
-    { icon: CustomSeekingIcon, label: 'Seeking', to: '/jobs/seeking' },
+    { icon: CustomDepartmentsIcon, label: 'Departments', short: 'Depts', to: '/network?segment=Departments' },
     { icon: CustomEventsIcon, label: 'Events', to: '/events' },
     { icon: CustomMessagesIcon, label: 'Messages', to: '/messages' },
     { icon: CustomEmergencyIcon, label: 'Emergency', to: '/emergency' },
@@ -113,7 +117,14 @@ export default function HomePage() {
                 >
                   <action.icon className={`w-[36px] h-[36px] mb-2 transition-colors duration-200 ${isDark ? 'text-white' : 'text-[#1C1C1E]'} group-hover:text-[#1D9BF0]`} />
                   <span className={`text-[12px] font-bold leading-tight text-center ${t.textMuted} group-hover:${isDark ? 'text-white' : 'text-black'} transition-colors duration-200`}>
-                    {action.label}
+                    {/* Six across a phone leaves ~55px a label; "Depts" is the
+                        Directory's own short form for the same lens. */}
+                    {action.short ? (
+                      <>
+                        <span className="sm:hidden">{action.short}</span>
+                        <span className="hidden sm:inline">{action.label}</span>
+                      </>
+                    ) : action.label}
                   </span>
                 </div>
               ))}
