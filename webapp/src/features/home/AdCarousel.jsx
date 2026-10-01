@@ -2,54 +2,62 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
 import { Dots } from '../../components/ui';
 
-/* Sponsored / campus highlight carousel — 1:1 port of the mobile AdCarousel. */
+/* ---------------------------------------------------------------------------
+   Sponsored / campus highlight carousel — port of the mobile AdCarousel.
+
+   Same RATIO as mobile, not the same height. On the phone the slot is the
+   390px content column × 130px — 3:1. The web used to keep the 130px and
+   stretch the width, which turned the card into a ~5.5:1 ribbon with a tiny
+   headline lost in a sea of gradient. Now:
+
+   · the slot is `aspect-[3/1]` at every width (design system §3a), capped
+     at `max-w-3xl` so a full-width column below xl never grows it past
+     ~256px tall — the column is constrained, never the ratio;
+   · everything inside a slide is sized in container-query units (cqw) of
+     the 390px mobile design, so the slide is the mobile slide, scaled —
+     at 390px wide it is pixel-identical to the phone.
+--------------------------------------------------------------------------- */
+
+/* 390px is the mobile design width: N px on the phone = N/390 × 100 cqw. */
+const AdSlide = ({ gradient, glow = 'bg-black/10', chip = 'bg-black/20', puck = 'bg-black/10 border-black/20', tag, title, subtitle, emoji }) => (
+  <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center px-[6.15cqw] relative overflow-hidden`}>
+    <div className={`absolute -right-[6.15cqw] -top-[6.15cqw] w-[32.8cqw] h-[32.8cqw] ${glow} rounded-full blur-2xl pointer-events-none`}></div>
+    <div className="z-10 flex-1 pr-[4.1cqw] min-w-0">
+      <span className={`px-[2.05cqw] py-[0.51cqw] rounded-[1cqw] text-[2.31cqw] font-black ${chip} text-white uppercase tracking-wider mb-[2.05cqw] inline-block backdrop-blur-md`}>{tag}</span>
+      <h3 className="text-white font-extrabold text-[4.62cqw] leading-tight mb-[1.03cqw]">{title}</h3>
+      <p className="text-white/90 text-[2.82cqw] font-semibold">{subtitle}</p>
+    </div>
+    <div className={`z-10 w-[11.28cqw] h-[11.28cqw] ${puck} border rounded-full flex items-center justify-center text-[4.62cqw] shadow-lg backdrop-blur-md shrink-0`}>{emoji}</div>
+  </div>
+);
 
 export const useDemoAds = () => useMemo(() => [
   {
     id: 1,
     link: '#bootcamp',
-    content: (
-      <div className="w-full h-full bg-gradient-to-br from-yellow-500 to-amber-600 flex items-center px-6 relative overflow-hidden">
-        <div className="absolute -right-6 -top-6 w-32 h-32 bg-black/10 rounded-full blur-2xl pointer-events-none"></div>
-        <div className="z-10 flex-1 pr-4">
-          <span className="px-2 py-0.5 rounded text-[9px] font-black bg-black/20 text-white uppercase tracking-wider mb-2 inline-block backdrop-blur-md">Workshop</span>
-          <h3 className="text-white font-extrabold text-lg leading-tight mb-1">Tech Bootcamp 2024</h3>
-          <p className="text-white/90 text-[11px] font-semibold">Master UI/UX & React. Limited seats!</p>
-        </div>
-        <div className="z-10 w-11 h-11 bg-black/10 border border-black/20 rounded-full flex items-center justify-center text-lg shadow-lg backdrop-blur-md shrink-0">🚀</div>
-      </div>
-    )
+    content: <AdSlide gradient="from-yellow-500 to-amber-600" tag="Workshop" title="Tech Bootcamp 2024" subtitle="Master UI/UX & React. Limited seats!" emoji="🚀" />,
   },
   {
     id: 2,
     link: '#internship',
-    content: (
-      <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center px-6 relative overflow-hidden">
-        <div className="absolute -right-6 -top-6 w-32 h-32 bg-black/10 rounded-full blur-2xl pointer-events-none"></div>
-        <div className="z-10 flex-1 pr-4">
-          <span className="px-2 py-0.5 rounded text-[9px] font-black bg-black/20 text-white uppercase tracking-wider mb-2 inline-block backdrop-blur-md">Hiring Now</span>
-          <h3 className="text-white font-extrabold text-lg leading-tight mb-1">Startup Internship</h3>
-          <p className="text-white/90 text-[11px] font-semibold">Kickstart your career at top startups.</p>
-        </div>
-        <div className="z-10 w-11 h-11 bg-black/10 border border-black/20 rounded-full flex items-center justify-center text-lg shadow-lg backdrop-blur-md shrink-0">💼</div>
-      </div>
-    )
+    content: <AdSlide gradient="from-emerald-500 to-teal-700" tag="Hiring Now" title="Startup Internship" subtitle="Kickstart your career at top startups." emoji="💼" />,
   },
   {
     id: 3,
     link: '#careerfair',
     content: (
-      <div className="w-full h-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center px-6 relative overflow-hidden">
-        <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
-        <div className="z-10 flex-1 pr-4">
-          <span className="px-2 py-0.5 rounded text-[9px] font-black bg-white/20 text-white uppercase tracking-wider mb-2 inline-block backdrop-blur-md">Event</span>
-          <h3 className="text-white font-extrabold text-lg leading-tight mb-1">Campus Career Fair</h3>
-          <p className="text-white/90 text-[11px] font-semibold">Meet 50+ employers on campus.</p>
-        </div>
-        <div className="z-10 w-11 h-11 bg-white/10 border border-white/20 rounded-full flex items-center justify-center text-lg shadow-lg backdrop-blur-md shrink-0">🎓</div>
-      </div>
-    )
-  }
+      <AdSlide
+        gradient="from-orange-500 to-red-600"
+        glow="bg-white/10"
+        chip="bg-white/20"
+        puck="bg-white/10 border-white/20"
+        tag="Event"
+        title="Campus Career Fair"
+        subtitle="Meet 50+ employers on campus."
+        emoji="🎓"
+      />
+    ),
+  },
 ], []);
 
 export const AdCarousel = ({ ads }) => {
@@ -82,9 +90,9 @@ export const AdCarousel = ({ ads }) => {
   };
 
   return (
-    <div className="w-full mt-2 mb-2 animate-fade-in relative z-10">
+    <div className="w-full max-w-3xl mx-auto mt-2 mb-2 animate-fade-in relative z-10">
       <div
-        className={`relative w-full rounded-xl overflow-hidden border ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-white/80'} backdrop-blur-sm touch-pan-y select-none`}
+        className={`@container relative w-full aspect-[3/1] rounded-xl overflow-hidden border ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-white/80'} backdrop-blur-sm touch-pan-y select-none`}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => { setIsPaused(false); if (dragStartX !== null) handleDragEnd(); }}
         onMouseDown={(e) => handleDragStart(e.clientX)}
@@ -95,7 +103,7 @@ export const AdCarousel = ({ ads }) => {
         onTouchEnd={handleDragEnd}
       >
         <div
-          className="flex transition-transform duration-500 ease-out h-[130px]"
+          className="flex transition-transform duration-500 ease-out h-full"
           style={{ transform: `translateX(calc(-${currentIndex * 100}% + ${dragOffset}px))` }}
         >
           {ads.map((ad, idx) => (

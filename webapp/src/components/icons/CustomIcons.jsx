@@ -62,6 +62,16 @@ export const CustomSeekingIcon = ({ className }) => (
   </svg>
 );
 
+/* Departments — a campus hall: pediment, four columns, a plinth. Outer
+   shape at 2.5, columns at 2 (the set's rule), legible at 36px. */
+export const CustomDepartmentsIcon = ({ className }) => (
+  <svg viewBox="0 0 32 32" fill="none" className={className}>
+    <path d="M5 12L16 5L27 12H5Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M5 26H27" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    <path d="M9 15.5V22.5M14 15.5V22.5M18 15.5V22.5M23 15.5V22.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
 export const CustomCalendarIcon = ({ className }) => (
   <svg viewBox="0 0 32 32" fill="none" className={className}>
     <rect x="5" y="8" width="22" height="19" rx="4" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" />
