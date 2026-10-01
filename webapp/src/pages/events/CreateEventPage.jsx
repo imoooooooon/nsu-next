@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  ArrowLeft, CheckCircle2, Plus, Trash2, X, CalendarRange, Clock, Users, UserPlus,
-  AlertCircle, ListPlus, CalendarDays, MapPin,
+  ArrowLeft, CheckCircle2, Plus, Trash2, X, CalendarRange, Clock, UserPlus,
+  AlertCircle, ListPlus, CalendarDays, MapPin, User, Lock,
 } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
@@ -16,7 +16,7 @@ import { EntityAvatar } from '../../features/departments/DepartmentPrimitives';
 import {
   EVENT_FORM_CATEGORIES, ORGANIZER_TYPES, MAX_EVENT_DAYS,
   countEventDays, listEventDays, describeEventRange, formatDeadline, formatTime12h,
-  newActivity, isActivityTimeInvalid, validateEventDraft, emptyEventDraft,
+  newActivity, isActivityTimeInvalid, validateEventDraft, emptyEventDraft, formatOrganizer,
 } from '../../features/events/eventForm';
 
 /* ---------------------------------------------------------------------------
@@ -27,8 +27,12 @@ import {
    decides things: what it is → who runs it → when it happens → how people
    get in → what happens each day. Then the practical details.
 
-   · Organizers — the host (you, or the department with `?as=`) is fixed;
-     co-organizers are typed in by hand with a type, as removable chips.
+   · Organizers — ONLY the entities typed in by hand, each with an
+     Organizer Type, as removable chips ("Mahfuz Ahmed · Club"). The
+     publishing account is never added implicitly; one tap ("Add myself")
+     makes it an organizer when it really is one.
+   · Posted by — the publishing account, shown read-only above the form
+     and derived automatically (you, or the department with `?as=`).
    · Category — "Other" reveals a field to name it.
    · When — Starting + Ending date. The range alone decides the length
      ("3-day event · Thu, Oct 1 – Sat, Oct 3").
@@ -38,8 +42,8 @@ import {
      ("Day 1 - October 1, 2026 (Thursday)"), each with any number of
      activities (start, end, details). It rebuilds as the range changes.
 
-   `?as=<deptId>` hosts the event as a department hub, exactly like
-   `/jobs/post?as=` — one campus calendar; only the host identity changes.
+   `?as=<deptId>` posts the event as a department hub, exactly like
+   `/jobs/post?as=` — one campus calendar; only "Posted by" changes.
 --------------------------------------------------------------------------- */
 
 const FormSection = ({ step, title, hint, icon: Icon, children }) => {
@@ -73,8 +77,8 @@ export default function CreateEventPage() {
   const [searchParams] = useSearchParams();
 
   const asDept = findDepartmentById(searchParams.get('as'));
-  const hostingAsDept = asDept && getDepartmentAccess(asDept, authRole).canManage ? asDept : null;
-  const goBack = useCloseTo(hostingAsDept ? `/departments/${hostingAsDept.id}` : '/events');
+  const postingAsDept = asDept && getDepartmentAccess(asDept, authRole).canManage ? asDept : null;
+  const goBack = useCloseTo(postingAsDept ? `/departments/${postingAsDept.id}` : '/events');
   const viewer = getViewerIdentity(authRole);
 
   const [draft, setDraft] = useState(emptyEventDraft);
@@ -97,12 +101,14 @@ export default function CreateEventPage() {
     setDraft(d => ({ ...d, startDate: value, endDate: !d.endDate || d.endDate < value ? value : d.endDate }));
   };
 
+  const addOrganizerEntry = (name, type) =>
+    setDraft(d => (d.organizers.some(o => o.name.toLowerCase() === name.toLowerCase())
+      ? d
+      : { ...d, organizers: [...d.organizers, { id: `org-${Date.now()}`, name, type }] }));
   const addOrganizer = () => {
     const name = organizerName.trim();
     if (!name) return;
-    setDraft(d => (d.organizers.some(o => o.name.toLowerCase() === name.toLowerCase())
-      ? d
-      : { ...d, organizers: [...d.organizers, { id: `org-${Date.now()}`, name, type: organizerType }] }));
+    addOrganizerEntry(name, organizerType);
     setOrganizerName('');
   };
   const removeOrganizer = (id) => setDraft(d => ({ ...d, organizers: d.organizers.filter(o => o.id !== id) }));
@@ -127,12 +133,18 @@ export default function CreateEventPage() {
       category: draft.category === 'Other' ? draft.customCategory.trim() : draft.category,
       range: rangeSummary,
       deadline: draft.deadlineDate ? formatDeadline(draft.deadlineDate, draft.deadlineTime) : null,
-      organizers: draft.organizers.length,
+      organizers: draft.organizers.map(formatOrganizer),
+      postedBy: postedBy.name,
       activityCount,
     });
   };
 
-  const hostName = hostingAsDept ? `${hostingAsDept.code} Department` : viewer.fullName;
+  /* Posted by — derived from the publishing account, never typed. The
+     "Add myself" shortcut offers that same identity as an organizer. */
+  const postedBy = postingAsDept
+    ? { name: `${postingAsDept.code} Department`, type: 'Department', note: `Department account · you are signed in as ${viewer.fullName}` }
+    : { name: viewer.fullName, type: 'Individual', note: viewer.roleSub };
+  const postedByIsOrganizer = draft.organizers.some(o => o.name.toLowerCase() === postedBy.name.toLowerCase());
 
   return (
     <PageContainer className="animate-fade-in">
@@ -142,12 +154,38 @@ export default function CreateEventPage() {
         <PageHeader
           className="flex-1"
           title={published ? 'Status' : 'Create Event'}
-          subtitle={!published && hostingAsDept ? `Hosting as ${hostingAsDept.code} Department` : undefined}
         />
       </div>
 
       {!published ? (
         <div className="space-y-5 mb-8">
+          {/* Posted by — read-only metadata, not a form field: it is whoever
+              publishes, so it is shown, never edited. */}
+          <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl border ${isDark ? 'bg-white/[0.03] border-white/10' : 'bg-black/[0.02] border-black/[0.06]'}`}>
+            {postingAsDept ? (
+              <EntityAvatar dept={postingAsDept} size="sm" />
+            ) : (
+              <span className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 border ${isDark ? 'bg-white/10 border-white/10' : 'bg-white border-black/5'}`}>
+                <User className={`w-5 h-5 ${t.textMuted}`} strokeWidth={2} />
+              </span>
+            )}
+            <div className="min-w-0 flex-1">
+              <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} flex items-center gap-1`}>
+                <Lock className="w-3 h-3" strokeWidth={2.5} /> Posted by
+              </p>
+              <p className={`text-sm font-extrabold ${t.text} truncate`}>{postedBy.name}</p>
+              <p className={`text-[10px] font-bold ${t.textMuted} truncate`}>{postedBy.note}</p>
+            </div>
+            {postingAsDept && (
+              <button
+                onClick={() => navigate('/events/create', { replace: true })}
+                className="text-[#1D9BF0] text-[11px] font-extrabold hover:underline shrink-0"
+              >
+                Post as myself
+              </button>
+            )}
+          </div>
+
           {/* ------------------------------------------------ 1 · basics */}
           <FormSection step={1} title="The event" hint="What it is and how many people it can take.">
             <Field label="Event Title">
@@ -175,42 +213,33 @@ export default function CreateEventPage() {
           </FormSection>
 
           {/* -------------------------------------------- 2 · organizers */}
-          <FormSection step={2} title="Organizers" hint="You host it. Add the clubs, offices, partners or people running it with you.">
-            <div className="flex flex-wrap gap-2">
-              <span className={`inline-flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-xl border ${isDark ? 'bg-[#1D9BF0]/10 border-[#1D9BF0]/25' : 'bg-[#1D9BF0]/[0.06] border-[#1D9BF0]/20'}`}>
-                {hostingAsDept ? (
-                  <EntityAvatar dept={hostingAsDept} size="xs" />
-                ) : (
-                  <span className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10' : 'bg-white'}`}>
-                    <Users className={`w-4 h-4 ${t.textMuted}`} strokeWidth={2.5} />
+          <FormSection step={2} title="Organizers" hint="The clubs, offices, partners or people running this event. Only who you add here is listed as an organizer.">
+            {draft.organizers.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {draft.organizers.map(org => (
+                  <span key={org.id} className={`inline-flex items-center gap-1.5 pl-3 pr-1.5 h-9 rounded-xl border animate-scale-up ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/70 border-black/[0.06]'}`}>
+                    <span className={`text-xs font-extrabold ${t.text}`}>{org.name}</span>
+                    <span className={`text-xs font-bold ${t.textMuted}`}>· {org.type}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeOrganizer(org.id)}
+                      aria-label={`Remove ${org.name}`}
+                      className={`w-7 h-7 rounded-lg flex items-center justify-center ${t.textMuted} ${isDark ? 'hover:bg-white/10' : 'hover:bg-black/5'} hover:text-red-500 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}
+                    >
+                      <X className="w-3.5 h-3.5" strokeWidth={3} />
+                    </button>
                   </span>
-                )}
-                <span className="min-w-0">
-                  <span className={`block text-xs font-extrabold ${t.text} leading-tight`}>{hostName}</span>
-                  <span className="block text-[9px] font-extrabold uppercase tracking-wider text-[#1D9BF0]">Host</span>
-                </span>
-              </span>
-
-              {draft.organizers.map(org => (
-                <span key={org.id} className={`inline-flex items-center gap-2 pl-3 pr-1.5 py-1.5 rounded-xl border animate-scale-up ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/70 border-black/[0.06]'}`}>
-                  <span className="min-w-0">
-                    <span className={`block text-xs font-extrabold ${t.text} leading-tight`}>{org.name}</span>
-                    <span className={`block text-[9px] font-extrabold uppercase tracking-wider ${t.textMuted}`}>{org.type}</span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => removeOrganizer(org.id)}
-                    aria-label={`Remove ${org.name}`}
-                    className={`w-7 h-7 rounded-lg flex items-center justify-center ${t.textMuted} ${isDark ? 'hover:bg-white/10' : 'hover:bg-black/5'} hover:text-red-500 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}
-                  >
-                    <X className="w-3.5 h-3.5" strokeWidth={3} />
-                  </button>
-                </span>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <p className={`text-xs font-bold ${t.textMuted} px-3.5 py-3 rounded-xl border border-dashed ${isDark ? 'border-white/15' : 'border-black/10'}`}>
+                No organizers yet — add at least one below.
+              </p>
+            )}
+            <ErrorText>{visibleErrors.organizers}</ErrorText>
 
             <div>
-              <FieldLabel>Add an organizer</FieldLabel>
+              <FieldLabel>Add an Organizer</FieldLabel>
               <div className="flex flex-col sm:flex-row gap-2">
                 <div className="flex-1 min-w-0">
                   <TextInput
@@ -224,7 +253,7 @@ export default function CreateEventPage() {
                   />
                 </div>
                 <div className="sm:w-48">
-                  <Select options={ORGANIZER_TYPES} value={organizerType} onChange={setOrganizerType} aria-label="Organizer type" />
+                  <Select options={ORGANIZER_TYPES} value={organizerType} onChange={setOrganizerType} aria-label="Organizer Type" />
                 </div>
                 {/* `md` is the input height (h-12, rounded-xl), so the three
                     controls on this row share one baseline and one height. */}
@@ -232,6 +261,16 @@ export default function CreateEventPage() {
                   Add
                 </Button>
               </div>
+              {/* The poster is an organizer only if they say so — one tap. */}
+              {!postedByIsOrganizer && (
+                <button
+                  type="button"
+                  onClick={() => addOrganizerEntry(postedBy.name, postedBy.type)}
+                  className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-extrabold text-[#1D9BF0] hover:underline outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0] rounded"
+                >
+                  <Plus className="w-3.5 h-3.5" strokeWidth={3} /> Add {postingAsDept ? postedBy.name : 'myself'} as an organizer
+                </button>
+              )}
             </div>
           </FormSection>
 
@@ -411,8 +450,8 @@ export default function CreateEventPage() {
           </div>
           <h3 className={`text-2xl font-extrabold ${t.text} tracking-tight mb-2 text-center`}>Event Created!</h3>
           <p className={`text-sm font-bold ${t.textMuted} text-center mb-6 max-w-sm leading-relaxed`}>
-            {hostingAsDept
-              ? `Your event is live on the campus calendar and on the ${hostingAsDept.code} Department hub.`
+            {postingAsDept
+              ? `Your event is live on the campus calendar and on the ${postingAsDept.code} Department hub.`
               : 'Your event has been successfully published and is now live for students to register.'}
           </p>
           <div className={`w-full max-w-sm text-left rounded-xl border p-4 mb-8 space-y-2 ${isDark ? 'bg-white/5 border-white/10' : 'bg-black/[0.02] border-black/[0.06]'}`}>
@@ -421,16 +460,19 @@ export default function CreateEventPage() {
             {published.deadline && <p className={`text-xs font-bold ${t.textMuted}`}>Registration closes {published.deadline}</p>}
             <p className={`text-xs font-bold ${t.textMuted}`}>
               {published.activityCount} scheduled {published.activityCount === 1 ? 'activity' : 'activities'}
-              {published.organizers > 0 && ` · ${published.organizers} co-${published.organizers === 1 ? 'organizer' : 'organizers'}`}
             </p>
+            <div className={`pt-2 mt-1 border-t space-y-1 ${isDark ? 'border-white/10' : 'border-black/[0.06]'}`}>
+              <p className={`text-xs font-bold ${t.textMuted}`}>Organized by: <span className={`font-extrabold ${t.text}`}>{published.organizers.join(', ')}</span></p>
+              <p className={`text-xs font-bold ${t.textMuted}`}>Posted by: <span className={`font-extrabold ${t.text}`}>{published.postedBy}</span></p>
+            </div>
           </div>
           <Button
             variant="neutral"
             size="lg"
             className="w-full max-w-xs"
-            onClick={() => navigate(hostingAsDept ? `/departments/${hostingAsDept.id}` : '/events')}
+            onClick={() => navigate(postingAsDept ? `/departments/${postingAsDept.id}` : '/events')}
           >
-            {hostingAsDept ? `Back to ${hostingAsDept.code} Hub` : 'Back to Events'}
+            {postingAsDept ? `Back to ${postingAsDept.code} Hub` : 'Back to Events'}
           </Button>
         </Card>
       )}

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import {
-  ArrowLeft, CheckCircle2, Plus, Trash2, X, CalendarRange, Clock, Users, UserPlus,
+  ArrowLeft, CheckCircle2, Plus, Trash2, X, CalendarRange, Clock, User, Lock, UserPlus,
   AlertCircle, ListPlus, CalendarDays, MapPin,
 } from 'lucide-react';
 import { EntityAvatar } from '../department/DepartmentPrimitives';
@@ -8,7 +8,7 @@ import { Select } from '../ui/Select';
 import {
   EVENT_FORM_CATEGORIES, ORGANIZER_TYPES, MAX_EVENT_DAYS,
   countEventDays, listEventDays, describeEventRange, formatDeadline, formatTime12h,
-  newActivity, isActivityTimeInvalid, validateEventDraft, emptyEventDraft,
+  newActivity, isActivityTimeInvalid, validateEventDraft, emptyEventDraft, formatOrganizer,
 } from './eventForm';
 
 /* ---------------------------------------------------------------------------
@@ -16,15 +16,17 @@ import {
    `webapp/src/pages/events/CreateEventPage.jsx` section for section:
 
    1 The event (title, category with "Other" → name it, capacity)
-   2 Organizers (fixed host + hand-typed co-organizers with a type)
+   2 Organizers (ONLY entities typed in by hand, each with an Organizer Type)
    3 When (Starting / Ending date → "3-day event · Thu, Oct 1 – Sat, Oct 3")
    4 Registration deadline (date + time → "October 1, 2026 - 11:59 PM")
    5 Event schedule (one section per day of the range, each with any
      number of activities: start, end, details)
    + Venue & details
 
-   `hostDept` hosts the event as a department hub (its Official / Admins);
-   otherwise the signed-in person (`viewerName`) is the host.
+   Posted by — the publishing account, read-only at the top of the form:
+   the department when `postAsDept` is set (its Official / Admins), otherwise
+   the signed-in person (`viewerName`). It is never an implicit organizer;
+   "Add myself" makes it one when it really is.
 --------------------------------------------------------------------------- */
 
 const labelCls = (t) => `text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`;
@@ -51,7 +53,7 @@ const ErrorText = ({ children }) => (children ? (
   </p>
 ) : null);
 
-export const CreateEventScreen = ({ onClose, t, isDark, hostDept = null, viewerName = 'You' }) => {
+export const CreateEventScreen = ({ onClose, t, isDark, postAsDept = null, viewerName = 'You' }) => {
   const [draft, setDraft] = useState(emptyEventDraft);
   const [organizerName, setOrganizerName] = useState('');
   const [organizerType, setOrganizerType] = useState(ORGANIZER_TYPES[0]);
@@ -70,12 +72,14 @@ export const CreateEventScreen = ({ onClose, t, isDark, hostDept = null, viewerN
     setDraft(d => ({ ...d, startDate: value, endDate: !d.endDate || d.endDate < value ? value : d.endDate }));
   };
 
+  const addOrganizerEntry = (name, type) =>
+    setDraft(d => (d.organizers.some(o => o.name.toLowerCase() === name.toLowerCase())
+      ? d
+      : { ...d, organizers: [...d.organizers, { id: `org-${Date.now()}`, name, type }] }));
   const addOrganizer = () => {
     const name = organizerName.trim();
     if (!name) return;
-    setDraft(d => (d.organizers.some(o => o.name.toLowerCase() === name.toLowerCase())
-      ? d
-      : { ...d, organizers: [...d.organizers, { id: `org-${Date.now()}`, name, type: organizerType }] }));
+    addOrganizerEntry(name, organizerType);
     setOrganizerName('');
   };
   const removeOrganizer = (id) => setDraft(d => ({ ...d, organizers: d.organizers.filter(o => o.id !== id) }));
@@ -95,11 +99,16 @@ export const CreateEventScreen = ({ onClose, t, isDark, hostDept = null, viewerN
       range: rangeSummary,
       deadline: draft.deadlineDate ? formatDeadline(draft.deadlineDate, draft.deadlineTime) : null,
       activityCount: days.reduce((n, day) => n + dayActivities(day.number).length, 0),
-      organizers: draft.organizers.length,
+      organizers: draft.organizers.map(formatOrganizer),
+      postedBy: postedBy.name,
     });
   };
 
-  const hostName = hostDept ? `${hostDept.code} Department` : viewerName;
+  /* Posted by — derived from the publishing account, never typed. */
+  const postedBy = postAsDept
+    ? { name: `${postAsDept.code} Department`, type: 'Department', note: `Department account · signed in as ${viewerName}` }
+    : { name: viewerName, type: 'Individual', note: 'Your account' };
+  const postedByIsOrganizer = draft.organizers.some(o => o.name.toLowerCase() === postedBy.name.toLowerCase());
   const dateCls = inputCls(t, '[&::-webkit-calendar-picker-indicator]:opacity-50');
 
   return (
@@ -114,8 +123,8 @@ export const CreateEventScreen = ({ onClose, t, isDark, hostDept = null, viewerN
         </button>
         <div className="flex flex-col items-center min-w-0 px-3">
           <h2 className={`text-base font-extrabold ${t.text} leading-tight`}>{published ? 'Status' : 'Create Event'}</h2>
-          {!published && hostDept && (
-            <p className={`text-[10px] font-bold ${t.textMuted} truncate`}>Hosting as {hostDept.code} Department</p>
+          {!published && postAsDept && (
+            <p className={`text-[10px] font-bold ${t.textMuted} truncate`}>Posting as {postAsDept.code} Department</p>
           )}
         </div>
         <div className="w-10 h-10"></div>
@@ -124,6 +133,24 @@ export const CreateEventScreen = ({ onClose, t, isDark, hostDept = null, viewerN
       {!published ? (
         <>
           <div className="flex-1 overflow-y-auto pb-32 relative z-10 px-5 pt-5 space-y-4">
+            {/* Posted by — read-only metadata, not a form field. */}
+            <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl border ${isDark ? 'bg-white/[0.03] border-white/10' : 'bg-black/[0.02] border-black/[0.06]'}`}>
+              {postAsDept ? (
+                <EntityAvatar dept={postAsDept} size="sm" isDark={isDark} />
+              ) : (
+                <span className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 border ${isDark ? 'bg-white/10 border-white/10' : 'bg-white border-black/5'}`}>
+                  <User className={`w-5 h-5 ${t.textMuted}`} strokeWidth={2} />
+                </span>
+              )}
+              <div className="min-w-0 flex-1">
+                <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} flex items-center gap-1`}>
+                  <Lock className="w-3 h-3" strokeWidth={2.5} /> Posted by
+                </p>
+                <p className={`text-sm font-extrabold ${t.text} truncate`}>{postedBy.name}</p>
+                <p className={`text-[10px] font-bold ${t.textMuted} truncate`}>{postedBy.note}</p>
+              </div>
+            </div>
+
             {/* 1 · the event */}
             <Section step={1} title="The event" hint="What it is and how many people it can take." t={t} isDark={isDark}>
               <div>
@@ -151,35 +178,27 @@ export const CreateEventScreen = ({ onClose, t, isDark, hostDept = null, viewerN
             </Section>
 
             {/* 2 · organizers */}
-            <Section step={2} title="Organizers" hint="You host it. Add the clubs, offices, partners or people running it with you." t={t} isDark={isDark}>
-              <div className="flex flex-wrap gap-2">
-                <span className={`inline-flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-xl border ${isDark ? 'bg-[#1D9BF0]/10 border-[#1D9BF0]/25' : 'bg-[#1D9BF0]/[0.06] border-[#1D9BF0]/20'}`}>
-                  {hostDept ? (
-                    <EntityAvatar dept={hostDept} size="xs" isDark={isDark} />
-                  ) : (
-                    <span className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10' : 'bg-white'}`}>
-                      <Users className={`w-4 h-4 ${t.textMuted}`} strokeWidth={2.5} />
+            <Section step={2} title="Organizers" hint="The clubs, offices, partners or people running this event. Only who you add here is listed as an organizer." t={t} isDark={isDark}>
+              {draft.organizers.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {draft.organizers.map(org => (
+                    <span key={org.id} className={`inline-flex items-center gap-1.5 pl-3 pr-1.5 h-9 rounded-xl border animate-scale-up ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/70 border-black/[0.06]'}`}>
+                      <span className={`text-xs font-extrabold ${t.text}`}>{org.name}</span>
+                      <span className={`text-xs font-bold ${t.textMuted}`}>· {org.type}</span>
+                      <button type="button" onClick={() => removeOrganizer(org.id)} aria-label={`Remove ${org.name}`} className={`w-7 h-7 rounded-lg flex items-center justify-center ${t.textMuted} active:text-red-500`}>
+                        <X className="w-3.5 h-3.5" strokeWidth={3} />
+                      </button>
                     </span>
-                  )}
-                  <span className="min-w-0">
-                    <span className={`block text-xs font-extrabold ${t.text} leading-tight`}>{hostName}</span>
-                    <span className="block text-[9px] font-extrabold uppercase tracking-wider text-[#1D9BF0]">Host</span>
-                  </span>
-                </span>
-                {draft.organizers.map(org => (
-                  <span key={org.id} className={`inline-flex items-center gap-2 pl-3 pr-1.5 py-1.5 rounded-xl border animate-scale-up ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/70 border-black/[0.06]'}`}>
-                    <span className="min-w-0">
-                      <span className={`block text-xs font-extrabold ${t.text} leading-tight`}>{org.name}</span>
-                      <span className={`block text-[9px] font-extrabold uppercase tracking-wider ${t.textMuted}`}>{org.type}</span>
-                    </span>
-                    <button type="button" onClick={() => removeOrganizer(org.id)} aria-label={`Remove ${org.name}`} className={`w-7 h-7 rounded-lg flex items-center justify-center ${t.textMuted} active:text-red-500`}>
-                      <X className="w-3.5 h-3.5" strokeWidth={3} />
-                    </button>
-                  </span>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <p className={`text-xs font-bold ${t.textMuted} px-3.5 py-3 rounded-xl border border-dashed ${isDark ? 'border-white/15' : 'border-black/10'}`}>
+                  No organizers yet — add at least one below.
+                </p>
+              )}
+              <ErrorText>{visibleErrors.organizers}</ErrorText>
               <div>
-                <label className={labelCls(t)}>Add an organizer</label>
+                <label className={labelCls(t)}>Add an Organizer</label>
                 <div className="relative mb-2">
                   <UserPlus className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${t.textMuted} pointer-events-none`} strokeWidth={2.5} />
                   <input
@@ -194,7 +213,7 @@ export const CreateEventScreen = ({ onClose, t, isDark, hostDept = null, viewerN
                 </div>
                 <div className="flex gap-2">
                   <div className="flex-1 min-w-0">
-                    <Select t={t} isDark={isDark} value={organizerType} onChange={setOrganizerType} options={ORGANIZER_TYPES} aria-label="Organizer type" />
+                    <Select t={t} isDark={isDark} value={organizerType} onChange={setOrganizerType} options={ORGANIZER_TYPES} aria-label="Organizer Type" />
                   </div>
                   <button
                     type="button"
@@ -205,6 +224,16 @@ export const CreateEventScreen = ({ onClose, t, isDark, hostDept = null, viewerN
                     <Plus className="w-4 h-4 mr-1" strokeWidth={3} /> Add
                   </button>
                 </div>
+                {/* The poster is an organizer only if they say so — one tap. */}
+                {!postedByIsOrganizer && (
+                  <button
+                    type="button"
+                    onClick={() => addOrganizerEntry(postedBy.name, postedBy.type)}
+                    className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-extrabold text-[#1D9BF0]"
+                  >
+                    <Plus className="w-3.5 h-3.5" strokeWidth={3} /> Add {postAsDept ? postedBy.name : 'myself'} as an organizer
+                  </button>
+                )}
               </div>
             </Section>
 
@@ -368,8 +397,8 @@ export const CreateEventScreen = ({ onClose, t, isDark, hostDept = null, viewerN
           </div>
           <h3 className={`text-2xl font-extrabold ${t.text} tracking-tight mb-2 text-center`}>Event Created!</h3>
           <p className={`text-sm font-bold ${t.textMuted} text-center mb-6 max-w-xs leading-relaxed`}>
-            {hostDept
-              ? `Your event is live on the campus calendar and on the ${hostDept.code} Department hub.`
+            {postAsDept
+              ? `Your event is live on the campus calendar and on the ${postAsDept.code} Department hub.`
               : 'Your event has been successfully published and is now live for students to register.'}
           </p>
           <div className={`w-full text-left rounded-xl border p-4 mb-8 space-y-2 ${isDark ? 'bg-white/5 border-white/10' : 'bg-black/[0.02] border-black/[0.06]'}`}>
@@ -378,14 +407,17 @@ export const CreateEventScreen = ({ onClose, t, isDark, hostDept = null, viewerN
             {published.deadline && <p className={`text-xs font-bold ${t.textMuted}`}>Registration closes {published.deadline}</p>}
             <p className={`text-xs font-bold ${t.textMuted}`}>
               {published.activityCount} scheduled {published.activityCount === 1 ? 'activity' : 'activities'}
-              {published.organizers > 0 && ` · ${published.organizers} co-${published.organizers === 1 ? 'organizer' : 'organizers'}`}
             </p>
+            <div className={`pt-2 mt-1 border-t space-y-1 ${isDark ? 'border-white/10' : 'border-black/[0.06]'}`}>
+              <p className={`text-xs font-bold ${t.textMuted}`}>Organized by: <span className={`font-extrabold ${t.text}`}>{published.organizers.join(', ')}</span></p>
+              <p className={`text-xs font-bold ${t.textMuted}`}>Posted by: <span className={`font-extrabold ${t.text}`}>{published.postedBy}</span></p>
+            </div>
           </div>
           <button
             onClick={onClose}
             className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] ${isDark ? 'bg-white/10 text-white' : 'bg-black/5 text-black'} border ${t.borderSoft} shadow-sm`}
           >
-            {hostDept ? `Back to ${hostDept.code} Hub` : 'Back to Events'}
+            {postAsDept ? `Back to ${postAsDept.code} Hub` : 'Back to Events'}
           </button>
         </div>
       )}

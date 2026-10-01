@@ -13,9 +13,10 @@ export const globalEventsData = [
     description: 'The official NSU Career Fair connects students with over 50 top national and multinational companies. Bring your resumes, participate in on-the-spot interviews, and discover your next internship or full-time role. Registration is mandatory for entry.',
     category: 'Career',
     organizer: {
-      id: 'org-1', name: 'Career and Placement Center (CPC)', type: 'University', verified: true,
+      id: 'org-1', name: 'Career and Placement Center (CPC)', type: 'University Office', verified: true,
       description: 'Official career support office of North South University.'
     },
+    postedBy: { name: 'Tahsina Rahman', role: 'Career and Placement Center' },
     date: '2026-07-22', endDate: '2026-07-22', time: '10:00 AM', endTime: '5:00 PM',
     venue: 'NSU Plaza', venueDetails: 'Level 1 and Level 2, North South University campus.',
     image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop',
@@ -42,6 +43,7 @@ export const globalEventsData = [
       id: 'org-2', name: 'CSE Department', type: 'Department', verified: true,
       description: 'Department of Computer Science & Engineering.'
     },
+    postedBy: { name: 'CSE Department', role: 'Department account' },
     date: '2026-07-14', endDate: '2026-07-14', time: '3:00 PM', endTime: '4:30 PM',
     venue: 'AUDI 801', venueDetails: 'Admin Building, Level 8.',
     image: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=800&auto=format&fit=crop',
@@ -63,6 +65,8 @@ export const globalEventsData = [
       id: 'organizer-acm', name: 'NSU ACM Student Chapter', type: 'Club', verified: true,
       description: 'The premier computer science student community at NSU.'
     },
+    coOrganizers: [{ name: 'NSU Design Lab', type: 'Club' }],
+    postedBy: { name: 'Abrar Fahim', role: 'Student · CSE' },
     date: '2026-07-25', endDate: '2026-07-26', time: '9:00 AM', endTime: '4:00 PM',
     venue: 'SAC 312', venueDetails: 'South Academic Building, Level 3.',
     image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&auto=format&fit=crop',
@@ -85,9 +89,10 @@ export const globalEventsData = [
     description: 'The official orientation program for the Summer 2026 incoming batch. Get to know campus facilities, academic rules, clubs, and meet your faculty members.',
     category: 'Academic',
     organizer: {
-      id: 'org-3', name: 'NSU Admissions Office', type: 'University', verified: true,
+      id: 'org-3', name: 'NSU Admissions Office', type: 'University Office', verified: true,
       description: 'Official admissions and registrar office.'
     },
+    postedBy: { name: 'NSU Admissions Office', role: 'University office account' },
     date: '2026-07-15', endDate: '2026-07-15', time: '9:00 AM', endTime: '1:00 PM',
     venue: 'Open Air Theater (OAT)', venueDetails: 'Main campus center.',
     image: 'https://images.unsplash.com/photo-1523580494112-071d4574024e?w=800&auto=format&fit=crop',
@@ -113,6 +118,7 @@ export const globalEventsData = [
       id: 'org-10', name: 'Grameenphone Ltd.', type: 'External Partner', verified: true,
       description: 'Leading telecommunications provider.'
     },
+    postedBy: { name: 'Career and Placement Center (CPC)', role: 'University office account' },
     date: '2026-07-16', endDate: '2026-07-16', time: '2:00 PM', endTime: '4:00 PM',
     venue: 'Career Center', venueDetails: 'Admin Building, Level 4.',
     image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop',
@@ -135,6 +141,8 @@ export const globalEventsData = [
       id: 'org-2', name: 'CSE Department', type: 'Department', verified: true,
       description: 'Department of Computer Science & Engineering.'
     },
+    coOrganizers: [{ name: 'NSU ACM Student Chapter', type: 'Club' }],
+    postedBy: { name: 'CSE Department', role: 'Department account' },
     date: '2026-07-30', endDate: '2026-07-31', time: '9:00 AM', endTime: '9:00 PM',
     venue: 'SAC Atrium', venueDetails: 'South Academic Building, Ground Floor.',
     image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&auto=format&fit=crop',
@@ -161,6 +169,8 @@ export const globalEventsData = [
       id: 'org-2', name: 'CSE Department', type: 'Department', verified: true,
       description: 'Department of Computer Science & Engineering.'
     },
+    coOrganizers: [{ name: 'Tanvir Hasan', type: 'Individual' }],
+    postedBy: { name: 'CSE Department', role: 'Department account' },
     date: '2026-08-05', endDate: '2026-08-05', time: '2:30 PM', endTime: '4:30 PM',
     venue: 'SAC 1042 Seminar Room', venueDetails: 'South Academic Building, Level 10.',
     image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&auto=format&fit=crop',
@@ -186,6 +196,8 @@ export const globalEventsData = [
       id: 'org-dept-ece', name: 'ECE Department', type: 'Department', verified: true,
       description: 'Department of Electrical & Computer Engineering.'
     },
+    coOrganizers: [{ name: 'NSU Robotics Club', type: 'Club' }],
+    postedBy: { name: 'ECE Department', role: 'Department account' },
     date: '2026-07-28', endDate: '2026-07-28', time: '10:00 AM', endTime: '4:00 PM',
     venue: 'SAC 0915 Lab Wing', venueDetails: 'South Academic Building, Level 9.',
     image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop',
@@ -211,6 +223,7 @@ export const globalEventsData = [
       id: 'org-dept-bba', name: 'Accounting & Finance Department', type: 'Department', verified: true,
       description: 'Department of Accounting & Finance, School of Business & Economics.'
     },
+    postedBy: { name: 'Accounting & Finance Department', role: 'Department account' },
     date: '2026-08-02', endDate: '2026-08-02', time: '10:00 AM', endTime: '5:00 PM',
     venue: 'NAC Auditorium', venueDetails: 'North Academic Building, Level 2.',
     image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&auto=format&fit=crop',
@@ -236,6 +249,7 @@ export const globalEventsData = [
       id: 'org-dept-architecture', name: 'Architecture Department', type: 'Department', verified: true,
       description: 'Department of Architecture.'
     },
+    postedBy: { name: 'Architecture Department', role: 'Department account' },
     date: '2026-07-20', endDate: '2026-07-24', time: '11:00 AM', endTime: '6:00 PM',
     venue: 'NAC Gallery', venueDetails: 'North Academic Building, Level 4.',
     image: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&auto=format&fit=crop',
@@ -251,6 +265,16 @@ export const globalEventsData = [
     notificationType: null, notificationMessage: null
   }
 ];
+
+/* Organizers vs Posted by (client revision):
+   · `organizer` is the LEAD organizer — the one the Follow button follows
+     and the cards print — and `coOrganizers` are the rest. Each has a
+     `type` from the Organizer Type list (Club, Department, University
+     Office, External Partner, Individual).
+   · `postedBy` is the account that published the event: metadata, shown
+     read-only, never counted as an organizer.
+   The public page reads them as "Organized by: …" and "Posted by: …". */
+export const getEventOrganizers = (event) => [event.organizer, ...(event.coOrganizers || [])].filter(Boolean);
 
 export const findEventById = (id) => globalEventsData.find(e => e.id === id) || null;
 
