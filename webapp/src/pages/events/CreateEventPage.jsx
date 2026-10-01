@@ -7,7 +7,7 @@ import {
 import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
 import { PageContainer, PageHeader, FormColumn } from '../../components/layout/AppShell';
-import { Button, Card, Field, FieldLabel, IconButton, SelectInput, TextArea, TextInput } from '../../components/ui';
+import { Button, Card, Field, FieldLabel, IconButton, Select, TextArea, TextInput } from '../../components/ui';
 import { useCloseTo } from '../../lib/navigation';
 import { findDepartmentById } from '../../data/departments';
 import { getViewerIdentity } from '../../data/people';
@@ -157,9 +157,7 @@ export default function CreateEventPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Field label="Category">
-                <SelectInput value={draft.category} onChange={set('category')}>
-                  {EVENT_FORM_CATEGORIES.map(c => <option key={c}>{c}</option>)}
-                </SelectInput>
+                <Select options={EVENT_FORM_CATEGORIES} value={draft.category} onChange={(v) => setDraft(d => ({ ...d, category: v }))} aria-label="Category" />
               </Field>
               <Field label="Capacity">
                 <TextInput type="number" min="1" placeholder="e.g. 150" value={draft.capacity} onChange={set('capacity')} />
@@ -226,11 +224,11 @@ export default function CreateEventPage() {
                   />
                 </div>
                 <div className="sm:w-48">
-                  <SelectInput value={organizerType} onChange={(e) => setOrganizerType(e.target.value)} aria-label="Organizer type">
-                    {ORGANIZER_TYPES.map(type => <option key={type}>{type}</option>)}
-                  </SelectInput>
+                  <Select options={ORGANIZER_TYPES} value={organizerType} onChange={setOrganizerType} aria-label="Organizer type" />
                 </div>
-                <Button variant="soft" icon={Plus} onClick={addOrganizer} disabled={!organizerName.trim()} className="h-12 sm:w-auto">
+                {/* `md` is the input height (h-12, rounded-xl), so the three
+                    controls on this row share one baseline and one height. */}
+                <Button variant="soft" size="md" icon={Plus} onClick={addOrganizer} disabled={!organizerName.trim()} className="sm:w-auto shrink-0">
                   Add
                 </Button>
               </div>

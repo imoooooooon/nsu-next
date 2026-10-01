@@ -8,6 +8,7 @@ import {
 import { getSeekingViewerProfile, createEmptySeekingDraft, buildSeekingPostFromDraft } from './utils';
 import { TalentCard } from './TalentCard';
 import { SeekingDetailRow } from './SeekingPrimitives';
+import { Select } from '../ui/Select';
 
 // --- SEEKING: CREATE POST (form → preview → success) ---
 export const CreateSeekingOverlay = ({ t, isDark, authRole, initialDraft, onClose, onSubmit, onViewMyPosts, onToast }) => {
@@ -70,7 +71,6 @@ export const CreateSeekingOverlay = ({ t, isDark, authRole, initialDraft, onClos
 
   const labelClass = `text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`;
   const inputClass = `w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`;
-  const selectClass = `${inputClass} appearance-none`;
   const errorClass = 'text-[11px] font-bold text-red-500 mt-1.5 block';
 
   const chipClass = (active) =>
@@ -242,15 +242,11 @@ export const CreateSeekingOverlay = ({ t, isDark, authRole, initialDraft, onClos
                 </div>
                 <div>
                   <label className={labelClass} htmlFor="seeking-availability">Availability</label>
-                  <select id="seeking-availability" value={draft.availability} onChange={(e) => setField('availability', e.target.value)} className={selectClass}>
-                    {SEEKING_AVAILABILITY.map((a) => <option key={a} value={a}>{a}</option>)}
-                  </select>
+                  <Select id="seeking-availability" options={SEEKING_AVAILABILITY} value={draft.availability} onChange={(v) => setField('availability', v)} t={t} isDark={isDark} />
                 </div>
                 <div>
                   <label className={labelClass} htmlFor="seeking-commitment">Commitment</label>
-                  <select id="seeking-commitment" value={draft.commitment} onChange={(e) => setField('commitment', e.target.value)} className={selectClass}>
-                    {SEEKING_COMMITMENTS.map((c) => <option key={c} value={c}>{c}</option>)}
-                  </select>
+                  <Select id="seeking-commitment" options={SEEKING_COMMITMENTS} value={draft.commitment} onChange={(v) => setField('commitment', v)} t={t} isDark={isDark} />
                 </div>
                 <div>
                   <label className={labelClass} htmlFor="seeking-duration">Preferred Duration</label>
@@ -260,9 +256,7 @@ export const CreateSeekingOverlay = ({ t, isDark, authRole, initialDraft, onClos
 
               <div className="mt-4">
                 <label className={labelClass} htmlFor="seeking-compensation">Compensation Preference</label>
-                <select id="seeking-compensation" value={draft.compensation} onChange={(e) => setField('compensation', e.target.value)} className={selectClass}>
-                  {SEEKING_COMPENSATIONS.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
+                <Select id="seeking-compensation" options={SEEKING_COMPENSATIONS} value={draft.compensation} onChange={(v) => setField('compensation', v)} t={t} isDark={isDark} />
               </div>
             </div>
 

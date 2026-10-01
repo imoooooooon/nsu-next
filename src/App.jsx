@@ -25,6 +25,7 @@ import { CreateEventScreen } from './components/events/CreateEventScreen';
 
 // --- SELECTION CONTROLS (sliding spring pill + switch, shared with the web) ---
 import { SegmentedPill, ViewModeSwitch, SwitchVisual } from './components/ui/controls';
+import { Select } from './components/ui/Select';
 
 // --- SEEKING WORK MODULE (Jobs › Seeking) ---
 import {
@@ -886,12 +887,7 @@ const SettingsFlowOverlay = ({ type, onClose, t, isDark, authRole, appLanguage, 
               </div>
               <div>
                 <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Blood Group</label>
-                <select defaultValue="B+" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-3 text-sm font-bold ${t.text} appearance-none focus:outline-none transition-all shadow-sm`}>
-                  <option value="A+">A+</option>
-                  <option value="B+">B+</option>
-                  <option value="O+">O+</option>
-                  <option value="AB+">AB+</option>
-                </select>
+                <Select options={['A+', 'B+', 'O+', 'AB+']} defaultValue="B+" t={t} isDark={isDark} aria-label="Blood Group" />
               </div>
             </div>
             <div>
@@ -3814,23 +3810,13 @@ export default function App() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Department</label>
-                    <select className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} appearance-none outline-none transition-all focus:ring-2 focus:ring-[#1D9BF0]/30 shadow-sm`}>
-                      <option>CSE</option>
-                      <option>ECE</option>
-                      <option>BBA</option>
-                      <option>Architecture</option>
-                    </select>
+                    <Select options={['CSE', 'ECE', 'BBA', 'Architecture']} t={t} isDark={isDark} aria-label="Department" />
                   </div>
                   
                   {(isStudent || isAlumni) && (
                     <div>
                       <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Batch</label>
-                      <select className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} appearance-none outline-none transition-all focus:ring-2 focus:ring-[#1D9BF0]/30 shadow-sm`}>
-                        <option>221</option>
-                        <option>213</option>
-                        <option>212</option>
-                        <option>211</option>
-                      </select>
+                      <Select options={['221', '213', '212', '211']} t={t} isDark={isDark} aria-label="Batch" />
                     </div>
                   )}
                 </div>
@@ -5443,12 +5429,7 @@ export default function App() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Job Type</label>
-                  <select defaultValue="Full-Time" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} appearance-none focus:outline-none transition-all shadow-sm`}>
-                    <option value="Full-Time">Full-Time</option>
-                    <option value="Part-Time">Part-Time</option>
-                    <option value="Internship">Internship</option>
-                    <option value="Contract">Contract</option>
-                  </select>
+                  <Select options={['Full-Time', 'Part-Time', 'Internship', 'Contract']} defaultValue="Full-Time" t={t} isDark={isDark} aria-label="Job Type" />
                 </div>
                 <div>
                   <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Salary</label>

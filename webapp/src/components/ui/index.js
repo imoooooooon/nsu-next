@@ -3,6 +3,7 @@ export * from './Card';
 export * from './controls';
 export * from './motion';
 export * from './forms';
+export * from './Select';
 export * from './Avatar';
 export * from './feedback';
 export * from './Modal';
