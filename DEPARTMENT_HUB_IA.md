@@ -96,7 +96,7 @@ are browsed rarely and entered mostly by *link*, not by *hunting*.
 | `/messages/dept-:deptId-helpdesk` | `ChatOverlay kind='helpdesk'` | any user ↔ admins |
 | `/messages/helpdesk-:threadId` | `ChatOverlay kind='helpdesk-thread'` | Admin only |
 | `/jobs/post?as=:deptId` | `PostJobOverlay asDepartment` | Official / Admin |
-| `/events/create?as=:deptId` | `CreateEventScreen hostDept` | Official / Admin |
+| `/events/create?as=:deptId` | `CreateEventScreen postAsDept` | Official / Admin |
 
 Job posting and blood requests **reuse the existing modules** with a department
 identity attached. Forking them would give the campus two job boards, which is
@@ -178,7 +178,7 @@ detail-route rule (`lg:grid-cols-3`, content + sticky rail).
         rail (lg+) / stacked below (mobile):
         · Contact & office hours
         · Department officials (Chair first, then Official + Admins)
-        · Upcoming events hosted by this department
+        · Upcoming events posted by this department
         · Open positions from this department
         · Active blood requests
 ```
@@ -211,11 +211,13 @@ detail-route rule (`lg:grid-cols-3`, content + sticky rail).
    `adminIds` — resolved in order by `getDepartmentLeadership`. The Chair is a
    tinted tile at the top, the one a student, parent or recruiter is looking
    for; one person answering two questions is one entry carrying both titles.
-7. **Events are published like jobs.** A department hosts events on the one
+7. **Events are published like jobs.** A department posts events on the one
    campus calendar: an event carries `deptId`, so it appears in Events *and*
    on the hub, in the directory's signal chips and in the Manage console —
    never on a second, department-only calendar. Officials/Admins create them
-   through `/events/create?as=:deptId`.
+   through `/events/create?as=:deptId`, which makes the department the
+   event's **Posted by** account. Organizers are still only what they add
+   (the department can be one via "Add CSE Department as an organizer").
 
 ---
 

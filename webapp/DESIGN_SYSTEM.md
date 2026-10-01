@@ -326,9 +326,20 @@ browser's broken-image glyph — remote demo assets do expire.
 sections in the order an organiser decides things, then the details:
 
 1. **The event** — title, category (`Other` reveals "Name the category"), capacity.
-2. **Organizers** — the host (you, or the department with `?as=`) is a fixed
-   chip; co-organizers are typed in by hand with a type (Club, Department,
-   University Office, External Partner, Individual) and removed with ✕.
+2. **Organizers** — ONLY the entities typed in under "Add an Organizer",
+   each with an **Organizer Type** (Club, Department, University Office,
+   External Partner, Individual), shown as removable chips "Mahfuz Ahmed ·
+   Club". At least one is required. The publishing account is never added
+   implicitly; an "Add myself as an organizer" link adds it when it really is
+   one.
+
+   **Posted by** is separate, read-only metadata at the top of the form —
+   derived from the publishing account (you, or the department with `?as=`),
+   never typed and never counted as an organizer. There is no "Host" in this
+   flow. On Event Details the two read as **Organized by:** (lead organizer
+   + co-organizers) and **Posted by:**. Event records carry `organizer`
+   (lead), `coOrganizers[]` and `postedBy { name, role }`;
+   `getEventOrganizers(event)` returns the full list.
 3. **When** — Starting + Ending date. The range alone sets the length,
    echoed as "3-day event · Thu, Oct 1 – Sat, Oct 3". Picking a start fills
    an empty end with the same day.
@@ -357,7 +368,7 @@ App (in `AppShell`): `/home` · `/network` (`?segment=Alumni|Student|Faculty|Dep
 `/departments/:deptId/manage` (Official/Admin only; others bounce to the hub) · `/jobs` ·
 `/jobs/post` (`?as=:deptId` posts as a department hub) · `/jobs/seeking` · `/jobs/seeking/new` · `/jobs/seeking/my-posts` ·
 `/jobs/seeking/:talentId` · `/jobs/:jobId` · `/events` · `/events/browse` ·
-`/events/calendar` · `/events/my` · `/events/create` (`?as=:deptId` hosts as a department hub) · `/events/:eventId` ·
+`/events/calendar` · `/events/my` · `/events/create` (`?as=:deptId` posts as a department hub) · `/events/:eventId` ·
 `/emergency` · `/emergency/donors/:bloodGroup` · `/emergency/requests/:requestId` ·
 `/messages` (index = empty pane, `:chatId` = chat, split-view ≥lg; `:chatId` also
 resolves the department channels `dept-:deptId-broadcast` / `dept-:deptId-helpdesk`

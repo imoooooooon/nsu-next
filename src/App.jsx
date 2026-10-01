@@ -102,6 +102,16 @@ const CustomEventsIcon = ({ className }) => (
 // --- GLOBAL DEMO EVENTS DATA ---
 const EVENTS_REFERENCE_DATE = new Date('2026-07-12T12:00:00');
 
+/* Organizers vs Posted by (client revision) — same model as webapp/src/data/events.js:
+   · `organizer` is the LEAD organizer — the one the Follow button follows
+     and the cards print — and `coOrganizers` are the rest. Each has a
+     `type` from the Organizer Type list (Club, Department, University
+     Office, External Partner, Individual).
+   · `postedBy` is the account that published the event: metadata, shown
+     read-only, never counted as an organizer.
+   The public page reads them as "Organized by: …" and "Posted by: …". */
+const getEventOrganizers = (event) => [event.organizer, ...(event.coOrganizers || [])].filter(Boolean);
+
 /* The signed-in demo identity's name — the default host of an event. */
 const viewerFullName = (authRole) =>
   authRole === 'student' ? 'Hasan Tarik' : authRole === 'alumni' ? 'Nusrat Jahan' : 'Dr. Hasan Mahmud';
@@ -114,9 +124,10 @@ const globalEventsData = [
     description: 'The official NSU Career Fair connects students with over 50 top national and multinational companies. Bring your resumes, participate in on-the-spot interviews, and discover your next internship or full-time role. Registration is mandatory for entry.',
     category: 'Career',
     organizer: {
-      id: 'org-1', name: 'Career and Placement Center (CPC)', type: 'University', verified: true,
+      id: 'org-1', name: 'Career and Placement Center (CPC)', type: 'University Office', verified: true,
       description: 'Official career support office of North South University.'
     },
+    postedBy: { name: 'Tahsina Rahman', role: 'Career and Placement Center' },
     date: '2026-07-22', endDate: '2026-07-22', time: '10:00 AM', endTime: '5:00 PM',
     venue: 'NSU Plaza', venueDetails: 'Level 1 and Level 2, North South University campus.',
     image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop',
@@ -143,6 +154,7 @@ const globalEventsData = [
       id: 'org-2', name: 'CSE Department', type: 'Department', verified: true,
       description: 'Department of Computer Science & Engineering.'
     },
+    postedBy: { name: 'CSE Department', role: 'Department account' },
     date: '2026-07-14', endDate: '2026-07-14', time: '3:00 PM', endTime: '4:30 PM',
     venue: 'AUDI 801', venueDetails: 'Admin Building, Level 8.',
     image: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=800&auto=format&fit=crop',
@@ -164,6 +176,8 @@ const globalEventsData = [
       id: 'organizer-acm', name: 'NSU ACM Student Chapter', type: 'Club', verified: true,
       description: 'The premier computer science student community at NSU.'
     },
+    coOrganizers: [{ name: 'NSU Design Lab', type: 'Club' }],
+    postedBy: { name: 'Abrar Fahim', role: 'Student · CSE' },
     date: '2026-07-25', endDate: '2026-07-26', time: '9:00 AM', endTime: '4:00 PM',
     venue: 'SAC 312', venueDetails: 'South Academic Building, Level 3.',
     image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&auto=format&fit=crop',
@@ -186,9 +200,10 @@ const globalEventsData = [
     description: 'The official orientation program for the Summer 2026 incoming batch. Get to know campus facilities, academic rules, clubs, and meet your faculty members.',
     category: 'Academic',
     organizer: {
-      id: 'org-3', name: 'NSU Admissions Office', type: 'University', verified: true,
+      id: 'org-3', name: 'NSU Admissions Office', type: 'University Office', verified: true,
       description: 'Official admissions and registrar office.'
     },
+    postedBy: { name: 'NSU Admissions Office', role: 'University office account' },
     date: '2026-07-15', endDate: '2026-07-15', time: '9:00 AM', endTime: '1:00 PM',
     venue: 'Open Air Theater (OAT)', venueDetails: 'Main campus center.',
     image: 'https://images.unsplash.com/photo-1523580494112-071d4574024e?w=800&auto=format&fit=crop',
@@ -214,6 +229,7 @@ const globalEventsData = [
       id: 'org-10', name: 'Grameenphone Ltd.', type: 'External Partner', verified: true,
       description: 'Leading telecommunications provider.'
     },
+    postedBy: { name: 'Career and Placement Center (CPC)', role: 'University office account' },
     date: '2026-07-16', endDate: '2026-07-16', time: '2:00 PM', endTime: '4:00 PM',
     venue: 'Career Center', venueDetails: 'Admin Building, Level 4.',
     image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop',
@@ -236,6 +252,8 @@ const globalEventsData = [
       id: 'org-2', name: 'CSE Department', type: 'Department', verified: true,
       description: 'Department of Computer Science & Engineering.'
     },
+    coOrganizers: [{ name: 'NSU ACM Student Chapter', type: 'Club' }],
+    postedBy: { name: 'CSE Department', role: 'Department account' },
     date: '2026-07-30', endDate: '2026-07-31', time: '9:00 AM', endTime: '9:00 PM',
     venue: 'SAC Atrium', venueDetails: 'South Academic Building, Ground Floor.',
     image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&auto=format&fit=crop',
@@ -262,6 +280,8 @@ const globalEventsData = [
       id: 'org-2', name: 'CSE Department', type: 'Department', verified: true,
       description: 'Department of Computer Science & Engineering.'
     },
+    coOrganizers: [{ name: 'Tanvir Hasan', type: 'Individual' }],
+    postedBy: { name: 'CSE Department', role: 'Department account' },
     date: '2026-08-05', endDate: '2026-08-05', time: '2:30 PM', endTime: '4:30 PM',
     venue: 'SAC 1042 Seminar Room', venueDetails: 'South Academic Building, Level 10.',
     image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&auto=format&fit=crop',
@@ -287,6 +307,8 @@ const globalEventsData = [
       id: 'org-dept-ece', name: 'ECE Department', type: 'Department', verified: true,
       description: 'Department of Electrical & Computer Engineering.'
     },
+    coOrganizers: [{ name: 'NSU Robotics Club', type: 'Club' }],
+    postedBy: { name: 'ECE Department', role: 'Department account' },
     date: '2026-07-28', endDate: '2026-07-28', time: '10:00 AM', endTime: '4:00 PM',
     venue: 'SAC 0915 Lab Wing', venueDetails: 'South Academic Building, Level 9.',
     image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop',
@@ -312,6 +334,7 @@ const globalEventsData = [
       id: 'org-dept-bba', name: 'Accounting & Finance Department', type: 'Department', verified: true,
       description: 'Department of Accounting & Finance, School of Business & Economics.'
     },
+    postedBy: { name: 'Accounting & Finance Department', role: 'Department account' },
     date: '2026-08-02', endDate: '2026-08-02', time: '10:00 AM', endTime: '5:00 PM',
     venue: 'NAC Auditorium', venueDetails: 'North Academic Building, Level 2.',
     image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&auto=format&fit=crop',
@@ -337,6 +360,7 @@ const globalEventsData = [
       id: 'org-dept-architecture', name: 'Architecture Department', type: 'Department', verified: true,
       description: 'Department of Architecture.'
     },
+    postedBy: { name: 'Architecture Department', role: 'Department account' },
     date: '2026-07-20', endDate: '2026-07-24', time: '11:00 AM', endTime: '6:00 PM',
     venue: 'NAC Gallery', venueDetails: 'North Academic Building, Level 4.',
     image: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&auto=format&fit=crop',
@@ -2294,12 +2318,25 @@ const EventDetailsScreen = ({
       <div className="flex-1 overflow-y-auto pb-32 relative z-10 px-5 pt-5 space-y-6">
         <div>
           <h1 className={`text-2xl font-extrabold ${t.text} leading-tight tracking-tight mb-2`}>{event.title}</h1>
-          <div className="flex items-center space-x-2">
-             <span className={`text-sm font-bold ${t.textMuted}`}>{event.organizer.name}</span>
-             {event.organizer.verified && <BadgeCheck className="w-4 h-4 text-[#1D9BF0]" strokeWidth={2.5} />}
-             <span className="w-1 h-1 rounded-full bg-gray-400"></span>
-             <span className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted}`}>{event.organizer.type}</span>
-          </div>
+          {/* Who runs it vs who published it — two facts, two rows. */}
+          <dl className="space-y-1">
+            <div className="flex flex-wrap items-baseline gap-x-1.5">
+              <dt className={`text-sm font-bold ${t.textMuted}`}>Organized by:</dt>
+              <dd className={`text-sm font-extrabold ${t.text}`}>
+                {getEventOrganizers(event).map((org, i) => (
+                  <span key={org.name} className="inline-flex items-center">
+                    {i > 0 && <span className={`mr-1.5 font-bold ${t.textMuted}`}>,</span>}
+                    {org.name}
+                    {org.verified && <BadgeCheck className="w-4 h-4 ml-1 text-[#1D9BF0]" strokeWidth={2.5} />}
+                  </span>
+                ))}
+              </dd>
+            </div>
+            <div className="flex flex-wrap items-baseline gap-x-1.5">
+              <dt className={`text-sm font-bold ${t.textMuted}`}>Posted by:</dt>
+              <dd className={`text-sm font-extrabold ${t.text}`}>{event.postedBy?.name}</dd>
+            </div>
+          </dl>
         </div>
 
         <div className={`p-4 rounded-2xl ${isDark ? 'bg-white/5' : 'bg-black/5'} border ${t.borderSoft} space-y-4`}>
@@ -2406,7 +2443,7 @@ const EventDetailsScreen = ({
         </div>
 
         <div>
-          <h3 className={`text-lg font-extrabold ${t.text} tracking-tight mb-4`}>Organizer</h3>
+          <h3 className={`text-lg font-extrabold ${t.text} tracking-tight mb-4`}>Organized by</h3>
           <div className={`p-5 rounded-2xl ${t.card} border ${t.border} shadow-sm flex flex-col`}>
              <div className="flex items-start justify-between mb-3">
                <div className="flex items-center space-x-3">
@@ -2426,6 +2463,27 @@ const EventDetailsScreen = ({
              <button onClick={handleFollowOrg} className={`w-full py-2.5 rounded-lg text-xs font-extrabold transition-all border active:scale-95 ${isFollowingOrg ? `${isDark ? 'bg-white/10 border-white/20 text-white' : 'bg-gray-100 border-gray-300 text-black'}` : 'bg-[#1D9BF0] border-[#1D9BF0] text-white shadow-sm'}`}>
                {isFollowingOrg ? 'Following' : 'Follow Organizer'}
              </button>
+             {/* Co-organizers — written the same way as in the create form. */}
+             {(event.coOrganizers || []).length > 0 && (
+               <ul className={`mt-4 pt-4 border-t space-y-2 ${isDark ? 'border-white/10' : 'border-black/[0.06]'}`}>
+                 {event.coOrganizers.map(org => (
+                   <li key={org.name} className="flex items-center gap-2.5">
+                     <span className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isDark ? 'bg-white/10' : 'bg-black/5'}`}>
+                       <Users className={`w-4 h-4 ${t.textMuted}`} strokeWidth={2} />
+                     </span>
+                     <span className={`text-xs font-extrabold ${t.text}`}>{org.name}</span>
+                     <span className={`text-xs font-bold ${t.textMuted}`}>· {org.type}</span>
+                   </li>
+                 ))}
+               </ul>
+             )}
+             {/* Posted by — read-only metadata about the listing itself. */}
+             {event.postedBy && (
+               <p className={`mt-4 pt-4 border-t text-[11px] font-bold ${t.textMuted} ${isDark ? 'border-white/10' : 'border-black/[0.06]'}`}>
+                 Posted by <span className={`font-extrabold ${t.text}`}>{event.postedBy.name}</span>
+                 {event.postedBy.role && <> · {event.postedBy.role}</>}
+               </p>
+             )}
           </div>
         </div>
 
@@ -5969,12 +6027,12 @@ export default function App() {
               />
             )}
 
-            {/* Hosting an event as a department — opened from the hub or its
+            {/* Posting an event as a department — opened from the hub or its
                 console, so it sits above both. */}
             {createEventDept && (
               <div className="absolute inset-0 z-[80]">
                 <CreateEventScreen
-                  hostDept={createEventDept}
+                  postAsDept={createEventDept}
                   viewerName={viewerFullName(authRole)}
                   t={t}
                   isDark={isDark}

@@ -18,7 +18,16 @@ export const EVENT_FORM_CATEGORIES = [
   'Research', 'Cultural', 'Sports', 'Volunteer', 'Other',
 ];
 
+/* Terminology (client revision):
+   · Organizer(s)   — entities the user enters by hand, each with a type
+   · Organizer Type — one of ORGANIZER_TYPES
+   · Posted by      — the publishing account, derived automatically, read-only
+   There is no "Host": the account that posts an event is not, by itself,
+   one of its organizers. */
 export const ORGANIZER_TYPES = ['Club', 'Department', 'University Office', 'External Partner', 'Individual'];
+
+/* "Mahfuz Ahmed · Club" — the one way an organizer is written everywhere. */
+export const formatOrganizer = (org) => (org.type ? `${org.name} · ${org.type}` : org.name);
 
 /* A month is plenty for any campus event (exhibitions run a week or two);
    beyond it the schedule would become an endless wall of empty days. */
@@ -110,6 +119,10 @@ export const validateEventDraft = (draft) => {
   const errors = {};
   if (!draft.title.trim()) errors.title = 'Give the event a title.';
   if (draft.category === 'Other' && !draft.customCategory.trim()) errors.customCategory = 'Name the category.';
+  /* Organizers are only what the user adds — the publishing account is
+     "Posted by", never an implicit organizer — so the public page's
+     "Organized by" needs at least one. */
+  if (!draft.organizers.length) errors.organizers = 'Add at least one organizer.';
   if (!draft.startDate) errors.startDate = 'Pick a starting date.';
   if (!draft.endDate) errors.endDate = 'Pick an ending date.';
   const days = countEventDays(draft.startDate, draft.endDate);
