@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Droplet, AlertTriangle } from 'lucide-react';
 import { EntityAvatar, DepartmentSheet } from './DepartmentPrimitives';
+import { Select } from '../ui/Select';
 
 /* ---------------------------------------------------------------------------
    Posting an Emergency Blood request AS the department (brief §4).
@@ -79,9 +80,7 @@ export const DepartmentBloodRequestSheet = ({ dept, t, isDark, onClose, onPost }
 
         <div>
           <label className={labelClass}>Requested On Behalf Of</label>
-          <select defaultValue={BENEFICIARIES[0]} aria-label="Requested on behalf of" className={`${inputClass} appearance-none cursor-pointer`}>
-            {BENEFICIARIES.map(b => <option key={b} value={b}>{b}</option>)}
-          </select>
+          <Select options={BENEFICIARIES} defaultValue={BENEFICIARIES[0]} t={t} isDark={isDark} aria-label="Requested on behalf of" />
         </div>
 
         <div>

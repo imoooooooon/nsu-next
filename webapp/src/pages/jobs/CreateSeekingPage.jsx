@@ -4,7 +4,7 @@ import { ArrowLeft, BadgeCheck, CalendarClock, CheckCircle2, Eye, Sparkles, User
 import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
 import { PageContainer, FormColumn } from '../../components/layout/AppShell';
-import { IconButton } from '../../components/ui';
+import { IconButton, Select } from '../../components/ui';
 import { useCloseTo } from '../../lib/navigation';
 import {
   SEEKING_CATEGORIES, SEEKING_WORK_MODES, SEEKING_AVAILABILITY, SEEKING_COMMITMENTS,
@@ -93,7 +93,6 @@ export default function CreateSeekingPage() {
 
   const labelClass = `text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`;
   const inputClass = `w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`;
-  const selectClass = `${inputClass} appearance-none`;
   const errorClass = 'text-[11px] font-bold text-red-500 mt-1.5 block';
 
   const chipClass = (active) =>
@@ -253,15 +252,11 @@ export default function CreateSeekingPage() {
               </div>
               <div>
                 <label className={labelClass} htmlFor="seeking-availability">Availability</label>
-                <select id="seeking-availability" value={draft.availability} onChange={(e) => setField('availability', e.target.value)} className={selectClass}>
-                  {SEEKING_AVAILABILITY.map((a) => <option key={a} value={a}>{a}</option>)}
-                </select>
+                <Select id="seeking-availability" options={SEEKING_AVAILABILITY} value={draft.availability} onChange={(v) => setField('availability', v)} />
               </div>
               <div>
                 <label className={labelClass} htmlFor="seeking-commitment">Commitment</label>
-                <select id="seeking-commitment" value={draft.commitment} onChange={(e) => setField('commitment', e.target.value)} className={selectClass}>
-                  {SEEKING_COMMITMENTS.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
+                <Select id="seeking-commitment" options={SEEKING_COMMITMENTS} value={draft.commitment} onChange={(v) => setField('commitment', v)} />
               </div>
               <div>
                 <label className={labelClass} htmlFor="seeking-duration">Preferred Duration</label>
@@ -271,9 +266,7 @@ export default function CreateSeekingPage() {
 
             <div className="mt-4">
               <label className={labelClass} htmlFor="seeking-compensation">Compensation Preference</label>
-              <select id="seeking-compensation" value={draft.compensation} onChange={(e) => setField('compensation', e.target.value)} className={selectClass}>
-                {SEEKING_COMPENSATIONS.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
+              <Select id="seeking-compensation" options={SEEKING_COMPENSATIONS} value={draft.compensation} onChange={(v) => setField('compensation', v)} />
             </div>
           </div>
 

@@ -1,4 +1,4 @@
-import { Search, X, ChevronDown } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeContext';
 
 /* ---------------------------------------------------------------------------
@@ -41,20 +41,7 @@ export const TextInput = ({ icon: Icon, className = '', ...rest }) => {
   );
 };
 
-export const SelectInput = ({ className = '', children, ...rest }) => {
-  const { t } = useTheme();
-  return (
-    <div className="relative">
-      <select
-        className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 pr-9 text-sm font-bold ${t.text} appearance-none outline-none transition-all focus:ring-2 focus:ring-[#1D9BF0]/30 shadow-sm cursor-pointer ${className}`}
-        {...rest}
-      >
-        {children}
-      </select>
-      <ChevronDown className={`absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${t.textMuted} pointer-events-none`} strokeWidth={2.5} />
-    </div>
-  );
-};
+/* SelectInput lives in ./Select.jsx — the product's one custom dropdown. */
 
 export const TextArea = ({ className = '', ...rest }) => {
   const { t } = useTheme();

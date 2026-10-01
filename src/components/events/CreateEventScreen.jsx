@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
 import {
   ArrowLeft, CheckCircle2, Plus, Trash2, X, CalendarRange, Clock, Users, UserPlus,
-  AlertCircle, ListPlus, CalendarDays, MapPin, ChevronDown,
+  AlertCircle, ListPlus, CalendarDays, MapPin,
 } from 'lucide-react';
 import { EntityAvatar } from '../department/DepartmentPrimitives';
+import { Select } from '../ui/Select';
 import {
   EVENT_FORM_CATEGORIES, ORGANIZER_TYPES, MAX_EVENT_DAYS,
   countEventDays, listEventDays, describeEventRange, formatDeadline, formatTime12h,
@@ -49,15 +50,6 @@ const ErrorText = ({ children }) => (children ? (
     <AlertCircle className="w-3.5 h-3.5 shrink-0" strokeWidth={2.5} /> {children}
   </p>
 ) : null);
-
-const Select = ({ t, value, onChange, options, ariaLabel }) => (
-  <div className="relative">
-    <select value={value} onChange={onChange} aria-label={ariaLabel} className={inputCls(t, 'appearance-none pr-9')}>
-      {options.map(o => <option key={o}>{o}</option>)}
-    </select>
-    <ChevronDown className={`absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${t.textMuted} pointer-events-none`} strokeWidth={2.5} />
-  </div>
-);
 
 export const CreateEventScreen = ({ onClose, t, isDark, hostDept = null, viewerName = 'You' }) => {
   const [draft, setDraft] = useState(emptyEventDraft);
@@ -142,7 +134,7 @@ export const CreateEventScreen = ({ onClose, t, isDark, hostDept = null, viewerN
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className={labelCls(t)}>Category</label>
-                  <Select t={t} value={draft.category} onChange={set('category')} options={EVENT_FORM_CATEGORIES} ariaLabel="Category" />
+                  <Select t={t} isDark={isDark} value={draft.category} onChange={(v) => setDraft(d => ({ ...d, category: v }))} options={EVENT_FORM_CATEGORIES} aria-label="Category" />
                 </div>
                 <div>
                   <label className={labelCls(t)}>Capacity</label>
@@ -202,7 +194,7 @@ export const CreateEventScreen = ({ onClose, t, isDark, hostDept = null, viewerN
                 </div>
                 <div className="flex gap-2">
                   <div className="flex-1 min-w-0">
-                    <Select t={t} value={organizerType} onChange={(e) => setOrganizerType(e.target.value)} options={ORGANIZER_TYPES} ariaLabel="Organizer type" />
+                    <Select t={t} isDark={isDark} value={organizerType} onChange={setOrganizerType} options={ORGANIZER_TYPES} aria-label="Organizer type" />
                   </div>
                   <button
                     type="button"

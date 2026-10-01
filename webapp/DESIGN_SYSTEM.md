@@ -125,7 +125,9 @@ Toast is already rendered by the shells — just call `showToast('...')`.
 - `Toggle` — switch (`checked, onChange, color, size, label`); `SwitchVisual` is the same switch, visual only, for when a larger element is the control
 - `useSlidingPill(activeKey, { enterFrom, memoryKey })` — the travelling-pill hook behind every segmented control
 - `Dots` — carousel indicators
-- `Field, FieldLabel, FieldHint, TextInput (icon), SelectInput, TextArea, SearchInput (value, onChange, onClear)`
+- `Field, FieldLabel, FieldHint, TextInput (icon), TextArea, SearchInput (value, onChange, onClear)`
+- `Select` — **the product's only dropdown** (`options`, `value` | `defaultValue`, `onChange(value)`, `aria-label`). `SelectInput` is the same component with the old `<option>`-children API. Never ship a native `<select>`: the OS draws its menu (square corners, system font, system-blue highlight), which broke the design system. The panel is the filter-menu panel (`DropdownPanel` / `DropdownItem` styling — rounded-xl, p-2, rounded-lg rows, selected row solid `#1D9BF0` with a check); the trigger keeps input geometry (h-12 rounded-xl) so a row of inputs and selects shares one height. It renders in a portal (never clipped by a modal), flips upward near the viewport bottom, and keeps the native keyboard contract (↑/↓/Home/End, Enter/Space, Esc, type-ahead). Mobile mirror: `../src/components/ui/Select.jsx`.
+- Buttons beside inputs use `size="md"` (h-12, the input height) — never `lg` (h-14) in a field row.
 - `Avatar` (`size xs–3xl`, `online`), `RoleAvatar` (`role: Student|Alumni|Faculty`), `Verified`, `RoleTag`
 - `SectionHeading` (`title, action, onAction`), `MicroHeading`, `EmptyState` (`icon, title, subtitle, action, onAction`), `Toast`
 - `SettingsRow` — settings list row (`icon, label, value, isToggle, toggleState, onToggle, isDestructive, onClick`); stack inside `Card padded={false}`
