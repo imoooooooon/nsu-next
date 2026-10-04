@@ -1,3 +1,5 @@
+import { StaffHome } from '../../../src/shared/DepartmentExperience';
+import { globalDepartments } from '../data/departments';
 import { useNavigate } from 'react-router-dom';
 import { BadgeCheck, Bell, Moon, Sun, Plus } from 'lucide-react';
 import { useTheme } from '../theme/ThemeContext';
@@ -43,6 +45,8 @@ export default function HomePage() {
     { icon: CustomMessagesIcon, label: 'Messages', to: '/messages' },
     { icon: CustomEmergencyIcon, label: 'Emergency', to: '/emergency' },
   ];
+
+  if (authRole === 'staff') return <PageContainer><StaffHome t={t} authRole={authRole} departments={globalDepartments} onManage={d => navigate(`/departments/${d.id}/manage`)} onDirectory={() => navigate('/network?segment=Departments')} onProfile={() => navigate('/profile')} /></PageContainer>;
 
   const canPostJobs = authRole === 'alumni' || authRole === 'faculty';
 

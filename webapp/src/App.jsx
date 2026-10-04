@@ -1,3 +1,8 @@
+import { startTransition } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { PrototypePanel } from '../../src/shared/DepartmentExperience';
+import { useAppState } from './context/AppStateContext';
+import { useTheme } from './theme/ThemeContext';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthLayout } from './components/layout/AuthLayout';
 import { AppShell } from './components/layout/AppShell';
@@ -42,7 +47,11 @@ import MomentNotePage from './pages/moments/MomentNotePage';
 import CreateMomentPage from './pages/moments/CreateMomentPage';
 
 export default function App() {
+  const { t, isDark, toggleTheme } = useTheme();
+  const { authRole, setAuthRole, login, logout, setAuthMode } = useAppState();
+  const navigate = useNavigate();
   return (
+    <>
     <Routes>
       {/* Unauthenticated flow */}
       <Route element={<AuthLayout />}>
@@ -104,5 +113,11 @@ export default function App() {
       <Route path="/" element={<Navigate to="/home" replace />} />
       <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
+    <PrototypePanel t={t} isDark={isDark} authRole={authRole} onTheme={toggleTheme}
+      onSwitch={role => { setAuthRole(role); login(); navigate('/home'); }}
+      onHome={() => { login(); navigate('/home'); }}
+      onDepartment={id => { login(); navigate(id ? `/departments/${id}` : "/network?segment=Departments"); }}
+      onSignup={() => startTransition(() => { logout(); setAuthRole('staff'); setAuthMode('signup'); navigate('/auth/signup'); })} />
+    </>
   );
 }

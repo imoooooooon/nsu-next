@@ -3,6 +3,9 @@
 
 /* The app controls dark mode via a .dark class on <html> (see ThemeContext),
    so bind Tailwind's dark: variant to it instead of prefers-color-scheme. */
+@source "../../src/shared";
+@source "../../src/components/ui";
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ---------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+import { getDepartmentState, subscribeDepartmentState } from '../../../src/shared/departmentStore';
 /* Events demo data — identical to the shipped mobile prototype.
    All "past / upcoming" logic is computed against this fixed reference date. */
 
@@ -5,7 +6,7 @@ export const EVENTS_REFERENCE_DATE = new Date('2026-07-12T12:00:00');
 
 export const EVENT_CATEGORIES = ['All', 'Academic', 'Workshop', 'Competition', 'Career', 'Recruitment', 'Networking', 'Research', 'Cultural', 'Sports', 'Volunteer'];
 
-export const globalEventsData = [
+const seedEventsData = [
   {
     id: 'event-career-fair',
     title: 'NSU Career Fair Summer 2026',
@@ -291,3 +292,6 @@ export const getDepartmentEvents = (deptId) =>
   globalEventsData
     .filter(e => e.deptId === deptId && isUpcomingEvent(e))
     .sort((a, b) => a.date.localeCompare(b.date));
+
+export let globalEventsData = [...seedEventsData, ...getDepartmentState().events];
+subscribeDepartmentState(() => { globalEventsData = [...seedEventsData, ...getDepartmentState().events]; });

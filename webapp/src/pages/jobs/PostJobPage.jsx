@@ -26,9 +26,9 @@ export default function PostJobPage() {
      posting identity is what changes. */
   const asDept = findDepartmentById(searchParams.get('as'));
   const deptAccess = getDepartmentAccess(asDept, authRole);
-  const postingAsDept = asDept && deptAccess.canManage ? asDept : null;
+  const postingAsDept = asDept && deptAccess.canEditMetadata ? asDept : null;
 
-  if (authRole !== 'alumni' && authRole !== 'faculty') {
+  if ((asDept && !postingAsDept) || (!postingAsDept && authRole !== 'alumni' && authRole !== 'faculty')) {
     return <Navigate to="/jobs" replace />;
   }
 

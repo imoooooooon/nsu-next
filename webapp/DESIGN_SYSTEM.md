@@ -128,7 +128,7 @@ Toast is already rendered by the shells — just call `showToast('...')`.
 - `Field, FieldLabel, FieldHint, TextInput (icon), TextArea, SearchInput (value, onChange, onClear)`
 - `Select` — **the product's only dropdown** (`options`, `value` | `defaultValue`, `onChange(value)`, `aria-label`). `SelectInput` is the same component with the old `<option>`-children API. Never ship a native `<select>`: the OS draws its menu (square corners, system font, system-blue highlight), which broke the design system. The panel is the filter-menu panel (`DropdownPanel` / `DropdownItem` styling — rounded-xl, p-2, rounded-lg rows, selected row solid `#1D9BF0` with a check); the trigger keeps input geometry (h-12 rounded-xl) so a row of inputs and selects shares one height. It renders in a portal (never clipped by a modal), flips upward near the viewport bottom, and keeps the native keyboard contract (↑/↓/Home/End, Enter/Space, Esc, type-ahead). Mobile mirror: `../src/components/ui/Select.jsx`.
 - Buttons beside inputs use `size="md"` (h-12, the input height) — never `lg` (h-14) in a field row.
-- `Avatar` (`size xs–3xl`, `online`), `RoleAvatar` (`role: Student|Alumni|Faculty`), `Verified`, `RoleTag`
+- `Avatar` (`size xs–3xl`, `online`), `RoleAvatar` (`role: Student|Alumni|Faculty|Staff`), `Verified`, `RoleTag`
 - `SectionHeading` (`title, action, onAction`), `MicroHeading`, `EmptyState` (`icon, title, subtitle, action, onAction`), `Toast`
 - `SettingsRow` — settings list row (`icon, label, value, isToggle, toggleState, onToggle, isDestructive, onClick`); stack inside `Card padded={false}`
 - `Modal` — bottom-sheet on mobile / centered dialog on desktop (`onClose, title, size sm|md|lg|xl`)
@@ -362,7 +362,7 @@ except the deadline and an over-long range, which warn as soon as they happen.
 Auth (in `AuthLayout` phone-width panel): `/welcome`, `/auth/role`, `/auth/login`,
 `/auth/signup`, `/auth/otp`.
 
-App (in `AppShell`): `/home` · `/network` (`?segment=Alumni|Student|Faculty|Departments`) ·
+App (in `AppShell`): `/home` · `/network` (`?segment=Alumni|Student|Faculty|Staff|Departments`) ·
 `/network/:userId` · `/departments` (redirects into the directory segment) ·
 `/departments/:deptId` (`?tab=students|alumni|faculty`) ·
 `/departments/:deptId/manage` (Official/Admin only; others bounce to the hub) · `/jobs` ·
@@ -384,9 +384,9 @@ things the mobile app treated as screens.
 All demo data lives in `src/data/*` (`people, jobs, events, moments, emergency,
 notifications, conversations, departments`) with `findXById` helpers, and the seeking module's
 `constants/utils/data` in `src/features/seeking/`. Keep copy and records identical
-to mobile — clients compare the two surfaces. `data/departments.js` is mirrored
-byte-for-byte by the mobile module `../src/components/department/data.js`; edit
-both or neither.
+to mobile — clients compare the two surfaces. `data/departments.js` and the mobile module `../src/components/department/data.js`
+keep identical seed records with surface-specific imports. Dynamic metadata, ownership,
+assignments, staff identities and new events come from `../src/shared/departmentStore.js`.
 
 Conversation records carry one discriminator, `kind`:
 `'dm' | 'broadcast' | 'helpdesk' | 'helpdesk-thread'`, defaulting to `'dm'` so
@@ -435,3 +435,33 @@ The lint config exempts PascalCase identifiers from `no-unused-vars` (components
 referenced only inside JSX read as unused without `eslint-plugin-react`) and turns
 off `react-refresh/only-export-components`, since the design system deliberately
 ships tokens and helpers next to their providers.
+
+
+## 8. Department workspace and university staff
+
+The revised IA in `../DEPARTMENT_HUB_IA.md` supersedes the former faculty-only
+Official/Admin rules. Super Admin is the department owner; delegated permissions
+are Primary Admin, Broadcast/Event Publisher and Help Desk Operator. Resolve by
+identity, never by academic role. Use `canBroadcast`, `canCreateEvent`,
+`canHelpDesk`, `canEditMetadata`, `canGrantAccess` and `canTransfer` at each action.
+
+Shared components live in `../src/shared/DepartmentExperience.jsx` and receive
+`t` / `isDark` explicitly so they render identically on both surfaces. Staff use
+teal circular identity marks; department code marks remain square. Staff profile
+and directory cards lead with designation, affiliation and office, not academic
+stats. The fourth signup option is University Staff / Official.
+
+Public View / Admin View reuses the travelling segmented pill. Inside the
+workspace: Overview, Team & access, Page settings. No new global nav destination.
+Shared layouts use container queries so the 430px mobile prototype does not pick
+up desktop grids when shown on a wide monitor. The web Vite build scans shared
+source and deduplicates React to preserve one hook dispatcher.
+
+Confirmation dialogs use native modal focus containment, Escape dismissal and
+return focus. The shared Select portals inside an enclosing dialog when present,
+keeping its listbox in the browser top layer. Destructive access removal and
+ownership transfer require explicit confirmation; ordinary metadata saving does not.
+
+A small Prototype control is review chrome. It is available on auth and signed-in
+screens, labels simulated delivery, and switches identities without resetting
+permission changes. Reset is explicit. New prototype state lasts for this page session.

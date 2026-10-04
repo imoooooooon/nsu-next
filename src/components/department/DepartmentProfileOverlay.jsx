@@ -1,3 +1,4 @@
+import { DepartmentEntry } from '../../shared/DepartmentExperience';
 import { useMemo, useState } from 'react';
 import {
   ArrowLeft, Share, Mail, Megaphone, Settings2, Users, MapPin, Phone, Globe,
@@ -138,6 +139,7 @@ export const DepartmentProfileOverlay = ({
       </div>
 
       <div className="flex-1 overflow-y-auto relative z-10 pb-40">
+        <div className="px-5 pt-5"><DepartmentEntry dept={dept} authRole={authRole} t={t} isDark={isDark} onManage={() => onManage(dept)} /></div>
         {/* -------------------------------------------------- identity hero */}
         <div className="px-5 pt-6">
           <div className={`rounded-2xl p-6 relative overflow-hidden border ${t.border} shadow-xl shadow-black/[0.04] dark:shadow-black/40`}>
@@ -175,26 +177,6 @@ export const DepartmentProfileOverlay = ({
             </div>
           </div>
         </div>
-
-        {/* --------------------------------------------- admin management band */}
-        {access.canManage && (
-          <div className="px-5 pt-4">
-            <div className={`rounded-2xl p-4 ${t.card} border ${t.border}`}>
-              <AccessBadge level={access.level} isDark={isDark} className="mb-2.5" />
-              <p className={`text-[11px] font-bold ${t.textMuted} leading-relaxed mb-3`}>
-                {access.isOfficial
-                  ? 'You hold the master key — broadcast, answer the Help Desk and grant Admin Access to verified faculty.'
-                  : 'You have Admin Access — broadcast, answer the Help Desk and post on behalf of the department.'}
-              </p>
-              <button
-                onClick={() => onManage(dept)}
-                className="w-full h-11 rounded-lg bg-[#1D9BF0]/10 text-[#1D9BF0] border border-[#1D9BF0]/20 font-extrabold text-sm flex items-center justify-center active:scale-[0.97] transition-transform"
-              >
-                <Settings2 className="w-4 h-4 mr-2" strokeWidth={2.5} /> Manage Department
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* ------------------------------ About — the department description */}
         <div className="px-5 pt-4">
@@ -331,7 +313,7 @@ export const DepartmentProfileOverlay = ({
           <div className={`rounded-2xl p-5 ${t.card} border ${t.border}`}>
             <div className="flex items-center justify-between mb-4">
               <h3 className={`text-sm font-extrabold ${t.textMuted} uppercase tracking-wider`}>Upcoming Events</h3>
-              {access.canManage && onCreateEvent && (
+              {access.canCreateEvent && onCreateEvent && (
                 <button onClick={() => onCreateEvent(dept)} className="text-[#1D9BF0] text-[11px] font-extrabold flex items-center">
                   <Plus className="w-3.5 h-3.5 mr-0.5" strokeWidth={3} /> Create
                 </button>
@@ -364,7 +346,7 @@ export const DepartmentProfileOverlay = ({
           <div className={`rounded-2xl p-5 ${t.card} border ${t.border}`}>
             <div className="flex items-center justify-between mb-4">
               <h3 className={`text-sm font-extrabold ${t.textMuted} uppercase tracking-wider`}>Open Positions</h3>
-              {access.canManage && (
+              {access.canEditMetadata && (
                 <button onClick={() => onPostJob(dept)} className="text-[#1D9BF0] text-[11px] font-extrabold flex items-center">
                   <Plus className="w-3.5 h-3.5 mr-0.5" strokeWidth={3} /> Post
                 </button>
@@ -393,7 +375,7 @@ export const DepartmentProfileOverlay = ({
           <div className={`rounded-2xl p-5 ${t.card} border ${t.border}`}>
             <div className="flex items-center justify-between mb-4">
               <h3 className={`text-sm font-extrabold ${t.textMuted} uppercase tracking-wider`}>Emergency Blood</h3>
-              {access.canManage && (
+              {access.canEditMetadata && (
                 <button onClick={() => onPostBlood(dept)} className="text-red-500 text-[11px] font-extrabold flex items-center">
                   <Plus className="w-3.5 h-3.5 mr-0.5" strokeWidth={3} /> Post
                 </button>

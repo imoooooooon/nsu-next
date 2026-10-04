@@ -9,6 +9,8 @@ export const getRoleStyles = (role, isDark) => {
       return { type: 'Student', icon: GraduationCap, colorClass: 'text-[#1D9BF0]', bgClass: 'bg-[#1D9BF0]/10' };
     case 'Alumni':
       return { type: 'Alumni', icon: Briefcase, colorClass: 'text-amber-500', bgClass: 'bg-amber-500/10' };
+    case 'Staff':
+      return { type: 'Staff', icon: Briefcase, colorClass: 'text-teal-500', bgClass: 'bg-teal-500/10' };
     case 'Faculty':
       return {
         type: 'Faculty',
@@ -23,7 +25,7 @@ export const getRoleStyles = (role, isDark) => {
 
 /* Derives a person's role bucket from a directory record. */
 export const getPersonRole = (person) =>
-  person.batch === 'Faculty' ? 'Faculty' : person.role === 'Student' ? 'Student' : 'Alumni';
+  person.userType === 'staff' ? 'Staff' : person.batch === 'Faculty' ? 'Faculty' : person.role === 'Student' ? 'Student' : 'Alumni';
 
 /* Department accent chips. */
 export const getDeptStyle = (dept, isDark) => {

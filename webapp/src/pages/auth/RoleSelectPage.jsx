@@ -12,6 +12,7 @@ const ROLES = [
   { id: 'student', title: 'Student', desc: 'Use your official university email', icon: GraduationCap },
   { id: 'alumni', title: 'Alumni', desc: 'Verification required before access', icon: Users },
   { id: 'faculty', title: 'Faculty', desc: 'Sign in with your institutional email', icon: Briefcase },
+          { id: 'staff', title: 'University Staff / Official', desc: 'Program officers, coordinators and office staff', icon: Users },
 ];
 
 export default function RoleSelectPage() {

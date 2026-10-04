@@ -1,3 +1,4 @@
+import { DepartmentEntry } from '../../../../src/shared/DepartmentExperience';
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
@@ -124,6 +125,7 @@ export default function DepartmentHubPage() {
         )}
       </DetailHeader>
 
+      <DepartmentEntry dept={dept} authRole={authRole} t={t} isDark={isDark} onManage={() => navigate(`/departments/${dept.id}/manage`)} />
       {/* ------------------------------------------------- identity hero */}
       <TintedCard tint="blueSoft" className="p-6 lg:p-8 mb-5" contentClassName="flex flex-col sm:flex-row sm:items-start gap-6 lg:gap-8">
         <EntityAvatar dept={dept} size="3xl" className="mx-auto sm:mx-0" />
@@ -175,21 +177,6 @@ export default function DepartmentHubPage() {
           </div>
         </div>
       </TintedCard>
-
-      {/* ------------------------------------------- admin management band */}
-      {access.canManage && (
-        <Card padded={false} className="mb-5 flex flex-col sm:flex-row sm:items-center gap-4 p-4">
-          <AccessBadge level={access.level} className="shrink-0" />
-          <p className={`text-xs font-bold ${t.textMuted} flex-1 leading-relaxed`}>
-            {access.isOfficial
-              ? 'You hold the master key for this department — you can broadcast, answer the Help Desk and grant Admin Access to verified faculty.'
-              : 'You have Admin Access — you can broadcast, answer the Help Desk and post on behalf of the department.'}
-          </p>
-          <Button variant="soft" size="sm" icon={Settings2} className="shrink-0" onClick={() => navigate(`/departments/${dept.id}/manage`)}>
-            Manage Department
-          </Button>
-        </Card>
-      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 pb-4">
         {/* ------------------------------------------------- main column */}
@@ -283,7 +270,7 @@ export default function DepartmentHubPage() {
               campus calendar, so they are on /events too. */}
           <DepartmentEvents
             events={events}
-            canManage={access.canManage}
+            canManage={access.canCreateEvent}
             onCreate={() => navigate(`/events/create?as=${dept.id}`)}
             onBrowse={() => navigate('/events')}
           />
@@ -292,7 +279,7 @@ export default function DepartmentHubPage() {
           <Card>
             <div className="flex items-center justify-between mb-3">
               <MicroHeading className="!mb-0">Open Positions</MicroHeading>
-              {access.canManage && (
+              {access.canEditMetadata && (
                 <button
                   onClick={() => navigate(`/jobs/post?as=${dept.id}`)}
                   className="text-[#1D9BF0] text-[11px] font-extrabold hover:underline inline-flex items-center"
@@ -334,7 +321,7 @@ export default function DepartmentHubPage() {
           <Card>
             <div className="flex items-center justify-between mb-3">
               <MicroHeading className="!mb-0">Emergency Blood</MicroHeading>
-              {access.canManage && (
+              {access.canEditMetadata && (
                 <button
                   onClick={() => setIsBloodOpen(true)}
                   className="text-red-500 text-[11px] font-extrabold hover:underline inline-flex items-center"

@@ -10,7 +10,7 @@ import {
 import { ChatReactionMenu, ChatMessageActionsMenu } from '../../features/messages/ChatMenus';
 import { findConversationById } from '../../data/conversations';
 import DepartmentChannelView from '../../features/messages/DepartmentChannelView';
-import { VIEWER_DEPARTMENT_ID } from '../../lib/departmentAccess';
+import { getViewerDepartmentId } from '../../lib/departmentAccess';
 import { getRoleStyles } from '../../lib/roleStyles';
 import { SEEKING_MESSAGE_PROMPTS } from '../../features/seeking/constants';
 import { getSeekingCategoryStyle } from '../../features/seeking/utils';
@@ -46,7 +46,7 @@ const ReactionPill = ({ emoji, side = 'right', isDark, onClick }) => {
 export default function ChatView() {
   const { chatId } = useParams();
   const { t, isDark } = useTheme();
-  const { chatContext, setChatContext, showToast } = useAppState();
+  const { authRole, chatContext, setChatContext, showToast } = useAppState();
   const navigate = useNavigate();
 
   const [isAttachmentOpen, setIsAttachmentOpen] = useState(false);
@@ -61,7 +61,7 @@ export default function ChatView() {
   const threadEndRef = useRef(null);
 
   const isHandoff = chatId === 'new';
-  const conversation = isHandoff ? null : findConversationById(chatId, VIEWER_DEPARTMENT_ID);
+  const conversation = isHandoff ? null : findConversationById(chatId, getViewerDepartmentId(authRole));
   const seekingHandoff = isHandoff ? chatContext?.seeking : null;
 
   useEffect(() => {

@@ -1,3 +1,4 @@
+import { liveDepartment } from '../../shared/departmentStore';
 /* Department (Entity Profile) demo data.
    Keep these records byte-identical with the web app's
    `webapp/src/data/departments.js` — clients compare surfaces. */
@@ -109,12 +110,12 @@ export const globalDepartments = [
    fields, even when one person answers two of them. */
 
 export const findDepartmentById = (id) =>
-  globalDepartments.find(d => String(d.id) === String(id)) || null;
+  liveDepartment(globalDepartments.find(d => String(d.id) === String(id))) || null;
 
 /* Departments are keyed by `id` but people records carry the display `code`
    (CSE, ECE, BBA, Architecture) — this bridges the two. */
 export const findDepartmentByCode = (code) =>
-  globalDepartments.find(d => d.code.toLowerCase() === String(code || '').toLowerCase()) || null;
+  liveDepartment(globalDepartments.find(d => d.code.toLowerCase() === String(code || '').toLowerCase())) || null;
 
 /* ---------------------------------------------------------------------------
    Broadcast history — what the channel already holds when you open it.

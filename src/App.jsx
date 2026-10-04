@@ -1,3 +1,6 @@
+import { getDepartmentState, subscribeDepartmentState } from './shared/departmentStore';
+import { PrototypePanel, StaffHome, StaffProfile, StaffSignup, StaffDirectory } from './shared/DepartmentExperience';
+import { useDepartmentState, currentStaff, currentViewer, allStaff, liveDepartment } from './shared/departmentStore';
 import React, { useState, useEffect } from 'react';
 import { 
   // Base / Navigation / Existing
@@ -38,9 +41,9 @@ import {
 
 // --- DEPARTMENT HUB MODULE (Entity Profiles) ---
 import {
-  globalDepartments, findDepartmentById,
+  globalDepartments, findDepartmentById, findDepartmentByCode,
   departmentHelpDeskThreads, departmentBroadcasts,
-  VIEWER_DEPARTMENT_ID, getDepartmentAccess, formatCount,
+  getViewerDepartmentId, getDepartmentAccess, formatCount,
   DepartmentList, DepartmentGrid, MyDepartmentPanel, EntityAvatar,
   DepartmentProfileOverlay, DepartmentChannelOverlay,
   DepartmentManageOverlay, DepartmentBloodRequestSheet,
@@ -114,9 +117,9 @@ const getEventOrganizers = (event) => [event.organizer, ...(event.coOrganizers |
 
 /* The signed-in demo identity's name — the default host of an event. */
 const viewerFullName = (authRole) =>
-  authRole === 'student' ? 'Hasan Tarik' : authRole === 'alumni' ? 'Nusrat Jahan' : 'Dr. Hasan Mahmud';
+  authRole === 'student' ? 'Hasan Tarik' : authRole === 'alumni' ? 'Nusrat Jahan' : authRole === 'staff' ? currentStaff(authRole).name : ({ 101: 'Dr. Aminul Islam', 105: 'Dr. Tanzima Hashem', 109: 'Ar. Nusrat Farzana' }[currentViewer(authRole).personId] || 'Faculty member');
 
-const globalEventsData = [
+const seedEventsData = [
   {
     id: 'event-career-fair',
     title: 'NSU Career Fair Summer 2026',
@@ -382,17 +385,23 @@ const globalEventsData = [
    and on the hub without two lists that could drift apart. "Upcoming" = ends
    on or after the reference date and not cancelled — soonest first. Same
    rule as the web's `getDepartmentEvents` (webapp/src/data/events.js). */
+let globalEventsData = [...seedEventsData, ...getDepartmentState().events];
 const isUpcomingEvent = (event) =>
   event.registrationStatus !== 'Cancelled' &&
   new Date(`${event.endDate || event.date}T23:59:59`) >= EVENTS_REFERENCE_DATE;
 
-const departmentEvents = Object.fromEntries(globalDepartments.map(d => [
+let departmentEvents = Object.fromEntries(globalDepartments.map(d => [
   d.id,
   globalEventsData
     .filter(e => e.deptId === d.id && isUpcomingEvent(e))
     .sort((a, b) => a.date.localeCompare(b.date)),
 ]));
 
+
+subscribeDepartmentState(() => {
+  globalEventsData = [...seedEventsData, ...getDepartmentState().events];
+  departmentEvents = Object.fromEntries(globalDepartments.map(d => [d.id, globalEventsData.filter(e => e.deptId === d.id && isUpcomingEvent(e)).sort((a, b) => a.date.localeCompare(b.date))]));
+});
 
 const JobSlider = ({ jobs, isDark, t, onSelectJob }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -3267,6 +3276,7 @@ const JobsTab = ({
 };
 
 export default function App() {
+  useDepartmentState();
 
   // --- EVENTS MODULE STATE ---
   const [isEventsModuleOpen, setIsEventsModuleOpen] = useState(false);
@@ -3574,10 +3584,10 @@ export default function App() {
   };
 
   // --- DEPARTMENT HUB HANDLERS ---
-  const viewerDepartment = findDepartmentById(VIEWER_DEPARTMENT_ID);
+  const viewerDepartment = findDepartmentById(getViewerDepartmentId(authRole));
   const viewerDeptAccess = getDepartmentAccess(viewerDepartment, authRole);
 
-  const handleOpenDepartment = (dept) => setSelectedDepartment(dept);
+  const handleOpenDepartment = (dept) => { if (dept) setSelectedDepartment(dept); else { setDirectorySegment('Departments'); setActiveTab('directory'); } };
 
   const handleOpenDepartmentChannel = (dept, kind, thread = null) => {
     setDepartmentChannel({ dept, kind, thread });
@@ -3690,6 +3700,7 @@ export default function App() {
           { id: 'student', title: 'Student', desc: 'Use your official university email', icon: GraduationCap },
           { id: 'alumni', title: 'Alumni', desc: 'Verification required before access', icon: Users },
           { id: 'faculty', title: 'Faculty', desc: 'Sign in with your institutional email', icon: Briefcase },
+          { id: 'staff', title: 'University Staff / Official', desc: 'Program officers, coordinators and office staff', icon: Users },
         ].map((role, index) => {
           const isSelected = authRole === role.id;
           
@@ -4578,7 +4589,7 @@ export default function App() {
     /* One directory, four lenses. Departments are Entity Profiles — they live
        in the network, so they are a segment here rather than a sixth item
        competing for a slot in a five-item capsule. */
-    const availableTabs = ['Alumni', 'Student', 'Faculty', 'Departments'];
+    const availableTabs = ['Alumni', 'Student', 'Faculty', 'Staff', 'Departments'];
     const isDepartments = directorySegment === 'Departments';
 
     const viewKind = isDepartments ? 'departments' : 'people';
@@ -4586,7 +4597,7 @@ export default function App() {
 
     let displayData = isDepartments ? globalDepartments :
                       directorySegment === 'Alumni' ? globalAlumniData : 
-                      directorySegment === 'Faculty' ? globalFacultyData : 
+                      directorySegment === 'Faculty' ? globalFacultyData : directorySegment === 'Staff' ? allStaff() :
                       globalStudentData;
 
     return (
@@ -4670,7 +4681,8 @@ export default function App() {
 
           {/* People in list mode — one line each: circle avatar, name +
               headline + department, and Connect as the trailing action. */}
-          {!isDepartments && view === 'list' && (
+          {directorySegment === 'Staff' && <StaffDirectory people={displayData} t={t} view={view} onSelect={setSelectedUser} />}
+          {!isDepartments && directorySegment !== 'Staff' && view === 'list' && (
             <div className={`rounded-2xl ${t.card} border ${t.border} ${t.cardShadow} overflow-hidden`}>
               <ul className={`divide-y ${isDark ? 'divide-white/[0.06]' : 'divide-black/[0.05]'}`}>
                 {displayData.map((person) => (
@@ -4707,7 +4719,7 @@ export default function App() {
             </div>
           )}
 
-          {!isDepartments && view === 'card' && displayData.map((person) => (
+          {!isDepartments && directorySegment !== 'Staff' && view === 'card' && displayData.map((person) => (
             <div 
               key={person.id} 
               className={`rounded-2xl p-5 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 cursor-pointer shadow-2xl shadow-black/5 dark:shadow-black/40 border ${t.border}`} 
@@ -4864,7 +4876,7 @@ export default function App() {
 
     /* The admin's Help Desk inbox — student questions kept out of the
        admin's personal DMs. */
-    const helpDeskThreads = viewerDeptAccess.isAdmin && viewerDepartment
+    const helpDeskThreads = viewerDeptAccess.canHelpDesk && viewerDepartment
       ? (departmentHelpDeskThreads[viewerDepartment.id] || []).map(x => ({
           ...x, kind: 'helpdesk-thread', dept: viewerDepartment, isRequest: false,
         }))
@@ -4979,7 +4991,7 @@ export default function App() {
           {/* MessagesTab owns hooks, so it stays a component and remounts
               with <App/>; the memoryKey keeps its pill gliding anyway. */}
           <SegmentedPill
-            options={(viewerDeptAccess.isAdmin ? ['All Chats', 'Requests', 'Help Desk'] : ['All Chats', 'Requests']).map(seg => ({
+            options={(viewerDeptAccess.canHelpDesk ? ['All Chats', 'Requests', 'Help Desk'] : ['All Chats', 'Requests']).map(seg => ({
               id: seg,
               label: seg,
               badge: seg === 'Requests' ? 1 : seg === 'Help Desk' ? waitingCount : 0,
@@ -5119,6 +5131,7 @@ export default function App() {
   };
 
   const UserProfileView = ({ user, onBack }) => {
+    if (user.userType === 'staff') return <div className={`absolute inset-0 z-[95] overflow-y-auto px-5 pb-12 ${t.bg}`}><StaffProfile person={user} t={t} onBack={onBack} onDepartment={() => { onBack(); handleOpenDepartment(findDepartmentByCode(user.dept)); }} onMessage={findDepartmentByCode(user.dept) ? () => { onBack(); handleOpenDepartmentChannel(findDepartmentByCode(user.dept), 'helpdesk'); } : undefined} /></div>;
     return (
       <div className={`absolute inset-0 z-50 flex flex-col animate-slide-up ${t.bg}`}>
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden transition-opacity duration-500">
@@ -5696,13 +5709,13 @@ export default function App() {
             {currentView === 'splash' && SplashScreen()}
             {currentView === 'welcome' && WelcomeScreen()}
             {currentView === 'role_select' && RoleGatewayScreen()}
-            {currentView === 'auth_main' && AuthScreen()}
+            {currentView === 'auth_main' && (authRole === 'staff' && authMode === 'signup' ? <div className="absolute inset-0 overflow-y-auto"><StaffSignup t={t} isDark={isDark} onBack={() => setCurrentView('role_select')} onComplete={() => { setCurrentView('main'); setActiveTab('home'); }} /></div> : AuthScreen())}
             {currentView === 'otp' && OtpScreen()}
             
             {currentView === 'main' && (
               <div className="flex flex-col h-full relative z-10">
                 <div className="flex-1 overflow-hidden relative">
-                  {activeTab === 'home' && <HomeTab />}
+                  {activeTab === 'home' && (authRole === 'staff' ? <div className="h-full overflow-y-auto px-5 pb-28"><StaffHome t={t} authRole={authRole} departments={globalDepartments} onManage={setManageDepartment} onDirectory={() => { setDirectorySegment('Departments'); setActiveTab('directory'); }} onProfile={() => setSelectedUser(currentStaff(authRole))} /></div> : <HomeTab />)}
                   {/* DirectoryTab and EmergencyTab are declared inside <App/> and
                       hold no hooks, so they are CALLED, not mounted: as
                       <DirectoryTab /> they were a new component type on every
@@ -5737,7 +5750,8 @@ export default function App() {
                   {activeTab === 'emergency' && EmergencyTab()}
                   {activeTab === 'emergency_directory' && <EmergencyDirectoryTab />}
                   {activeTab === 'messages' && <MessagesTab />}
-                  {activeTab === 'profile' && <ProfileTab 
+                  {activeTab === 'profile' && authRole === 'staff' && <div className="h-full overflow-y-auto px-5 pb-28"><StaffProfile person={currentStaff(authRole)} t={t} onDepartment={() => handleOpenDepartment(findDepartmentByCode(currentStaff(authRole).dept) || viewerDepartment)} /></div>}
+                  {activeTab === 'profile' && authRole !== 'staff' && <ProfileTab
                     authRole={authRole} t={t} isDark={isDark} 
                     profileSegment={profileSegment} setProfileSegment={setProfileSegment}
                     setSettingsOverlay={setSettingsOverlay} setCurrentView={setCurrentView}
@@ -5954,14 +5968,14 @@ export default function App() {
             {/* --- DEPARTMENT HUB OVERLAYS (Entity Profiles) --- */}
             {selectedDepartment && (
               <DepartmentProfileOverlay
-                dept={selectedDepartment}
+                dept={liveDepartment(selectedDepartment)}
                 authRole={authRole}
                 t={t}
                 isDark={isDark}
                 aboutOverride={departmentAbout[selectedDepartment.id]}
                 adminIds={departmentAdminIds[selectedDepartment.id]}
                 peopleByCohort={{ students: globalStudentData, alumni: globalAlumniData, faculty: globalFacultyData }}
-                findUserById={(id) => allDirectoryUsers.find(u => u.id === id) || null}
+                findUserById={(id) => [...allDirectoryUsers, ...allStaff()].find(u => u.id === id) || null}
                 events={departmentEvents[selectedDepartment.id] || []}
                 renderEventStatus={(e) => (
                   <EventStatusBadge status={registeredEventIds.has(e.id) ? 'Registered' : e.registrationStatus} isDark={isDark} />
@@ -5984,12 +5998,13 @@ export default function App() {
                 authRole={authRole}
                 t={t}
                 isDark={isDark}
-                facultyData={globalFacultyData}
-                findUserById={(id) => allDirectoryUsers.find(u => u.id === id) || null}
+                facultyData={allDirectoryUsers}
+                findUserById={(id) => [...allDirectoryUsers, ...allStaff()].find(u => u.id === id) || null}
                 adminIds={departmentAdminIds[manageDepartment.id]}
                 aboutOverride={departmentAbout[manageDepartment.id]}
                 broadcastsSent={(sentBroadcasts[manageDepartment.id] || []).length}
-                onBack={() => setManageDepartment(null)}
+                onBack={() => { setSelectedDepartment(manageDepartment); setManageDepartment(null); }}
+                onSelectUser={setSelectedUser}
                 onGrantAccess={handleGrantDepartmentAdmin}
                 onRevokeAccess={handleRevokeDepartmentAdmin}
                 onSaveAbout={handleSaveDepartmentAbout}
@@ -6032,7 +6047,7 @@ export default function App() {
             {createEventDept && (
               <div className="absolute inset-0 z-[80]">
                 <CreateEventScreen
-                  postAsDept={createEventDept}
+                  postAsDept={createEventDept} authRole={authRole}
                   viewerName={viewerFullName(authRole)}
                   t={t}
                   isDark={isDark}
@@ -6058,6 +6073,12 @@ export default function App() {
               <UserProfileView user={selectedUser} onBack={() => setSelectedUser(null)} />
             )}
 
+            <PrototypePanel mobile t={t} isDark={isDark} authRole={authRole}
+              onTheme={() => setIsDark(v => !v)}
+              onSwitch={role => { setAuthRole(role); setCurrentView('main'); setManageDepartment(null); setDepartmentChannel(null); setSelectedDepartment(null); setSelectedUser(null); setActiveOverlay(null); setCreateEventDept(null); setIsPostJobOpen(false); setIsEventsModuleOpen(false); setSelectedGlobalEvent(null); setBloodSheetDept(null); setSettingsOverlay(null); setActiveTab('home'); }}
+              onHome={() => { setCurrentView('main'); setActiveTab('home'); setManageDepartment(null); setSelectedDepartment(null); setDepartmentChannel(null); setSelectedUser(null); setCreateEventDept(null); setIsPostJobOpen(false); setIsEventsModuleOpen(false); setSelectedGlobalEvent(null); setBloodSheetDept(null); setSettingsOverlay(null); }}
+              onDepartment={id => { setCurrentView('main'); handleOpenDepartment(findDepartmentById(id)); setManageDepartment(null); setDepartmentChannel(null); setCreateEventDept(null); setIsPostJobOpen(false); setIsEventsModuleOpen(false); setSelectedGlobalEvent(null); setBloodSheetDept(null); setSettingsOverlay(null); }}
+              onSignup={() => { setAuthRole('staff'); setAuthMode('signup'); setCurrentView('auth_main'); setManageDepartment(null); setSelectedDepartment(null); setDepartmentChannel(null); setSelectedUser(null); setCreateEventDept(null); setIsPostJobOpen(false); setIsEventsModuleOpen(false); setSelectedGlobalEvent(null); setBloodSheetDept(null); setSettingsOverlay(null); }} />
             {toastMsg && (
               <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-[100] animate-fade-in-up">
                 <div className={`px-5 py-2.5 rounded-full shadow-xl shadow-black/10 text-xs font-bold transition-colors whitespace-nowrap ${isDark ? 'bg-white text-black' : 'bg-[#1A1A1A] text-white'}`}>

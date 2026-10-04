@@ -13,7 +13,7 @@ import { EntityAvatar } from '../../features/departments/DepartmentPrimitives';
 import { globalConversations, getDepartmentChannels, getHelpDeskThreads } from '../../data/conversations';
 import { findDepartmentById } from '../../data/departments';
 import { getRoleStyles } from '../../lib/roleStyles';
-import { getDepartmentAccess, VIEWER_DEPARTMENT_ID } from '../../lib/departmentAccess';
+import { getDepartmentAccess, getViewerDepartmentId } from '../../lib/departmentAccess';
 import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
 
@@ -127,15 +127,15 @@ export default function MessagesPage() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [contextMenuChat, setContextMenuChat] = useState(null);
 
-  const viewerDept = findDepartmentById(VIEWER_DEPARTMENT_ID);
+  const viewerDept = findDepartmentById(getViewerDepartmentId(authRole));
   const access = getDepartmentAccess(viewerDept, authRole);
 
   /* Auto-enrolment, expressed as data: the channels are simply in the list. */
-  const deptChannels = getDepartmentChannels(VIEWER_DEPARTMENT_ID);
-  const helpDeskThreads = access.isAdmin ? getHelpDeskThreads(VIEWER_DEPARTMENT_ID) : [];
+  const deptChannels = getDepartmentChannels(getViewerDepartmentId(authRole));
+  const helpDeskThreads = access.canHelpDesk ? getHelpDeskThreads(getViewerDepartmentId(authRole)) : [];
   const waitingCount = helpDeskThreads.filter(x => x.unread).length;
 
-  const segments = access.isAdmin
+  const segments = access.canHelpDesk
     ? ['All Chats', { id: 'Requests', label: 'Requests', badge: 1 }, { id: 'Help Desk', label: 'Help Desk', badge: waitingCount || undefined }]
     : ['All Chats', { id: 'Requests', label: 'Requests', badge: 1 }];
 

@@ -1,3 +1,4 @@
+import { useDepartmentState, updateDepartmentState } from '../../../../src/shared/departmentStore';
 import { useEffect, useRef, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import {
@@ -113,7 +114,10 @@ export default function DepartmentChannelView({ conversation }) {
   const [emailArmed, setEmailArmed] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [replies, setReplies] = useState([]);
+  const sharedState = useDepartmentState();
+  const replyKey = conversation.id;
+  const replies = sharedState.replies[replyKey] || [];
+  const setReplies = updater => updateDepartmentState(s => ({ ...s, replies: { ...s.replies, [replyKey]: updater(s.replies[replyKey] || []) } }));
   const threadEndRef = useRef(null);
 
   const dept = findDepartmentById(conversation.deptId);
@@ -121,7 +125,7 @@ export default function DepartmentChannelView({ conversation }) {
   const kind = conversation.kind;
   const isBroadcast = kind === 'broadcast';
   const isAdminThread = kind === 'helpdesk-thread';
-  const canWrite = !isBroadcast || access.canBroadcast;
+  const canWrite = isBroadcast ? access.canBroadcast : !isAdminThread || access.canHelpDesk;
   const isMuted = mutedChannelIds.has(conversation.id);
 
   const history = dept ? (departmentBroadcasts[dept.id] || []) : [];
@@ -134,6 +138,7 @@ export default function DepartmentChannelView({ conversation }) {
   /* The email toggle is deliberately not sticky: it resets after every send,
      so urgency is opted into per message rather than left switched on. */
   const commitBroadcast = (emailed) => {
+    if (!access.canBroadcast || !text.trim()) return;
     const body = text.trim();
     const firstLine = body.split('\n')[0];
     sendDepartmentBroadcast(dept.id, {
@@ -152,7 +157,7 @@ export default function DepartmentChannelView({ conversation }) {
   };
 
   const handleSend = () => {
-    if (!text.trim()) return;
+    if (!text.trim() || !canWrite) return;
     if (isBroadcast) {
       if (emailArmed) { setIsConfirmOpen(true); return; }
       commitBroadcast(false);
@@ -169,7 +174,7 @@ export default function DepartmentChannelView({ conversation }) {
   if (!dept) return null;
   /* A student who pastes an admin thread URL gets the list back, not another
      member's private question. */
-  if (isAdminThread && !access.isAdmin) return <Navigate to="/messages" replace />;
+  if (isAdminThread && !access.canHelpDesk) return <Navigate to="/messages" replace />;
 
   const { icon: PeerRoleIcon, colorClass, bgClass } = getRoleStyles(conversation.role, isDark);
   const headerTitle = isAdminThread ? conversation.name : conversation.name;
@@ -245,7 +250,7 @@ export default function DepartmentChannelView({ conversation }) {
                   onClick={() => { setIsMenuOpen(false); toggleChannelMute(conversation.id); }}
                 />
               )}
-              {access.canManage && (
+              {access.canHelpDesk && (
                 <DropdownItem
                   icon={ShieldCheck}
                   label="Manage Department"
@@ -297,7 +302,7 @@ export default function DepartmentChannelView({ conversation }) {
                 <p className={`text-xs font-bold ${t.text} leading-relaxed opacity-90`}>
                   {isAdminThread
                     ? `You are replying as ${dept.code} Department. ${conversation.name} sees the department, not your personal account.`
-                    : 'This is a private conversation with the department. A faculty member with admin access will reply — usually within one working day.'}
+                    : 'This is a private conversation with the department. An authorized department teammate will reply — usually within one working day.'}
                 </p>
               </div>
 

@@ -1,3 +1,4 @@
+import { allStaff, currentStaff, currentViewer } from '../../../src/shared/departmentStore';
 /* Directory demo data — identical records to the shipped mobile prototype. */
 
 export const globalAlumniData = [
@@ -64,10 +65,11 @@ export const globalStudentData = [
 
 export const allDirectoryUsers = [...globalAlumniData, ...globalFacultyData, ...globalStudentData];
 
-export const findUserById = (id) => allDirectoryUsers.find(u => String(u.id) === String(id)) || null;
+export const findUserById = (id) => [...allDirectoryUsers, ...allStaff()].find(u => String(u.id) === String(id)) || null;
 
 /* The signed-in demo identities per auth role. */
 export const getViewerIdentity = (authRole) => {
+  if (authRole === 'staff') { const p = currentStaff(authRole); return { fullName: p.name, firstName: p.name.split(' ')[0], roleSub: p.role, subtitle: `${p.role} · ${p.dept}`, email: p.email, idTitle: 'Staff Access ID', idPrefix: p.nsuId }; }
   if (authRole === 'alumni') {
     return {
       fullName: 'Nusrat Jahan', firstName: 'Nusrat', roleSub: 'Software Engineer @ Google',
@@ -78,8 +80,9 @@ export const getViewerIdentity = (authRole) => {
     };
   }
   if (authRole === 'faculty') {
+    const p = findUserById(currentViewer(authRole).personId);
     return {
-      fullName: 'Dr. Hasan Mahmud', firstName: 'Dr. Hasan', roleSub: 'Professor @ CSE',
+      fullName: p.name, firstName: p.name.split(' ').slice(0, 2).join(' '), roleSub: `${p.role} @ ${p.dept}`,
       idTitle: 'Faculty Access ID', idPrefix: 'FAC-0012', termLabel: 'Joined', termValue: '2012',
       subtitle: 'Professor • CSE',
       stat1Label: 'Jobs Posted', stat1Count: '5', stat2Label: 'Mentored', stat2Count: '18',

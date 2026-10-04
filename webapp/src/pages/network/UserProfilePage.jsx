@@ -1,3 +1,4 @@
+import { StaffProfile } from '../../../../src/shared/DepartmentExperience';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft, Share, MapPin, Droplets, MessageSquare, CheckCircle2,
@@ -39,6 +40,8 @@ export default function UserProfilePage() {
       </PageContainer>
     );
   }
+
+  if (user.userType === 'staff') return <PageContainer><StaffProfile person={user} t={t} onBack={close} onDepartment={() => navigate(findDepartmentByCode(user.dept) ? `/departments/${findDepartmentByCode(user.dept).id}` : '/network?segment=Departments')} onMessage={findDepartmentByCode(user.dept) ? () => navigate(`/messages/dept-${findDepartmentByCode(user.dept).id}-helpdesk`) : undefined} /></PageContainer>;
 
   const requested = requestedSet.has(user.id);
 

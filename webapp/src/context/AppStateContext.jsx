@@ -1,3 +1,4 @@
+import { useDepartmentState } from '../../../src/shared/departmentStore';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { globalMySeekingPosts } from '../features/seeking/data';
 import { EMPTY_SEEKING_FILTERS } from '../features/seeking/constants';
@@ -35,6 +36,7 @@ const flipInSet = (prev, id) => {
 };
 
 export const AppStateProvider = ({ children }) => {
+  const departmentState = useDepartmentState();
   /* Auth (demo) — seeded from the persisted session. */
   const [authRole, setAuthRole] = useState(() => readSession()?.authRole || 'student'); // 'student' | 'alumni' | 'faculty'
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
@@ -213,7 +215,7 @@ export const AppStateProvider = ({ children }) => {
   const logout = useCallback(() => setIsAuthed(false), []);
 
   const value = useMemo(() => ({
-    authRole, setAuthRole, authMode, setAuthMode, isAuthed, login, logout,
+    departmentState, authRole, setAuthRole, authMode, setAuthMode, isAuthed, login, logout,
     toastMsg, showToast,
     requestedSet, toggleRequested,
     registeredEventIds, setRegisteredEventIds,
@@ -236,7 +238,7 @@ export const AppStateProvider = ({ children }) => {
     profileVisibility, setProfileVisibility,
     activeSessions, setActiveSessions,
   }), [
-    authRole, authMode, isAuthed, login, logout, toastMsg, showToast,
+    departmentState, authRole, authMode, isAuthed, login, logout, toastMsg, showToast,
     requestedSet, toggleRequested,
     registeredEventIds, goingEventIds, interestedEventIds, reminderEventIds, followedOrganizerIds,
     seekingFilters, savedTalentIds, toggleSavedTalentSet, handleToggleSavedTalent,

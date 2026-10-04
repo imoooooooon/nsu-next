@@ -5,6 +5,8 @@ import react from '@vitejs/plugin-react'
 // so all assets and routes are rooted at /webapp/.
 export default defineConfig({
   plugins: [react()],
+  resolve: { dedupe: ['react', 'react-dom', 'lucide-react'] },
+  server: { fs: { allow: ['..'] } },
   base: '/webapp/',
   build: {
     // Emits into the root project's dist so a single Vercel static deploy

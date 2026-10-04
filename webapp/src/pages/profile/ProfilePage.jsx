@@ -1,3 +1,5 @@
+import { StaffProfile } from '../../../../src/shared/DepartmentExperience';
+import { currentStaff } from '../../../../src/shared/departmentStore';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -9,7 +11,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
 import { getViewerIdentity } from '../../data/people';
 import { findDepartmentById } from '../../data/departments';
-import { getDepartmentAccess, formatCount, VIEWER_DEPARTMENT_ID } from '../../lib/departmentAccess';
+import { getDepartmentAccess, formatCount, getViewerDepartmentId } from '../../lib/departmentAccess';
 import { EntityAvatar, AccessBadge } from '../../features/departments/DepartmentPrimitives';
 import { PageContainer, PageHeader } from '../../components/layout/AppShell';
 import { Card, TintedCard, CardGlow, SegmentedControl, SettingsRow, MicroHeading } from '../../components/ui';
@@ -21,7 +23,6 @@ import { Card, TintedCard, CardGlow, SegmentedControl, SettingsRow, MicroHeading
 --------------------------------------------------------------------------- */
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const viewerDept = findDepartmentById(VIEWER_DEPARTMENT_ID);
   const { t, isDark, toggleTheme } = useTheme();
   const {
     authRole, logout, showToast,
@@ -32,6 +33,7 @@ export default function ProfilePage() {
     activeSessions,
   } = useAppState();
 
+  const viewerDept = findDepartmentById(getViewerDepartmentId(authRole));
   const identity = getViewerIdentity(authRole);
   const deptAccess = getDepartmentAccess(viewerDept, authRole);
 
@@ -61,6 +63,8 @@ export default function ProfilePage() {
     { label: 'Connections', count: '124', icon: Users, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
     { label: 'Profile Views', count: '89', icon: Eye, color: 'text-amber-500', bg: 'bg-amber-500/10' },
   ];
+
+  if (authRole === 'staff') return <PageContainer><StaffProfile t={t} person={currentStaff(authRole)} onDepartment={() => navigate(viewerDept ? `/departments/${viewerDept.id}` : '/network?segment=Departments')} /><button className="text-sm text-red-500 font-bold mt-4" onClick={() => { logout(); navigate('/welcome'); }}>Log out</button></PageContainer>;
 
   return (
     <PageContainer className="animate-fade-in">

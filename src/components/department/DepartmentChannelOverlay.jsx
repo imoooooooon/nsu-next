@@ -1,3 +1,4 @@
+import { useDepartmentState, updateDepartmentState } from '../../shared/departmentStore';
 import { useState } from 'react';
 import {
   ArrowLeft, Send, Lock, Megaphone, LifeBuoy, Mail, MailCheck, AlertTriangle,
@@ -75,12 +76,15 @@ export const DepartmentChannelOverlay = ({
   const [emailArmed, setEmailArmed] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [replies, setReplies] = useState([]);
+  const sharedState = useDepartmentState();
+  const replyKey = thread?.id || `${dept.id}-${channelKind}`;
+  const replies = sharedState.replies[replyKey] || [];
+  const setReplies = updater => updateDepartmentState(s => ({ ...s, replies: { ...s.replies, [replyKey]: updater(s.replies[replyKey] || []) } }));
 
   const access = getDepartmentAccess(dept, authRole);
   const isBroadcast = channelKind === 'broadcast';
   const isAdminThread = channelKind === 'helpdesk-thread';
-  const canWrite = !isBroadcast || access.canBroadcast;
+  const canWrite = isBroadcast ? access.canBroadcast : !isAdminThread || access.canHelpDesk;
 
   const history = departmentBroadcasts[dept.id] || [];
   const sessionBroadcasts = sentBroadcasts || [];
@@ -88,6 +92,7 @@ export const DepartmentChannelOverlay = ({
   /* The email toggle is deliberately not sticky: it resets after every send,
      so urgency is opted into per message rather than left switched on. */
   const commitBroadcast = (emailed) => {
+    if (!access.canBroadcast || !text.trim()) return;
     const body = text.trim();
     const firstLine = body.split('\n')[0];
     onSendBroadcast(dept.id, {
@@ -105,7 +110,7 @@ export const DepartmentChannelOverlay = ({
   };
 
   const handleSend = () => {
-    if (!text.trim()) return;
+    if (!text.trim() || !canWrite) return;
     if (isBroadcast) {
       if (emailArmed) { setIsConfirmOpen(true); return; }
       commitBroadcast(false);
@@ -118,6 +123,8 @@ export const DepartmentChannelOverlay = ({
     }]);
     setText('');
   };
+
+  if (isAdminThread && !access.canHelpDesk) return <div className={`absolute inset-0 z-[70] p-6 ${t.bg} ${t.text}`}><p>Help Desk access is required.</p><button onClick={onBack} className="text-[#1D9BF0] mt-4">Back to messages</button></div>;
 
   const headerTitle = isAdminThread ? thread.name : (isBroadcast ? `${dept.code} Department` : `${dept.code} Help Desk`);
   const headerSub = isAdminThread
@@ -189,7 +196,7 @@ export const DepartmentChannelOverlay = ({
                     <span className={`text-sm font-bold ${t.text}`}>{isMuted ? 'Unmute Channel' : 'Mute Channel'}</span>
                   </button>
                 )}
-                {access.canManage && (
+                {access.canHelpDesk && (
                   <button
                     onClick={() => { setIsMenuOpen(false); onManage(dept); }}
                     className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl active:scale-[0.98] transition-transform w-full text-left`}
@@ -245,7 +252,7 @@ export const DepartmentChannelOverlay = ({
               <p className={`text-xs font-bold ${t.text} leading-relaxed opacity-90`}>
                 {isAdminThread
                   ? `You are replying as ${dept.code} Department. ${thread.name} sees the department, not your personal account.`
-                  : 'This is a private conversation with the department. A faculty member with admin access will reply — usually within one working day.'}
+                  : 'This is a private conversation with the department. An authorized department teammate will reply — usually within one working day.'}
               </p>
             </div>
 

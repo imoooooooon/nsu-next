@@ -77,7 +77,8 @@ export const getHelpDeskThreads = (deptId) =>
   }));
 
 export const findConversationById = (id, deptId) => {
-  const inDepartment = [...getDepartmentChannels(deptId), ...getHelpDeskThreads(deptId)]
+  const channelDepartmentId = String(id).match(/^dept-(.+)-(?:broadcast|helpdesk)$/)?.[1] || deptId;
+  const inDepartment = [...getDepartmentChannels(channelDepartmentId), ...Object.keys(departmentHelpDeskThreads).flatMap(getHelpDeskThreads)]
     .find(c => String(c.id) === String(id));
   if (inDepartment) return inDepartment;
   const dm = globalConversations.find(c => String(c.id) === String(id));

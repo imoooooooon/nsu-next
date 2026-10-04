@@ -1,3 +1,4 @@
+import { publishDepartmentEvent, currentAccess } from '../../../../src/shared/departmentStore';
 import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -77,7 +78,7 @@ export default function CreateEventPage() {
   const [searchParams] = useSearchParams();
 
   const asDept = findDepartmentById(searchParams.get('as'));
-  const postingAsDept = asDept && getDepartmentAccess(asDept, authRole).canManage ? asDept : null;
+  const postingAsDept = asDept && getDepartmentAccess(asDept, authRole).canCreateEvent ? asDept : null;
   const goBack = useCloseTo(postingAsDept ? `/departments/${postingAsDept.id}` : '/events');
   const viewer = getViewerIdentity(authRole);
 
@@ -123,11 +124,14 @@ export default function CreateEventPage() {
     setDayActivities(dayNumber, dayActivities(dayNumber).filter(a => a.id !== id));
 
   const handlePublish = () => {
+    if (asDept && !getDepartmentAccess(asDept, authRole).canCreateEvent) return;
     if (Object.keys(errors).length > 0) {
       setShowErrors(true);
       return;
     }
     const activityCount = days.reduce((n, day) => n + dayActivities(day.number).length, 0);
+    if (postingAsDept && !currentAccess(postingAsDept, authRole).canCreateEvent) return;
+    publishDepartmentEvent(draft, postingAsDept, authRole, viewer.fullName);
     setPublished({
       title: draft.title.trim(),
       category: draft.category === 'Other' ? draft.customCategory.trim() : draft.category,
@@ -146,6 +150,7 @@ export default function CreateEventPage() {
     : { name: viewer.fullName, type: 'Individual', note: viewer.roleSub };
   const postedByIsOrganizer = draft.organizers.some(o => o.name.toLowerCase() === postedBy.name.toLowerCase());
 
+  if (asDept && !getDepartmentAccess(asDept, authRole).canCreateEvent) return <PageContainer><p className={`py-8 ${t.text}`}>You need publishing access to create events for this department.</p><button className="text-[#1D9BF0]" onClick={() => navigate(`/departments/${asDept.id}`)}>Return to department</button></PageContainer>;
   return (
     <PageContainer className="animate-fade-in">
       <FormColumn>

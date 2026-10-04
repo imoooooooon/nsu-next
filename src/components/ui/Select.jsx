@@ -46,6 +46,7 @@ export const Select = ({
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const [pos, setPos] = useState(null);
+  const [portalTarget, setPortalTarget] = useState(null);
   const triggerRef = useRef(null);
   const listRef = useRef(null);
   const typeahead = useRef({ text: '', timer: null });
@@ -70,6 +71,7 @@ export const Select = ({
 
   const openList = (start) => {
     if (disabled) return;
+    setPortalTarget(triggerRef.current?.closest('dialog') || document.body);
     place();
     setActive(start ?? (selectedIndex >= 0 ? selectedIndex : 0));
     setOpen(true);
@@ -202,7 +204,7 @@ export const Select = ({
             );
           })}
         </ul>,
-        document.body,
+        portalTarget || document.body,
       )}
     </div>
   );

@@ -1,3 +1,4 @@
+import { publishDepartmentEvent, currentAccess } from '../../shared/departmentStore';
 import { useMemo, useState } from 'react';
 import {
   ArrowLeft, CheckCircle2, Plus, Trash2, X, CalendarRange, Clock, User, Lock, UserPlus,
@@ -53,7 +54,7 @@ const ErrorText = ({ children }) => (children ? (
   </p>
 ) : null);
 
-export const CreateEventScreen = ({ onClose, t, isDark, postAsDept = null, viewerName = 'You' }) => {
+export const CreateEventScreen = ({ onClose, t, isDark, postAsDept = null, viewerName = 'You', authRole = 'student' }) => {
   const [draft, setDraft] = useState(emptyEventDraft);
   const [organizerName, setOrganizerName] = useState('');
   const [organizerType, setOrganizerType] = useState(ORGANIZER_TYPES[0]);
@@ -93,6 +94,8 @@ export const CreateEventScreen = ({ onClose, t, isDark, postAsDept = null, viewe
 
   const handlePublish = () => {
     if (Object.keys(errors).length > 0) { setShowErrors(true); return; }
+    if (postAsDept && !currentAccess(postAsDept, authRole).canCreateEvent) return;
+    publishDepartmentEvent(draft, postAsDept, authRole, viewerName);
     setPublished({
       title: draft.title.trim(),
       category: draft.category === 'Other' ? draft.customCategory.trim() : draft.category,
