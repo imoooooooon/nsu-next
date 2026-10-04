@@ -1,3 +1,5 @@
+import { InstantEntry, InstantDialog, MomentTypePicker } from './shared/InstantExperience';
+import { useMomentRecaps } from './shared/instantStore';
 import { getDepartmentState, subscribeDepartmentState } from './shared/departmentStore';
 import { PrototypePanel, StaffHome, StaffProfile, StaffSignup, StaffDirectory } from './shared/DepartmentExperience';
 import { useDepartmentState, currentStaff, currentViewer, allStaff, liveDepartment } from './shared/departmentStore';
@@ -15,7 +17,7 @@ import {
   
   // Moments specific
   Camera, Image as ImageIcon, VolumeX, Pin, Trash2, MailOpen, Reply, 
-  Heart, Type,
+  Heart,
   
   // Events specific
   CalendarDays, CalendarCheck, CalendarClock, TicketCheck, Trophy,
@@ -1218,6 +1220,7 @@ const MomentsRow = ({ moments, isDark, t, onOpenViewer, onOpenNote, onCreateClic
           <span className={`text-[11px] font-semibold ${t.text} truncate w-full text-center pointer-events-none`}>Your Moment</span>
         </div>
 
+        <InstantEntry t={t} />
         {moments.map((momentGroup, index) => {
           const firstNote = momentGroup.items.find(i => i.type === 'note');
           const unseenRing = `border-[#1D9BF0]`;
@@ -1521,6 +1524,8 @@ const CreateMomentSheet = ({ onClose, t, isDark }) => {
   
   const handlePost = () => { setTimeout(() => { onClose(); }, 500); };
 
+  if (step === 'instant') return <InstantDialog initialScreen="camera" onClose={onClose} />;
+
   return (
     <>
       <div className="absolute inset-0 z-[100] bg-black/60 backdrop-blur-sm animate-fade-in" onClick={onClose}></div>
@@ -1533,21 +1538,7 @@ const CreateMomentSheet = ({ onClose, t, isDark }) => {
               <h3 className={`text-xl font-semibold ${t.text}`}>Create Moment</h3>
               <button onClick={onClose} className={`w-8 h-8 rounded-full ${isDark ? 'bg-white/10' : 'bg-black/5'} flex items-center justify-center active:scale-95`}><X className={`w-4 h-4 ${t.text}`} strokeWidth={2.5} /></button>
             </div>
-            <div className="grid grid-cols-3 gap-4">
-               <div onClick={() => setStep('compose_media')} className={`flex flex-col items-center justify-center p-4 rounded-2xl ${t.card} border ${t.borderSoft} shadow-sm active:scale-95 transition-transform cursor-pointer`}>
-                 <div className="w-12 h-12 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center mb-3"><Camera className="w-6 h-6" strokeWidth={2.5} /></div>
-                 <span className={`text-[11px] font-semibold ${t.text}`}>Camera</span>
-               </div>
-               <div onClick={() => setStep('compose_media')} className={`flex flex-col items-center justify-center p-4 rounded-2xl ${t.card} border ${t.borderSoft} shadow-sm active:scale-95 transition-transform cursor-pointer`}>
-                 <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-3"><ImageIcon className="w-6 h-6" strokeWidth={2.5} /></div>
-                 <span className={`text-[11px] font-semibold ${t.text}`}>Photo/Video</span>
-               </div>
-               <div onClick={() => setStep('compose_note')} className={`flex flex-col items-center justify-center p-4 rounded-2xl ${t.card} border ${t.borderSoft} shadow-sm active:scale-95 transition-transform cursor-pointer`}>
-                 <div className="w-12 h-12 rounded-full bg-purple-500/10 text-purple-500 flex items-center justify-center mb-3"><Type className="w-6 h-6" strokeWidth={2.5} /></div>
-                 <span className={`text-[11px] font-semibold ${t.text}`}>Text Note</span>
-               </div>
-            </div>
-            <p className={`text-[10px] font-medium ${t.textMuted} text-center mt-6`}>Moments disappear after 24 hours.</p>
+            <MomentTypePicker t={t} onNote={() => setStep('compose_note')} onStory={() => setStep('compose_media')} onInstant={() => setStep('instant')} />
           </div>
         )}
 
@@ -3297,6 +3288,8 @@ export default function App() {
   const [selectedJob, setSelectedJob] = useState(null); 
   const [selectedEmergency, setSelectedEmergency] = useState(null);
   const [isDark, setIsDark] = useState(false);
+  const recaps = useMomentRecaps();
+  const momentGroups = [...recaps, ...globalMomentsData];
   const [viewerIndex, setViewerIndex] = useState(null); 
   const [noteViewerData, setNoteViewerData] = useState(null);
   const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
@@ -4125,7 +4118,7 @@ export default function App() {
         {/* --- MOMENTS FEATURE --- */}
         <div className="relative -mt-2 mb-2">
           <MomentsRow 
-            moments={globalMomentsData} 
+            moments={momentGroups}
             isDark={isDark} 
             t={t} 
             onOpenViewer={(index) => setViewerIndex(index)}
@@ -5853,7 +5846,7 @@ export default function App() {
             {/* --- MOMENTS OVERLAYS --- */}
             {viewerIndex !== null && (
               <MomentViewer 
-                moments={globalMomentsData} 
+                moments={momentGroups}
                 initialUserIndex={viewerIndex} 
                 onClose={() => setViewerIndex(null)}
                 t={t}

@@ -1,5 +1,6 @@
+import { InstantDialog, MomentTypePicker } from '../../../../src/shared/InstantExperience';
 import React from 'react';
-import { ArrowLeft, Camera, Image as ImageIcon, Type, User } from 'lucide-react';
+import { ArrowLeft, Image as ImageIcon, User } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
 import { Modal, Button } from '../../components/ui';
@@ -18,25 +19,13 @@ export default function CreateMomentPage() {
     close();
   };
 
+  if (step === 'instant') return <InstantDialog initialScreen="camera" onClose={close} />;
+
   return (
     <Modal onClose={close} title={step === 'select' ? 'Create Moment' : step === 'compose_note' ? 'Share a Note' : 'Preview'} size="sm">
       {step === 'select' && (
         <div className="flex flex-col pb-2">
-          <div className="grid grid-cols-3 gap-4">
-            <div onClick={() => setStep('compose_media')} className={`flex flex-col items-center justify-center p-4 rounded-2xl ${t.card} border ${t.borderSoft} shadow-sm active:scale-95 transition-transform cursor-pointer`}>
-              <div className="w-12 h-12 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center mb-3"><Camera className="w-6 h-6" strokeWidth={2.5} /></div>
-              <span className={`text-[11px] font-semibold ${t.text}`}>Camera</span>
-            </div>
-            <div onClick={() => setStep('compose_media')} className={`flex flex-col items-center justify-center p-4 rounded-2xl ${t.card} border ${t.borderSoft} shadow-sm active:scale-95 transition-transform cursor-pointer`}>
-              <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-3"><ImageIcon className="w-6 h-6" strokeWidth={2.5} /></div>
-              <span className={`text-[11px] font-semibold ${t.text}`}>Photo/Video</span>
-            </div>
-            <div onClick={() => setStep('compose_note')} className={`flex flex-col items-center justify-center p-4 rounded-2xl ${t.card} border ${t.borderSoft} shadow-sm active:scale-95 transition-transform cursor-pointer`}>
-              <div className="w-12 h-12 rounded-full bg-purple-500/10 text-purple-500 flex items-center justify-center mb-3"><Type className="w-6 h-6" strokeWidth={2.5} /></div>
-              <span className={`text-[11px] font-semibold ${t.text}`}>Text Note</span>
-            </div>
-          </div>
-          <p className={`text-[10px] font-medium ${t.textMuted} text-center mt-6`}>Moments disappear after 24 hours.</p>
+          <MomentTypePicker t={t} onNote={() => setStep('compose_note')} onStory={() => setStep('compose_media')} onInstant={() => setStep('instant')} />
         </div>
       )}
 

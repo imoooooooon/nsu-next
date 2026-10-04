@@ -1,3 +1,5 @@
+import { getInstantState, useMomentRecaps } from '../../../../src/shared/instantStore';
+import { INSTANT_TTL } from '../../../../src/shared/instantModel';
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { User, BadgeCheck, MoreVertical, X, Heart, Send } from 'lucide-react';
@@ -18,11 +20,13 @@ const PLAYABLE_MOMENTS = globalMomentsData.filter(m => m.items.some(i => i.type 
 /* Resolves a route id to a playable index: the user itself when they have
    media, otherwise the next user who does. */
 const resolveStartIndex = (id) => {
-  const direct = PLAYABLE_MOMENTS.findIndex(m => m.id === id);
+  const recaps = getInstantState().recaps.filter(item => Date.now() < item.createdAt + INSTANT_TTL);
+  const playable = [...recaps, ...PLAYABLE_MOMENTS];
+  const direct = playable.findIndex(m => m.id === id);
   if (direct >= 0) return direct;
   const requested = findMomentIndexById(id);
   if (requested < 0) return 0;
-  const nextPlayable = PLAYABLE_MOMENTS.findIndex(
+  const nextPlayable = playable.findIndex(
     m => globalMomentsData.indexOf(m) > requested
   );
   return nextPlayable >= 0 ? nextPlayable : 0;
@@ -34,7 +38,8 @@ export default function MomentViewerPage() {
   const close = useCloseTo('/home');
   const { t, isDark } = useTheme();
 
-  const moments = PLAYABLE_MOMENTS;
+  const recaps = useMomentRecaps();
+  const moments = [...recaps, ...PLAYABLE_MOMENTS];
 
   const [currentUserIndex, setCurrentUserIndex] = React.useState(() => resolveStartIndex(momentId));
   const [currentStoryIndex, setCurrentStoryIndex] = React.useState(0);

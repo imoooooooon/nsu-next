@@ -5,6 +5,17 @@ re-architected for desktop with proper routing. **Every page must follow this do
 
 ## 1. Foundations
 
+### Instants camera and viewer
+
+The shared Instants experience (`../src/shared/InstantExperience.jsx`) is an
+immersive black media surface in either theme, with Ugrads blue state accents and
+Plus Jakarta Sans. Its squircle photo stack and floating emoji reactions follow
+the supplied Instagram reference. The Moments row and creation chooser keep the
+normal theme tokens. Use the existing spring curve for transform/opacity motion,
+and respect reduced motion. Received Instants are opened only from the top Moments
+row; do not add them to feeds or navigation. See `../INSTANTS.md` for behaviour and
+the browser prototype's limits.
+
 | Token | Value |
 |---|---|
 | Font | Plus Jakarta Sans (400–800), loaded globally. Body class `font-jakarta` set by shells. |

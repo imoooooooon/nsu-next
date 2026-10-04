@@ -1,3 +1,4 @@
+import { InstantEntry } from '../../../../src/shared/InstantExperience';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Plus, BadgeCheck } from 'lucide-react';
@@ -55,6 +56,7 @@ export const MomentsRow = ({ moments }) => {
           <span className={`text-[11px] font-semibold ${t.text} truncate w-full text-center pointer-events-none`}>Your Moment</span>
         </div>
 
+        <InstantEntry t={t} />
         {moments.map((momentGroup) => {
           const firstNote = momentGroup.items.find(i => i.type === 'note');
           const unseenRing = 'border-[#1D9BF0]';
