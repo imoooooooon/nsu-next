@@ -8,15 +8,16 @@ import {
   consumeInstant,
   createInstant,
   initialInstantState,
+  refreshInstantDemo,
 } from "../src/shared/instantModel.js";
 
 const now = 1_800_000_000_000;
 test("an instant is consumed once, independently of other photos", () => {
   const state = initialInstantState(now);
   const opened = consumeInstant(state, "maliha", now);
-  assert.equal(availableInstants(opened, now).length, 2);
+  assert.equal(availableInstants(opened, now).length, 8);
   assert.equal(consumeInstant(opened, "maliha", now + 1), opened);
-  assert.equal(availableInstants(state, now).length, 3);
+  assert.equal(availableInstants(state, now).length, 9);
 });
 test("unopened instants expire exactly at 24 hours and cannot be consumed", () => {
   const state = initialInstantState(now);
@@ -37,7 +38,7 @@ test("future dated and unknown instants cannot be opened", () => {
 test("one-view receipts survive serialization and reload", () => {
   const consumed = consumeInstant(initialInstantState(now), "maliha", now);
   const restored = JSON.parse(JSON.stringify(consumed));
-  assert.equal(availableInstants(restored, now + 1000).length, 2);
+  assert.equal(availableInstants(restored, now + 1000).length, 8);
 });
 test("capture accepts only camera JPEG data and the two allowed audiences", () => {
   const photo = "data:image/jpeg;base64,dGVzdA==";
@@ -68,4 +69,20 @@ test("the sender archive outlives recipient expiry but stops at one year", () =>
   assert.equal(archivedInstants(state, now + INSTANT_TTL).length, 1);
   assert.equal(archivedInstants(state, now + ARCHIVE_TTL - 1).length, 1);
   assert.equal(archivedInstants(state, now + ARCHIVE_TTL).length, 0);
+});
+
+test("demo expansion preserves captures and receipts and runs only once", () => {
+  const current = initialInstantState(now);
+  const old = {
+    ...current,
+    demoRevision: undefined,
+    received: current.received.slice(0, 3),
+    opened: { maliha: now },
+    sent: [{ id: "mine" }],
+  };
+  const migrated = refreshInstantDemo(old, now);
+  assert.equal(migrated.received.length, 9);
+  assert.deepEqual(migrated.opened, old.opened);
+  assert.deepEqual(migrated.sent, old.sent);
+  assert.equal(refreshInstantDemo(migrated, now + INSTANT_TTL), migrated);
 });

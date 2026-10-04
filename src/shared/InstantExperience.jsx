@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   ArrowLeft,
@@ -293,6 +293,30 @@ export function InstantDialog({ onClose, initialScreen = "inbox" }) {
   );
 }
 
+function InstantCaption({ caption }) {
+  const pathId = useId();
+  if (!caption) return null;
+  const text = caption.toLocaleUpperCase();
+  return (
+    <svg
+      className="instant-photo-caption"
+      viewBox="0 0 1000 1000"
+      role="img"
+      aria-label={caption}
+    >
+      <defs>
+        <path
+          id={pathId}
+          d="M 100 335 C 115 150 155 105 335 82 C 510 58 690 58 820 100"
+        />
+      </defs>
+      <text fontSize={Math.min(52, Math.max(20, 740 / (text.length * 0.65)))} textLength={text.length > 20 ? 740 : undefined} lengthAdjust="spacingAndGlyphs">
+        <textPath href={`#${pathId}`}>{text}</textPath>
+      </text>
+    </svg>
+  );
+}
+
 function InstantInbox({ notify, onCamera }) {
   const snapshot = useInstantState();
   const now = useInstantClock();
@@ -310,6 +334,7 @@ function InstantInbox({ notify, onCamera }) {
   const activeValid = active && now < active.createdAt + INSTANT_TTL;
   const snoozed = snapshot.snoozedUntil > now;
   const next = unread[0];
+  const loadingItem = snapshot.received.find((item) => item.id === loadingId);
   // Loading does not spend a view. Consumption happens only when the photo decodes.
   const reveal = () => {
     if (next) {
@@ -321,7 +346,10 @@ function InstantInbox({ notify, onCamera }) {
     if (openInstant(item.id)) {
       setActive(item);
       setReply("");
-    }
+    } else setActive(null);
+    setLeaving(false);
+    setBurst(null);
+    setExtraReactions(false);
     setLoadingId(null);
   };
   const advance = () => {
@@ -338,6 +366,7 @@ function InstantInbox({ notify, onCamera }) {
       if (document.hidden) {
         setActive(null);
         setLoadingId(null);
+        setLeaving(false);
       }
     };
     document.addEventListener("visibilitychange", hide);
@@ -345,6 +374,21 @@ function InstantInbox({ notify, onCamera }) {
   }, []);
   return (
     <div className="instant-inbox">
+      {loadingItem && (
+        <img
+          key={loadingItem.id}
+          className="instant-preload"
+          src={loadingItem.photo}
+          alt=""
+          onLoad={() => loaded(loadingItem)}
+          onError={() => {
+            setLoadingId(null);
+            setLeaving(false);
+            setActive(null);
+            setLoadError(true);
+          }}
+        />
+      )}
       {activeValid ? (
         <>
           <div className="instant-stack-stage">
@@ -354,13 +398,25 @@ function InstantInbox({ notify, onCamera }) {
             {unread.length > 1 && (
               <div className="instant-card-back back-two" />
             )}
-            <div
-              className={`instant-photo-card ${leaving ? "departing" : "revealed"}`}
+            <button
+              type="button"
+              className={`instant-photo-card instant-photo-advance ${leaving ? "departing" : "revealed"}`}
+              onClick={advance}
+              disabled={leaving || !!loadingId}
+              aria-label={
+                next
+                  ? `View next instant after ${active.name}`
+                  : "Finish viewing instants"
+              }
+              aria-busy={!!loadingId}
               onAnimationEnd={(e) => {
                 if (leaving && e.target === e.currentTarget) {
-                  setActive(null);
-                  setLeaving(false);
-                  setBurst(null);
+                  if (next) reveal();
+                  else {
+                    setActive(null);
+                    setLeaving(false);
+                    setBurst(null);
+                  }
                 }
               }}
             >
@@ -370,10 +426,13 @@ function InstantInbox({ notify, onCamera }) {
                 draggable="false"
                 onContextMenu={(e) => e.preventDefault()}
               />
-              {active.caption && (
-                <p className="instant-photo-caption">{active.caption}</p>
-              )}
-            </div>
+              <InstantCaption caption={active.caption} />
+            </button>
+            {loadingId && (
+              <span className="instant-loading-label" role="status">
+                Opening…
+              </span>
+            )}
             {burst && (
               <div
                 className="instant-reaction-burst"
@@ -405,6 +464,11 @@ function InstantInbox({ notify, onCamera }) {
               View once
             </span>
           </div>
+          <p className="instant-tap-hint">
+            {next
+              ? "Tap the photo for the next instant"
+              : "Tap the photo to finish"}
+          </p>
           <div className="instant-reactions" aria-label="React to this instant">
             {["😂", "❤️", "🌸", "👏"].map((emoji, i) => (
               <button
@@ -445,10 +509,6 @@ function InstantInbox({ notify, onCamera }) {
             <button onClick={() => onCamera(active.name)}>
               <Camera size={16} />
               Send one back
-            </button>
-            <button onClick={advance} disabled={leaving}>
-              {unread.length ? "Next instant" : "Done"}
-              <ArrowRight size={17} />
             </button>
           </div>
           <form
@@ -522,18 +582,6 @@ function InstantInbox({ notify, onCamera }) {
                 {unread.length} new{" "}
                 {unread.length === 1 ? "instant" : "instants"} · view once
               </p>
-              {loadingId && (
-                <img
-                  className="instant-preload"
-                  src={next.photo}
-                  alt=""
-                  onLoad={() => loaded(next)}
-                  onError={() => {
-                    setLoadingId(null);
-                    setLoadError(true);
-                  }}
-                />
-              )}
               {loadError && (
                 <div className="instant-error" role="alert">
                   <p>Couldn’t load this photo. Tap the stack to retry.</p>
@@ -741,17 +789,18 @@ function InstantCamera({ sendBackTo }) {
             )}
           </div>
         )}
-        {(photo || camera === "ready") && (
-          <input
-            className="instant-caption-input"
-            aria-label="Instant caption"
-            placeholder="Add a thought…"
-            maxLength={100}
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-          />
-        )}
+        {(photo || camera === "ready") && <InstantCaption caption={caption} />}
       </div>
+      {(photo || camera === "ready") && (
+        <input
+          className="instant-caption-input"
+          aria-label="Instant caption"
+          placeholder="Add a thought…"
+          maxLength={100}
+          value={caption}
+          onChange={(e) => setCaption(e.target.value)}
+        />
+      )}
       <div className="instant-audience">
         <button
           onClick={() => setAudienceOpen(!audienceOpen)}
@@ -882,9 +931,7 @@ function InstantArchive({ notify, onCamera }) {
         </button>
         <div className="instant-photo-card">
           <img src={detail.photo} alt="Your archived instant" />
-          {detail.caption && (
-            <p className="instant-photo-caption">{detail.caption}</p>
-          )}
+          <InstantCaption caption={detail.caption} />
         </div>
         <p className="instant-footnote">
           {new Date(detail.createdAt).toLocaleString()} ·{" "}

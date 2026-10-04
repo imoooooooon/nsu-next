@@ -265,7 +265,7 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  border-radius: 29% / 21%;
+  border-radius: 0;
   background: #22282d;
   position: relative;
 }
@@ -391,17 +391,51 @@
 }
 .instant-photo-caption {
   position: absolute;
-  bottom: 22px;
-  left: 14px;
-  right: 14px;
-  text-align: center;
-  color: white;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 28px 16px 8px;
-  background: linear-gradient(transparent, #0009);
-  border-radius: 20px;
-  overflow-wrap: anywhere;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: white;
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px #0002);
+}
+.instant-photo-card,
+.instant-card-back,
+.instant-camera-window,
+.instant-archive-grid > button {
+  /* Continuous curves on every edge, matching the supplied Instant silhouette. */
+  --instant-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E%3Cpath d='M500 0C940 0 1000 60 1000 500C1000 940 940 1000 500 1000C60 1000 0 940 0 500C0 60 60 0 500 0Z'/%3E%3C/svg%3E");
+  -webkit-mask: var(--instant-mask) center / 100% 100% no-repeat;
+  mask: var(--instant-mask) center / 100% 100% no-repeat;
+  border-radius: 0 !important;
+  border: 0;
+}
+.instant-photo-advance {
+  display: block;
+  padding: 0;
+}
+.instant-dialog .instant-photo-advance:disabled {
+  opacity: 1;
+}
+.instant-stack-stage:has(.instant-photo-advance:focus-visible) {
+  outline: 2px solid #57bafc;
+  outline-offset: 7px;
+  border-radius: 30%;
+}
+.instant-loading-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  pointer-events: none;
+}
+.instant-tap-hint {
+  margin: 8px 0 0;
+  font-size: 10px;
+  color: #8e98a1;
 }
 .instant-byline {
   display: flex;
@@ -485,7 +519,7 @@
 }
 .instant-view-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   width: 100%;
   gap: 8px;
   margin: 30px 0 18px;
@@ -498,10 +532,6 @@
   border-radius: 99px;
   padding: 11px 14px;
   font-size: 11px;
-}
-.instant-view-actions button:last-child {
-  color: #84ceff;
-  border-color: #1d9bf035;
 }
 .instant-reply {
   display: flex;
@@ -612,16 +642,14 @@
   padding: 10px 20px;
 }
 .instant-caption-input {
-  position: absolute;
-  bottom: 28px;
-  left: 10%;
-  width: 80%;
+  width: 90%;
   text-align: center;
-  font-size: 14px;
+  font-size: 13px;
   color: white;
-  background: #0005;
+  background: #ffffff09;
   border-radius: 99px;
-  padding: 10px;
+  padding: 11px 16px;
+  margin-top: 18px;
   border: 1px solid #ffffff15;
 }
 .instant-caption-input::placeholder {

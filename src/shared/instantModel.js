@@ -1,5 +1,6 @@
 export const INSTANT_TTL = 24 * 60 * 60 * 1000;
 export const ARCHIVE_TTL = 365 * INSTANT_TTL;
+export const INSTANT_DEMO_REVISION = 2;
 
 export function availableInstants(state, now) {
   return state.received.filter(
@@ -59,9 +60,40 @@ export function initialInstantState(now) {
       "photo-1441974231531-c6227db76b6e",
       42,
     ],
+    ["rayan", "Rayan", "Wrong class", "photo-1455390582262-044cdead277a", 48],
+    [
+      "nabila",
+      "Nabila",
+      "One more chapter",
+      "photo-1507842217343-583bb7270b66",
+      53,
+    ],
+    [
+      "fahim",
+      "Fahim",
+      "Building something",
+      "photo-1498050108023-c5249f4df085",
+      61,
+    ],
+    ["ayman", "Ayman", "Good company", "photo-1522071820081-009f0129c71c", 76],
+    [
+      "maliha-afternoon",
+      "Maliha",
+      "Coffee number two",
+      "photo-1509042239860-f550ce710b93",
+      89,
+    ],
+    [
+      "tahmid-campus",
+      "Tahmid",
+      "Campus days",
+      "photo-1523240795612-9a054b0db644",
+      102,
+    ],
   ];
   return {
     version: 1,
+    demoRevision: INSTANT_DEMO_REVISION,
     received: photos.map(([id, name, caption, photo, minutes]) => ({
       id,
       name,
@@ -75,5 +107,18 @@ export function initialInstantState(now) {
     reactions: {},
     recaps: [],
     snoozedUntil: 0,
+  };
+}
+
+// Add new demo photos once, without resetting captures or existing view receipts.
+export function refreshInstantDemo(state, now) {
+  if (state.demoRevision === INSTANT_DEMO_REVISION) return state;
+  const incoming = initialInstantState(now).received.filter(
+    (item) => !state.received.some((existing) => existing.id === item.id),
+  );
+  return {
+    ...state,
+    demoRevision: INSTANT_DEMO_REVISION,
+    received: [...state.received, ...incoming],
   };
 }

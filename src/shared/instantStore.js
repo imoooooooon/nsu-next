@@ -5,6 +5,7 @@ import {
   initialInstantState,
   consumeInstant,
   createInstant,
+  refreshInstantDemo,
 } from "./instantModel.js";
 
 const STORAGE_KEY = "ugrads-instants-v1";
@@ -17,8 +18,15 @@ function load() {
       Array.isArray(saved.sent) &&
       Array.isArray(saved.recaps) &&
       saved.opened
-    )
-      return saved;
+    ) {
+      const refreshed = refreshInstantDemo(saved, Date.now());
+      try {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(refreshed));
+      } catch {
+        /* Keep the migrated session in memory. */
+      }
+      return refreshed;
+    }
   } catch {
     /* Storage may be unavailable in private browsing. */
   }

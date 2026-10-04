@@ -36,7 +36,7 @@ Instants use an immersive black camera/viewer canvas in both themes, Ugrads blue
 for state accents, Plus Jakarta Sans, squircle photo masks, and the existing
 `--ease-spring-soft` motion token. The normal Moments row and creation chooser
 continue to use the app's theme tokens. CSS transform/opacity animations implement
-stack reveal, departure, camera flash, modal entry/exit and emoji bursts without
+stack reveal, tap-photo advancement, departure, camera flash, modal entry/exit and emoji bursts without
 adding another animation runtime. Reduced-motion preferences suppress movement.
 
 A native modal dialog traps focus, supports Escape and returns focus to its trigger.
@@ -46,7 +46,7 @@ Layouts support narrow phones, short viewports and a centred desktop stage.
 ## Prototype boundary
 
 This repository has no authenticated media backend or social graph. The demo has
-three received Instants; captures, audience choices, replies, reactions, receipts,
+nine received Instants; captures, audience choices, replies, reactions, receipts,
 and recaps are stored locally in `sessionStorage`, with an in-memory fallback.
 Sharing does not transmit photos or messages to real recipients. Session storage
 is per tab/origin and has browser quota limits; captured photos are not durable
@@ -70,3 +70,5 @@ Browser QA covers both Moments entry points, preserved Notes/Story composers,
 view-once reload, reactions/replies, reduced-width layout, synthetic camera capture,
 switching and track disposal, permission errors, audience selection, undo, archive
 and recap handoff. Synthetic camera frames avoid accessing a real webcam during QA.
+
+Photo silhouettes use a shared SVG mask with continuous curved edges. Captions follow an SVG text path around the upper-left edge. Tap the photo (or press Enter/Space while focused) to advance directly; no separate Next button is shown. New demo samples are added once to existing sessions without resetting receipts or captures.
