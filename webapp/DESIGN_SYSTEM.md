@@ -5,16 +5,21 @@ re-architected for desktop with proper routing. **Every page must follow this do
 
 ## 1. Foundations
 
-### Instants camera and viewer
+### Moments camera and viewer
 
-The shared Instants experience (`../src/shared/InstantExperience.jsx`) is an
+The shared Moments experience (`../src/shared/InstantExperience.jsx`) is an
 immersive black media surface in either theme, with Ugrads blue state accents and
-Plus Jakarta Sans. Its squircle photo stack and floating emoji reactions follow
-the supplied Instagram reference. The Moments row and creation chooser keep the
-normal theme tokens. Use the existing spring curve for transform/opacity motion,
-and respect reduced motion. Received Instants are opened only from the top Moments
-row; do not add them to feeds or navigation. See `../INSTANTS.md` for behaviour and
-the browser prototype's limits.
+Plus Jakarta Sans. The top row retains a stacked Moments entry; avatars open that
+author's Moments and note bubbles open Notes. Creation offers Notes and Moments;
+Stories remain inactive with their design retained for a future release.
+The viewer uses horizontal scroll snapping with pagination dots and a vertical
+reaction strip on the right. Four shared SVG frame shapes support captions that
+follow the edge at any position, defaulting to the top left. Keep the header title
+strictly Moments and retain Close, Info, Archive and Camera utilities.
+The row and chooser keep normal theme tokens. Use the existing spring curve for
+transform/opacity motion and respect reduced motion. Received Moments remain in
+the top-row experience; do not add a feed card or global navigation item.
+See `../INSTANTS.md` for behaviour and the browser prototype's limits.
 
 | Token | Value |
 |---|---|

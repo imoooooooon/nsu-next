@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   ArrowLeft,
@@ -8,36 +8,35 @@ import {
   Check,
   ChevronDown,
   Grid2X2,
-  Image,
   Info,
   Moon,
   Plus,
   RotateCcw,
-  Send,
   Star,
   SwitchCamera,
   Trash2,
   Type,
   Users,
   X,
-  Zap,
+  Layers,
 } from "lucide-react";
 import {
   archivedInstants,
   availableInstants,
-  INSTANT_TTL,
+  momentsForAuthor,
 } from "./instantModel";
 import {
-  openInstant,
-  publishRecap,
-  reactToInstant,
   removeInstant,
-  replyToInstant,
   sendInstant,
   snoozeInstants,
   useInstantClock,
   useInstantState,
+  getInstantState,
+  updateMomentPresentation,
 } from "./instantStore";
+import { MomentCaption, MomentFrameEditor } from "./MomentMedia";
+import { frameStyle } from "./momentFrames";
+import { MomentsFeed } from "./MomentsFeed";
 import "./instants.css";
 
 function PickerIcon({ icon }) {
@@ -45,15 +44,14 @@ function PickerIcon({ icon }) {
   return <Component size={25} strokeWidth={1.8} />;
 }
 
-export function MomentTypePicker({ onNote, onStory, onInstant, t }) {
+export function MomentTypePicker({ onNote, onInstant, t }) {
   return (
     <div className="moment-type-picker">
       <p className={`mb-5 text-sm ${t.textMuted}`}>What’s your moment?</p>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3">
         {[
           ["Notes", "A little thought", Type, onNote, "violet"],
-          ["Story", "Photo or video", Image, onStory, "blue"],
-          ["Instant", "Right here, right now", Zap, onInstant, "green"],
+          ["Moments", "Right here, right now", Camera, onInstant, "blue"],
         ].map(([title, description, icon, onClick, color]) => (
           <button
             type="button"
@@ -72,7 +70,7 @@ export function MomentTypePicker({ onNote, onStory, onInstant, t }) {
         ))}
       </div>
       <p className={`text-[11px] text-center mt-5 ${t.textMuted}`}>
-        Stories & notes last 24 hours. Instants are viewed once.
+        A thought or a photo. Share a little of your day.
       </p>
     </div>
   );
@@ -89,7 +87,7 @@ export function InstantEntry({ t }) {
       <button
         type="button"
         className={`instant-entry ${t.text}`}
-        aria-label={`Open Instants${snoozed ? ", snoozed" : `, ${count} new`}`}
+        aria-label={`Open Moments${snoozed ? ", snoozed" : `, ${count} new`}`}
         onMouseDown={(e) => e.stopPropagation()}
         onClick={() => setOpen(true)}
       >
@@ -100,7 +98,7 @@ export function InstantEntry({ t }) {
           <span />
           <span />
           <span>
-            <Zap size={23} fill="currentColor" strokeWidth={1.5} />
+            <Layers size={23} strokeWidth={1.7} />
           </span>
           {count > 0 && !snoozed && <b>{count}</b>}
           {snoozed && (
@@ -109,7 +107,7 @@ export function InstantEntry({ t }) {
             </b>
           )}
         </span>
-        <span className="text-[11px] font-semibold">Instants</span>
+        <span className="text-[11px] font-semibold">Moments</span>
       </button>
       {open && <InstantDialog onClose={() => setOpen(false)} />}
     </>
@@ -131,13 +129,20 @@ function IconButton({ label, children, onClick, ...props }) {
   );
 }
 
-export function InstantDialog({ onClose, initialScreen = "inbox" }) {
+export function InstantDialog({
+  onClose,
+  initialScreen = "inbox",
+  authorId,
+  authorName,
+}) {
   const dialog = useRef(null);
   const [screen, setScreen] = useState(initialScreen);
   const [closing, setClosing] = useState(false);
   const [info, setInfo] = useState(false);
   const [notice, setNotice] = useState("");
-  const [sendBackTo, setSendBackTo] = useState("");
+  const [sessionMoments] = useState(() =>
+    momentsForAuthor(getInstantState(), Date.now(), authorId),
+  );
   const close = () => setClosing(true);
   useEffect(() => {
     const element = dialog.current;
@@ -145,9 +150,14 @@ export function InstantDialog({ onClose, initialScreen = "inbox" }) {
     const overflow = document.body.style.overflow;
     element.showModal();
     document.body.style.overflow = "hidden";
+    const hide = () => {
+      if (document.hidden) setClosing(true);
+    };
+    document.addEventListener("visibilitychange", hide);
     return () => {
       element.close();
       document.body.style.overflow = overflow;
+      document.removeEventListener("visibilitychange", hide);
       if (previous?.isConnected) previous.focus();
     };
   }, []);
@@ -160,7 +170,7 @@ export function InstantDialog({ onClose, initialScreen = "inbox" }) {
     <dialog
       ref={dialog}
       className={`instant-dialog ${closing ? "is-closing" : ""}`}
-      aria-label="Ugrads Instants"
+      aria-label="Ugrads Moments"
       onCancel={(e) => {
         e.preventDefault();
         close();
@@ -174,70 +184,35 @@ export function InstantDialog({ onClose, initialScreen = "inbox" }) {
     >
       <div className="instant-shell">
         <header className="instant-header">
-          <IconButton
-            label={
-              screen === "inbox" ||
-              (initialScreen === "camera" && screen === "camera")
-                ? "Close Instants"
-                : initialScreen === "camera"
-                  ? "Back to camera"
-                  : "Back to Instants"
-            }
-            onClick={() =>
-              screen === "inbox" ||
-              (initialScreen === "camera" && screen === "camera")
-                ? close()
-                : setScreen(initialScreen === "camera" ? "camera" : "inbox")
-            }
-          >
-            {screen === "inbox" ||
-            (initialScreen === "camera" && screen === "camera") ? (
-              <X size={23} />
-            ) : (
-              <ArrowLeft size={23} />
-            )}
+          <IconButton label="Close Moments" onClick={close}>
+            <X size={23} />
           </IconButton>
           <div className="instant-heading">
-            <h2>
-              {screen === "archive"
-                ? "Your instants"
-                : screen === "camera"
-                  ? "Capture an instant"
-                  : "Instants"}
-            </h2>
-            <span>
-              {screen === "archive"
-                ? "Only visible to you"
-                : screen === "camera"
-                  ? "A little less polished. A little more you."
-                  : "Here for a moment."}
-            </span>
+            <h2>Moments</h2>
           </div>
           <div className="instant-header-actions">
-            {screen === "inbox" && (
-              <IconButton label="About Instants" onClick={() => setInfo(!info)}>
-                <Info size={19} />
-              </IconButton>
-            )}
-            {screen !== "archive" && (
-              <IconButton
-                label="Your instant archive"
-                onClick={() => setScreen("archive")}
-              >
-                <Grid2X2 size={21} />
-              </IconButton>
-            )}
-            {screen !== "camera" && (
-              <IconButton
-                label="Capture an instant"
-                onClick={() => {
-                  setSendBackTo("");
-                  setScreen("camera");
-                }}
-              >
-                <Camera size={22} />
-              </IconButton>
-            )}
+            <IconButton label="About Moments" onClick={() => setInfo(!info)}>
+              <Info size={20} />
+            </IconButton>
+            <IconButton
+              label={
+                screen === "archive"
+                  ? "Back to moments"
+                  : "Your moments archive"
+              }
+              onClick={() =>
+                setScreen(screen === "archive" ? initialScreen : "archive")
+              }
+            >
+              <Grid2X2 size={21} />
+            </IconButton>
+            <IconButton
+              label="Capture a moment"
+              aria-pressed={screen === "camera"}
+              onClick={() => setScreen("camera")}
+            >
+              <Camera size={22} />
+            </IconButton>
           </div>
         </header>
         {info && (
@@ -248,36 +223,52 @@ export function InstantDialog({ onClose, initialScreen = "inbox" }) {
             >
               <X size={16} />
             </button>
-            <b>One look. A little connection.</b>
+            <b>A little connection.</b>
             <p>
-              Take a photo, add a thought, and share with close friends or
-              mutuals. Instants disappear after viewing or 24 hours.
+              Share a photo with close friends or mutual followers. Swipe both
+              ways while the viewer is open. Viewed moments leave your feed when
+              you close it; unopened moments expire after 24 hours.
             </p>
             <p>Screen capture can’t be blocked in a browser.</p>
             <p>
-              This prototype keeps captures and replies in this browser session;
-              it doesn’t send them to other people.
+              This prototype keeps photos and replies in this browser session.
+              It doesn’t send them to other people.
             </p>
+            <button
+              className="instant-text-button"
+              onClick={() => {
+                snoozeInstants(true);
+                setInfo(false);
+                close();
+              }}
+            >
+              Snooze feed for 24 hours
+            </button>
           </div>
         )}
         <div className="instant-content" key={screen}>
+          {screen !== initialScreen && (
+            <button
+              className="instant-text-button moment-screen-back"
+              onClick={() => setScreen(initialScreen)}
+            >
+              <ArrowLeft size={16} />
+              Back
+            </button>
+          )}
           {screen === "inbox" && (
-            <InstantInbox
+            <MomentsFeed
+              items={sessionMoments}
+              authorName={authorName}
               notify={setNotice}
-              onCamera={(name) => {
-                setSendBackTo(name || "");
-                setScreen("camera");
-              }}
+              onCamera={() => setScreen("camera")}
             />
           )}
-          {screen === "camera" && <InstantCamera sendBackTo={sendBackTo} />}
+          {screen === "camera" && <InstantCamera />}
           {screen === "archive" && (
             <InstantArchive
               notify={setNotice}
-              onCamera={() => {
-                setSendBackTo("");
-                setScreen("camera");
-              }}
+              onCamera={() => setScreen("camera")}
             />
           )}
         </div>
@@ -293,339 +284,7 @@ export function InstantDialog({ onClose, initialScreen = "inbox" }) {
   );
 }
 
-function InstantCaption({ caption }) {
-  const pathId = useId();
-  if (!caption) return null;
-  const text = caption.toLocaleUpperCase();
-  return (
-    <svg
-      className="instant-photo-caption"
-      viewBox="0 0 1000 1000"
-      role="img"
-      aria-label={caption}
-    >
-      <defs>
-        <path
-          id={pathId}
-          d="M 100 335 C 115 150 155 105 335 82 C 510 58 690 58 820 100"
-        />
-      </defs>
-      <text fontSize={Math.min(52, Math.max(20, 740 / (text.length * 0.65)))} textLength={text.length > 20 ? 740 : undefined} lengthAdjust="spacingAndGlyphs">
-        <textPath href={`#${pathId}`}>{text}</textPath>
-      </text>
-    </svg>
-  );
-}
-
-function InstantInbox({ notify, onCamera }) {
-  const snapshot = useInstantState();
-  const now = useInstantClock();
-  const [skipped, setSkipped] = useState([]);
-  const unread = availableInstants(snapshot, now).filter(
-    (item) => !skipped.includes(item.id),
-  );
-  const [active, setActive] = useState(null);
-  const [leaving, setLeaving] = useState(false);
-  const [loadingId, setLoadingId] = useState(null);
-  const [loadError, setLoadError] = useState(false);
-  const [reply, setReply] = useState("");
-  const [burst, setBurst] = useState(null);
-  const [extraReactions, setExtraReactions] = useState(false);
-  const activeValid = active && now < active.createdAt + INSTANT_TTL;
-  const snoozed = snapshot.snoozedUntil > now;
-  const next = unread[0];
-  const loadingItem = snapshot.received.find((item) => item.id === loadingId);
-  // Loading does not spend a view. Consumption happens only when the photo decodes.
-  const reveal = () => {
-    if (next) {
-      setLoadError(false);
-      setLoadingId(next.id);
-    }
-  };
-  const loaded = (item) => {
-    if (openInstant(item.id)) {
-      setActive(item);
-      setReply("");
-    } else setActive(null);
-    setLeaving(false);
-    setBurst(null);
-    setExtraReactions(false);
-    setLoadingId(null);
-  };
-  const advance = () => {
-    setLeaving(true);
-  };
-  const handleReaction = (emoji) => {
-    if (!activeValid) return;
-    reactToInstant(active.id, emoji);
-    setBurst((previous) => ({ emoji, key: (previous?.key || 0) + 1 }));
-    notify(`${emoji} reaction saved`);
-  };
-  useEffect(() => {
-    const hide = () => {
-      if (document.hidden) {
-        setActive(null);
-        setLoadingId(null);
-        setLeaving(false);
-      }
-    };
-    document.addEventListener("visibilitychange", hide);
-    return () => document.removeEventListener("visibilitychange", hide);
-  }, []);
-  return (
-    <div className="instant-inbox">
-      {loadingItem && (
-        <img
-          key={loadingItem.id}
-          className="instant-preload"
-          src={loadingItem.photo}
-          alt=""
-          onLoad={() => loaded(loadingItem)}
-          onError={() => {
-            setLoadingId(null);
-            setLeaving(false);
-            setActive(null);
-            setLoadError(true);
-          }}
-        />
-      )}
-      {activeValid ? (
-        <>
-          <div className="instant-stack-stage">
-            {unread.length > 0 && (
-              <div className="instant-card-back back-one" />
-            )}
-            {unread.length > 1 && (
-              <div className="instant-card-back back-two" />
-            )}
-            <button
-              type="button"
-              className={`instant-photo-card instant-photo-advance ${leaving ? "departing" : "revealed"}`}
-              onClick={advance}
-              disabled={leaving || !!loadingId}
-              aria-label={
-                next
-                  ? `View next instant after ${active.name}`
-                  : "Finish viewing instants"
-              }
-              aria-busy={!!loadingId}
-              onAnimationEnd={(e) => {
-                if (leaving && e.target === e.currentTarget) {
-                  if (next) reveal();
-                  else {
-                    setActive(null);
-                    setLeaving(false);
-                    setBurst(null);
-                  }
-                }
-              }}
-            >
-              <img
-                src={active.photo}
-                alt={`Instant from ${active.name}`}
-                draggable="false"
-                onContextMenu={(e) => e.preventDefault()}
-              />
-              <InstantCaption caption={active.caption} />
-            </button>
-            {loadingId && (
-              <span className="instant-loading-label" role="status">
-                Opening…
-              </span>
-            )}
-            {burst && (
-              <div
-                className="instant-reaction-burst"
-                key={burst.key}
-                aria-hidden="true"
-              >
-                {Array.from({ length: 9 }, (_, i) => (
-                  <span
-                    key={i}
-                    style={{
-                      "--i": i,
-                      "--x": `${((i % 3) - 1) * 66}px`,
-                      "--rotation": `${(i - 4) * 13}deg`,
-                    }}
-                  >
-                    {burst.emoji}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="instant-byline">
-            <b>{active.name}</b>
-            <span>
-              {Math.max(1, Math.floor((now - active.createdAt) / 60000))}m
-            </span>
-            <span className="instant-view-once">
-              <Zap size={11} />
-              View once
-            </span>
-          </div>
-          <p className="instant-tap-hint">
-            {next
-              ? "Tap the photo for the next instant"
-              : "Tap the photo to finish"}
-          </p>
-          <div className="instant-reactions" aria-label="React to this instant">
-            {["😂", "❤️", "🌸", "👏"].map((emoji, i) => (
-              <button
-                key={emoji}
-                className={`reaction-${i} ${snapshot.reactions[active.id] === emoji ? "selected" : ""}`}
-                aria-label={`React ${emoji}`}
-                onClick={() => handleReaction(emoji)}
-              >
-                {emoji}
-              </button>
-            ))}
-            <button
-              className="reaction-more"
-              aria-label="More reactions"
-              aria-expanded={extraReactions}
-              onClick={() => setExtraReactions(!extraReactions)}
-            >
-              <Plus size={23} />
-            </button>
-          </div>
-          {extraReactions && (
-            <div className="instant-extra-reactions">
-              {["🔥", "🥹", "😍", "💙", "🙌"].map((emoji) => (
-                <button
-                  key={emoji}
-                  aria-label={`React ${emoji}`}
-                  onClick={() => {
-                    handleReaction(emoji);
-                    setExtraReactions(false);
-                  }}
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-          )}
-          <div className="instant-view-actions">
-            <button onClick={() => onCamera(active.name)}>
-              <Camera size={16} />
-              Send one back
-            </button>
-          </div>
-          <form
-            className="instant-reply"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!reply.trim()) return;
-              replyToInstant(active.id, reply);
-              setReply("");
-              notify("Reply saved");
-            }}
-          >
-            <input
-              aria-label={`Reply to ${active.name}`}
-              placeholder={`Reply to ${active.name}…`}
-              value={reply}
-              onChange={(e) => setReply(e.target.value)}
-              maxLength={500}
-            />
-            <button
-              type="submit"
-              aria-label="Send reply"
-              disabled={!reply.trim()}
-            >
-              <Send size={19} />
-            </button>
-          </form>
-        </>
-      ) : (
-        <>
-          <div className="instant-inbox-intro">
-            <span className="instant-eyebrow">UGRADS MOMENTS</span>
-            <h3>
-              {snoozed
-                ? "A little quiet time."
-                : next
-                  ? "A glimpse of their day."
-                  : "All caught up."}
-            </h3>
-            <p>
-              {snoozed
-                ? "Your instants are snoozed for 24 hours."
-                : next
-                  ? "Open it once. Keep the feeling."
-                  : "The photo disappears. The connection stays."}
-            </p>
-          </div>
-          {next && !snoozed ? (
-            <>
-              <button
-                className="instant-unopened-stack"
-                onClick={reveal}
-                disabled={!!loadingId}
-                aria-label={`Open instant from ${next.name}`}
-              >
-                <span className="instant-card-back back-two" />
-                <span className="instant-card-back back-one" />
-                <span className="instant-photo-card covered">
-                  <span className="instant-cover-art" />
-                  <span className="instant-cover-label">
-                    <Zap size={32} fill="currentColor" />
-                    <b>{loadingId ? "Opening…" : "Tap to open"}</b>
-                    <small>
-                      {next.name}
-                      {unread.length > 1 ? ` + ${unread.length - 1} more` : ""}
-                    </small>
-                  </span>
-                </span>
-              </button>
-              <p className="instant-stack-count">
-                {unread.length} new{" "}
-                {unread.length === 1 ? "instant" : "instants"} · view once
-              </p>
-              {loadError && (
-                <div className="instant-error" role="alert">
-                  <p>Couldn’t load this photo. Tap the stack to retry.</p>
-                  <button
-                    className="instant-text-button"
-                    onClick={() => {
-                      setSkipped((prev) => [...prev, next.id]);
-                      setLoadError(false);
-                    }}
-                  >
-                    Skip for now
-                  </button>
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="instant-empty-art" aria-hidden="true">
-              {snoozed ? (
-                <Moon size={48} strokeWidth={1} />
-              ) : (
-                <Check size={48} strokeWidth={1} />
-              )}
-            </div>
-          )}
-          <button className="instant-primary" onClick={() => onCamera("")}>
-            <Camera size={18} />
-            Share a little of your day
-          </button>
-          <button
-            className="instant-text-button"
-            onClick={() => snoozeInstants(!snoozed)}
-          >
-            {snoozed ? "Resume instants" : "Snooze for 24 hours"}
-          </button>
-          <p className="instant-footnote">
-            Unopened instants expire after 24 hours.
-          </p>
-        </>
-      )}
-    </div>
-  );
-}
-
-function InstantCamera({ sendBackTo }) {
+function InstantCamera() {
   const video = useRef(null);
   const stream = useRef(null);
   const request = useRef({ version: 0 });
@@ -633,6 +292,8 @@ function InstantCamera({ sendBackTo }) {
   const [facing, setFacing] = useState("user");
   const [photo, setPhoto] = useState(null);
   const [caption, setCaption] = useState("");
+  const [frame, setFrame] = useState("squircle");
+  const [captionPosition, setCaptionPosition] = useState(81);
   const [audience, setAudience] = useState("mutuals");
   const [audienceOpen, setAudienceOpen] = useState(false);
   const [sent, setSent] = useState(null);
@@ -731,7 +392,10 @@ function InstantCamera({ sendBackTo }) {
     setCamera("idle");
   }
   function share() {
-    const result = sendInstant(photo, caption, audience);
+    const result = sendInstant(photo, caption, audience, {
+      frame,
+      captionPosition,
+    });
     if (!result) return;
     setSent(result.item);
     setPhoto(null);
@@ -739,18 +403,15 @@ function InstantCamera({ sendBackTo }) {
     setError(
       result.persisted
         ? ""
-        : "Shared in this session, but storage is full. This instant won’t survive a reload.",
+        : "Shared in this session, but storage is full. This moment won’t survive a reload.",
     );
   }
   return (
     <div className="instant-camera">
-      <p className="instant-camera-lead">
-        {sendBackTo
-          ? `Inspired by ${sendBackTo}’s instant`
-          : "Just you. Just now."}
-      </p>
+      <p className="instant-camera-lead">Capture your moment</p>
       <div
         className={`instant-camera-window ${flash ? "camera-flash" : ""}`}
+        style={frameStyle(frame)}
         onAnimationEnd={() => setFlash(false)}
       >
         <video
@@ -763,7 +424,7 @@ function InstantCamera({ sendBackTo }) {
           aria-hidden={camera !== "ready" || !!photo}
           aria-label="Live camera preview"
         />
-        {photo && <img src={photo} alt="Your captured instant" />}
+        {photo && <img src={photo} alt="Your captured moment" />}
         {!photo && camera !== "ready" && (
           <div className="instant-camera-placeholder">
             {camera === "error" ? (
@@ -780,7 +441,7 @@ function InstantCamera({ sendBackTo }) {
             </h3>
             <p>
               {error ||
-                "Instants start with your camera. No uploads. No filters."}
+                "Moments start with your camera. No uploads. No filters."}
             </p>
             {camera !== "loading" && (
               <button className="instant-primary" onClick={() => start()}>
@@ -789,16 +450,30 @@ function InstantCamera({ sendBackTo }) {
             )}
           </div>
         )}
-        {(photo || camera === "ready") && <InstantCaption caption={caption} />}
+        {(photo || camera === "ready") && (
+          <MomentCaption
+            caption={caption}
+            frame={frame}
+            captionPosition={captionPosition}
+          />
+        )}
       </div>
       {(photo || camera === "ready") && (
         <input
           className="instant-caption-input"
-          aria-label="Instant caption"
+          aria-label="Moment caption"
           placeholder="Add a thought…"
           maxLength={100}
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
+        />
+      )}
+      {photo && (
+        <MomentFrameEditor
+          frame={frame}
+          captionPosition={captionPosition}
+          onFrame={setFrame}
+          onPosition={setCaptionPosition}
         />
       )}
       <div className="instant-audience">
@@ -862,7 +537,7 @@ function InstantCamera({ sendBackTo }) {
         {photo ? (
           <button
             className="instant-shutter send"
-            aria-label="Share instant"
+            aria-label="Share moment"
             onClick={share}
           >
             <ArrowRight size={31} />
@@ -881,14 +556,14 @@ function InstantCamera({ sendBackTo }) {
       </div>
       <p className="instant-footnote">
         {photo
-          ? "Share this moment. They can open it once."
+          ? "Share this moment. Made for a little connection."
           : "Take a photo, then share when you’re ready."}
       </p>
       {sent && (
         <div className="instant-sent" role="status">
           <Check size={17} />
           <span>
-            Instant shared
+            Moment shared
             {sent.audience === "close-friends"
               ? " with close friends"
               : " with mutuals"}
@@ -919,9 +594,8 @@ function InstantArchive({ notify, onCamera }) {
   const snapshot = useInstantState();
   const now = useInstantClock();
   const items = archivedInstants(snapshot, now);
-  const [selected, setSelected] = useState([]);
-  const [selecting, setSelecting] = useState(false);
   const [detail, setDetail] = useState(null);
+  const [editing, setEditing] = useState(false);
   if (detail)
     return (
       <div className="instant-archive-detail">
@@ -929,9 +603,9 @@ function InstantArchive({ notify, onCamera }) {
           <ArrowLeft size={16} />
           Back to archive
         </button>
-        <div className="instant-photo-card">
-          <img src={detail.photo} alt="Your archived instant" />
-          <InstantCaption caption={detail.caption} />
+        <div className="instant-photo-card" style={frameStyle(detail.frame)}>
+          <img src={detail.photo} alt="Your archived moment" />
+          <MomentCaption {...detail} />
         </div>
         <p className="instant-footnote">
           {new Date(detail.createdAt).toLocaleString()} ·{" "}
@@ -940,11 +614,37 @@ function InstantArchive({ notify, onCamera }) {
             : "Mutual followers"}
         </p>
         <button
+          className="instant-primary"
+          onClick={() => setEditing(!editing)}
+        >
+          {editing ? "Done" : "Edit frame & caption position"}
+        </button>
+        {editing && (
+          <MomentFrameEditor
+            frame={detail.frame || "squircle"}
+            captionPosition={detail.captionPosition ?? 81}
+            onFrame={(frame) => {
+              updateMomentPresentation(detail.id, {
+                frame,
+                captionPosition: detail.captionPosition,
+              });
+              setDetail({ ...detail, frame });
+            }}
+            onPosition={(captionPosition) => {
+              updateMomentPresentation(detail.id, {
+                frame: detail.frame,
+                captionPosition,
+              });
+              setDetail({ ...detail, captionPosition });
+            }}
+          />
+        )}
+        <button
           className="instant-delete"
           onClick={() => {
             removeInstant(detail.id);
             setDetail(null);
-            notify("Instant deleted and unsent");
+            notify("Moment deleted and unsent");
           }}
         >
           <Trash2 size={16} />
@@ -964,79 +664,35 @@ function InstantArchive({ notify, onCamera }) {
       {items.length ? (
         <>
           <div className="instant-archive-label">
-            <span>
-              {selecting ? "Choose photos for your story" : "Recent instants"}
-            </span>
-            {selecting && (
-              <button
-                onClick={() => {
-                  setSelecting(false);
-                  setSelected([]);
-                }}
-              >
-                Cancel
-              </button>
-            )}
+            <span>Recent moments</span>
           </div>
           <div className="instant-archive-grid">
             {items.map((item) => (
               <button
                 key={item.id}
-                aria-label={`${selecting ? "Select" : "View"} instant ${new Date(item.createdAt).toLocaleTimeString()}`}
-                aria-pressed={
-                  selecting ? selected.includes(item.id) : undefined
-                }
-                onClick={() =>
-                  selecting
-                    ? setSelected((prev) =>
-                        prev.includes(item.id)
-                          ? prev.filter((id) => id !== item.id)
-                          : [...prev, item.id],
-                      )
-                    : setDetail(item)
-                }
+                style={frameStyle(item.frame)}
+                aria-label={`View moment ${new Date(item.createdAt).toLocaleTimeString()}`}
+                onClick={() => {
+                  setDetail(item);
+                  setEditing(false);
+                }}
               >
-                <img src={item.photo} alt={item.caption || "Your instant"} />
-                {selecting && (
-                  <span className={selected.includes(item.id) ? "checked" : ""}>
-                    {selected.includes(item.id) && <Check size={15} />}
-                  </span>
-                )}
+                <img src={item.photo} alt={item.caption || "Your moment"} />
               </button>
             ))}
           </div>
-          <button
-            className="instant-primary"
-            disabled={selecting && !selected.length}
-            onClick={() => {
-              if (!selecting) {
-                setSelecting(true);
-                return;
-              }
-              if (publishRecap(selected)) {
-                notify("Recap shared to your Story");
-                setSelected([]);
-                setSelecting(false);
-              }
-            }}
-          >
-            {selecting
-              ? `Share ${selected.length || ""} to Story`
-              : "Create recap"}
-            <Plus size={16} />
-          </button>
         </>
       ) : (
         <div className="instant-archive-empty">
           <Grid2X2 size={36} strokeWidth={1.3} />
           <h3>Your moments start here.</h3>
           <p>
-            Instants you share will be saved here, even after your friends view
+            Moments you share will be saved here, even after your friends view
             them.
           </p>
           <button className="instant-primary" onClick={onCamera}>
             <Camera size={18} />
-            Capture your first instant
+            Capture your first moment
           </button>
         </div>
       )}

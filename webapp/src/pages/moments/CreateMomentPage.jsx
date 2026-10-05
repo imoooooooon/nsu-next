@@ -25,7 +25,7 @@ export default function CreateMomentPage() {
     <Modal onClose={close} title={step === 'select' ? 'Create Moment' : step === 'compose_note' ? 'Share a Note' : 'Preview'} size="sm">
       {step === 'select' && (
         <div className="flex flex-col pb-2">
-          <MomentTypePicker t={t} onNote={() => setStep('compose_note')} onStory={() => setStep('compose_media')} onInstant={() => setStep('instant')} />
+          <MomentTypePicker t={t} onNote={() => setStep('compose_note')} onInstant={() => setStep('instant')} />
         </div>
       )}
 

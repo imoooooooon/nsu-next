@@ -1,3 +1,4 @@
+import { normalizePresentation } from "./momentFrames.js";
 export const INSTANT_TTL = 24 * 60 * 60 * 1000;
 export const ARCHIVE_TTL = 365 * INSTANT_TTL;
 export const INSTANT_DEMO_REVISION = 2;
@@ -21,7 +22,14 @@ export function consumeInstant(state, id, now) {
   return { ...state, opened: { ...state.opened, [id]: now } };
 }
 
-export function createInstant(photo, caption, audience, now, id) {
+export function createInstant(
+  photo,
+  caption,
+  audience,
+  now,
+  id,
+  presentation = {},
+) {
   if (
     !photo?.startsWith("data:image/jpeg") ||
     !["mutuals", "close-friends"].includes(audience)
@@ -34,6 +42,8 @@ export function createInstant(photo, caption, audience, now, id) {
     audience,
     createdAt: now,
     name: "You",
+    authorId: "self",
+    ...normalizePresentation(presentation.frame, presentation.captionPosition),
   };
 }
 
@@ -94,12 +104,23 @@ export function initialInstantState(now) {
   return {
     version: 1,
     demoRevision: INSTANT_DEMO_REVISION,
-    received: photos.map(([id, name, caption, photo, minutes]) => ({
+    received: photos.map(([id, name, caption, photo, minutes], index) => ({
       id,
       name,
       caption,
       photo: `https://images.unsplash.com/${photo}?auto=format&fit=crop&w=800&q=85`,
       createdAt: now - minutes * 60000,
+      authorId: {
+        Maliha: "user-1",
+        Tahmid: "user-3",
+        Sadia: "user-6",
+        Rayan: "user-7",
+        Nabila: "user-8",
+        Fahim: "user-5",
+        Ayman: "user-4",
+      }[name],
+      frame: ["squircle", "hexagon", "organic", "triangle"][index % 4],
+      captionPosition: 81,
     })),
     opened: {},
     sent: [],
@@ -108,6 +129,12 @@ export function initialInstantState(now) {
     recaps: [],
     snoozedUntil: 0,
   };
+}
+
+export function momentsForAuthor(state, now, authorId) {
+  return availableInstants(state, now).filter(
+    (item) => !authorId || item.authorId === authorId,
+  );
 }
 
 // Add new demo photos once, without resetting captures or existing view receipts.

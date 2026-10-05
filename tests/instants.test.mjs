@@ -9,9 +9,57 @@ import {
   createInstant,
   initialInstantState,
   refreshInstantDemo,
+  momentsForAuthor,
 } from "../src/shared/instantModel.js";
+import {
+  MOMENT_FRAMES,
+  STORIES_ENABLED,
+  normalizePresentation,
+} from "../src/shared/momentFrames.js";
+import { momentPeople } from "../src/shared/momentPeople.js";
 
 const now = 1_800_000_000_000;
+test("profile entry selects only that author’s unexpired, unopened moments", () => {
+  const state = initialInstantState(now);
+  assert.deepEqual(
+    momentsForAuthor(state, now, "user-1").map((item) => item.id),
+    ["maliha", "maliha-afternoon"],
+  );
+  const opened = consumeInstant(state, "maliha", now);
+  assert.deepEqual(
+    momentsForAuthor(opened, now, "user-1").map((item) => item.id),
+    ["maliha-afternoon"],
+  );
+  assert.equal(momentsForAuthor(state, now + INSTANT_TTL, "user-1").length, 0);
+  assert.equal(momentsForAuthor(state, now, "unknown").length, 0);
+});
+test("capture persists the chosen frame and caption position, with safe defaults", () => {
+  for (const frame of MOMENT_FRAMES) {
+    const item = createInstant(
+      "data:image/jpeg;base64,dGVzdA==",
+      "Caption",
+      "mutuals",
+      now,
+      "new",
+      { frame: frame.id, captionPosition: 99 },
+    );
+    assert.equal(item.frame, frame.id);
+    assert.equal(item.captionPosition, 99);
+  }
+  assert.deepEqual(normalizePresentation("invalid", NaN), {
+    frame: "squircle",
+    captionPosition: 81,
+  });
+  assert.equal(normalizePresentation("hexagon", 200).captionPosition, 100);
+});
+test("Stories are disabled and active rail metadata contains no Story media", () => {
+  assert.equal(STORIES_ENABLED, false);
+  assert.ok(
+    momentPeople.every((person) =>
+      person.items.every((item) => item.type === "note" && !item.url),
+    ),
+  );
+});
 test("an instant is consumed once, independently of other photos", () => {
   const state = initialInstantState(now);
   const opened = consumeInstant(state, "maliha", now);

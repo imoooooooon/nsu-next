@@ -1,74 +1,78 @@
-# Ugrads Moments: Instants
+# Ugrads Moments
 
-The mobile prototype and web app share `src/shared/InstantExperience.jsx`,
-`instantModel.js`, `instantStore.js`, and `instants.css`.
+The mobile prototype and web app share `src/shared/MomentsRail.jsx`,
+`InstantExperience.jsx`, `MomentsFeed.jsx`, `MomentMedia.jsx`, `momentFrames.js`,
+`instantModel.js`, `instantStore.js`, and `instants.css`. Internal Instant names and
+the existing session storage key are retained for compatibility; all active UI
+calls the photo feature **Moments**.
 
 ## Product behaviour
 
-- Create Moment offers **Notes / Story / Instant**. Notes and Story retain their
-  existing composers and viewers.
-- Received Instants have one entry point: the photo stack in the top Moments
-  row. There is no feed card, sidebar entry, or public Instant URL.
-- The create flow opens the camera and private archive only; it does not expose
-  the received inbox. The inbox offers camera, archive and explicit snooze controls.
-- Opening a photo consumes it only after the image loads. Closing, leaving the
-  document, or advancing ends that view. Failed loads can be retried or skipped
-  without consuming the photo. Unopened photos expire after 24 hours.
-- Emoji reactions animate over the photo. Replies are recorded in session state.
-- Capture uses `getUserMedia` with no microphone, gallery upload, filters, or image
-  editing. Users may add a caption, switch cameras, retake, choose mutual followers
-  or close friends, and share. Camera tracks stop on capture, dismissal, navigation,
-  switching cameras and when the document is hidden. Late permission results are
-  discarded after leaving the camera.
-- A shared photo has a ten-second Undo action. The private archive retains sender
-  photos for up to one year; deleting also represents unsending to unopened recipients.
-- Selected archive photos can be published as a new Story recap, using the existing
-  Story player. This does not put received Instants into Stories.
-- Snooze is an explicit 24-hour toggle. The sidebar drag interaction is omitted.
+- Creation offers **Notes / Moments**. Stories are inactive for this release.
+  The original mobile Story viewer/composer, web `StoryViewerPage.jsx`, original
+  Story data and recap helpers remain available for a future phase. Story creation,
+  recap publishing and Story viewing have no active entry points.
+- The top row keeps the Moments stack. Profile photos and names open only that
+  person's unread Moments; note bubbles open their existing Notes viewer.
+  Existing author viewer URLs also resolve to that author's Moments.
+- The viewer header reads **Moments**, with Close, Info, Archive and Camera icons.
+  It keeps author, timestamp and Reply. The view-once badge, lightning timestamp,
+  instruction text and send-back CTA have been removed.
+- Native horizontal scroll snapping supports touch/trackpad swiping, desktop
+  dragging, left/right arrow keys and selectable pagination dots. There is no
+  separate Next button. Both directions remain available within the open session.
+- A successfully loaded, active photo is marked viewed. A snapshot preserves the
+  open session for backward paging; closing or hiding the document ends that
+  session. Viewed photos are excluded when reopening. Failed loads do not consume
+  photos; unopened photos expire after 24 hours.
+- Reactions live in a vertical strip on the right, with a plus button for more.
+  Reactions animate over the photo; replies are recorded in session state.
+- Capture uses `getUserMedia` without microphone, gallery upload or filters.
+  After capture, users choose a soft square, soft hexagon, soft triangle or organic
+  circle. Captions remain uppercase and follow the selected frame's curved edge.
+  The top-left default, edge presets and a continuous position slider let users
+  place a caption anywhere around the perimeter. Frame and position are saved and
+  can also be adjusted in the private archive.
+- Camera switching, retaking, mutual/close-friends audiences, ten-second Undo,
+  private archive retention and delete/unsend remain. Camera tracks stop on capture,
+  dismissal, navigation, switching and document hiding; late permission results
+  are discarded. Snooze is an explicit 24-hour toggle.
 
 ## Design and accessibility
 
-The official visual reference is Meta's [Instants announcement](https://about.fb.com/news/2026/05/instants-share-in-the-moment/),
-including its camera, stacked photo viewer, reaction cluster, and archive images.
-The originally supplied Instagram URL returned HTTP 429 during research.
+The viewer uses an immersive black canvas in both themes, Ugrads blue state
+accents and Plus Jakarta Sans. The row and creation chooser use the app's normal
+theme tokens. Shared SVG geometry drives frame masks, thumbnails and caption
+paths. Native scrolling replaces the layered reveal animation; modal/camera and
+reaction motion use the existing spring token. Reduced-motion preferences suppress
+movement. No additional animation runtime is required.
 
-Instants use an immersive black camera/viewer canvas in both themes, Ugrads blue
-for state accents, Plus Jakarta Sans, squircle photo masks, and the existing
-`--ease-spring-soft` motion token. The normal Moments row and creation chooser
-continue to use the app's theme tokens. CSS transform/opacity animations implement
-stack reveal, tap-photo advancement, departure, camera flash, modal entry/exit and emoji bursts without
-adding another animation runtime. Reduced-motion preferences suppress movement.
-
-A native modal dialog traps focus, supports Escape and returns focus to its trigger.
-Controls have accessible names, keyboard focus indicators and disabled states.
-Layouts support narrow phones, short viewports and a centred desktop stage.
+The native modal traps focus, supports Escape and returns focus to its trigger.
+Controls have accessible names, focus indicators and selection states. Pagination
+announces the current position. Inactive photos are hidden from assistive technology.
+The layout supports narrow phones and a centred desktop viewing stage.
 
 ## Prototype boundary
 
 This repository has no authenticated media backend or social graph. The demo has
-nine received Instants; captures, audience choices, replies, reactions, receipts,
-and recaps are stored locally in `sessionStorage`, with an in-memory fallback.
-Sharing does not transmit photos or messages to real recipients. Session storage
-is per tab/origin and has browser quota limits; captured photos are not durable
-year-long cloud storage. Storage failure after capture is reported in the UI.
+nine received Moments across seven authors. Captures, audiences, replies, reactions,
+receipts and presentation choices live in `sessionStorage`, with an in-memory
+fallback. Sharing does not transmit photos or replies to real recipients. Storage
+is per tab/origin and subject to browser quotas; the archive is not durable cloud
+storage. Existing receipts and captures survive the presentation metadata migration.
 
 Production needs authenticated media storage, server-side recipient eligibility,
-atomic per-recipient consumption, expiry/deletion enforcement, durable private
-archives, and integration with messaging and moderation. Client-side state is a
-prototype of those behaviours, not an authorization or privacy boundary.
-
-Web browsers cannot reliably prevent OS screenshots or screen recording. The
-feature's information panel says so; no screenshot-protection promise is made.
+expiry/deletion enforcement, durable archives, and messaging/moderation integration.
+Browser screen capture cannot reliably be prevented; the Info panel states this.
 
 ## Validation
 
-`npm test` includes lifecycle, expiry boundary, receipt reload, capture validation,
-audience and archive retention tests. Build both apps sequentially with
-`npm run build` then `npm run build --prefix webapp`.
+`npm test` covers lifecycle and expiry boundaries, receipts, captures, audience,
+archive retention, author filtering, frame/position validation and the inactive
+Stories release state. Build sequentially with `npm run build` followed by
+`npm run build --prefix webapp`.
 
-Browser QA covers both Moments entry points, preserved Notes/Story composers,
-view-once reload, reactions/replies, reduced-width layout, synthetic camera capture,
-switching and track disposal, permission errors, audience selection, undo, archive
-and recap handoff. Synthetic camera frames avoid accessing a real webcam during QA.
-
-Photo silhouettes use a shared SVG mask with continuous curved edges. Captions follow an SVG text path around the upper-left edge. Tap the photo (or press Enter/Space while focused) to advance directly; no separate Next button is shown. New demo samples are added once to existing sessions without resetting receipts or captures.
+Browser QA covers author filtering, Notes routing, creation choices, forward/back
+paging, reactions/replies, responsive layout and synthetic camera capture through
+frame selection, caption positioning and archive editing. Synthetic camera frames
+avoid accessing a real webcam during QA.

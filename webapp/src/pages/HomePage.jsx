@@ -1,4 +1,3 @@
-import { useMomentRecaps } from '../../../src/shared/instantStore';
 import { StaffHome } from '../../../src/shared/DepartmentExperience';
 import { globalDepartments } from '../data/departments';
 import { useNavigate } from 'react-router-dom';
@@ -19,7 +18,7 @@ import { JobSlider } from '../features/jobs/JobSlider';
 import { JobCard } from '../features/jobs/JobCard';
 import { PersonCard } from '../features/network/PersonCard';
 import { FeaturedEventsCarousel } from '../features/events/FeaturedEventsCarousel';
-import { globalMomentsData } from '../data/moments';
+import { momentPeople as globalMomentsData } from '../../../src/shared/momentPeople';
 import { globalJobsData } from '../data/jobs';
 import { globalAlumniData, getViewerIdentity } from '../data/people';
 import { globalEventsData } from '../data/events';
@@ -32,7 +31,6 @@ export default function HomePage() {
   const { authRole } = useAppState();
   const navigate = useNavigate();
   const demoAds = useDemoAds();
-  const recaps = useMomentRecaps();
   const viewer = getViewerIdentity(authRole);
 
   /* Seeking left this row (as it left the sidebar): it is a mode of Jobs,
@@ -107,7 +105,7 @@ export default function HomePage() {
 
           {/* Moments */}
           <div className="relative -mt-1 mb-4">
-            <MomentsRow moments={[...recaps, ...globalMomentsData]} />
+            <MomentsRow moments={globalMomentsData} />
           </div>
 
           <AdCarousel ads={demoAds} />

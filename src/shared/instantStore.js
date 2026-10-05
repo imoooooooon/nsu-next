@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { normalizePresentation, STORIES_ENABLED } from "./momentFrames.js";
 import {
   ARCHIVE_TTL,
   INSTANT_TTL,
@@ -20,6 +21,17 @@ function load() {
       saved.opened
     ) {
       const refreshed = refreshInstantDemo(saved, Date.now());
+      const demo = initialInstantState(Date.now()).received;
+      refreshed.received = refreshed.received.map((item) => ({
+        ...item,
+        authorId:
+          item.authorId ||
+          demo.find((sample) => sample.id === item.id)?.authorId,
+        ...normalizePresentation(
+          item.frame || demo.find((sample) => sample.id === item.id)?.frame,
+          item.captionPosition,
+        ),
+      }));
       try {
         sessionStorage.setItem(STORAGE_KEY, JSON.stringify(refreshed));
       } catch {
@@ -64,7 +76,7 @@ export function openInstant(id) {
   update(next);
   return true;
 }
-export function sendInstant(photo, caption, audience) {
+export function sendInstant(photo, caption, audience, presentation) {
   const now = Date.now();
   const item = createInstant(
     photo,
@@ -72,6 +84,7 @@ export function sendInstant(photo, caption, audience) {
     audience,
     now,
     crypto.randomUUID(),
+    presentation,
   );
   if (!item) return null;
   const persisted = update({
@@ -82,6 +95,22 @@ export function sendInstant(photo, caption, audience) {
 }
 export function removeInstant(id) {
   update({ ...state, sent: state.sent.filter((item) => item.id !== id) });
+}
+export function updateMomentPresentation(id, presentation) {
+  update({
+    ...state,
+    sent: state.sent.map((item) =>
+      item.id === id
+        ? {
+            ...item,
+            ...normalizePresentation(
+              presentation.frame,
+              presentation.captionPosition,
+            ),
+          }
+        : item,
+    ),
+  });
 }
 export function reactToInstant(id, emoji) {
   update({ ...state, reactions: { ...state.reactions, [id]: emoji } });
@@ -100,6 +129,7 @@ export function snoozeInstants(snooze) {
   update({ ...state, snoozedUntil: snooze ? Date.now() + INSTANT_TTL : 0 });
 }
 export function publishRecap(ids) {
+  if (!STORIES_ENABLED) return false;
   const now = Date.now();
   const items = state.sent.filter(
     (item) => ids.includes(item.id) && now < item.createdAt + ARCHIVE_TTL,

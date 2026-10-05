@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { X, User, BadgeCheck, Send } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
-import { globalMomentsData } from '../../data/moments';
+import { momentPeople as globalMomentsData } from '../../../../src/shared/momentPeople';
 import { useCloseTo } from '../../lib/navigation';
 
 /* Note viewer — the floating thought-bubble overlay as a route. */
@@ -31,7 +31,7 @@ export default function MomentNotePage() {
   return (
     <div className="fixed inset-0 z-[95] flex flex-col justify-between bg-black/60 backdrop-blur-xl animate-fade-in" onClick={close}>
       <div className="pt-8 px-6 flex justify-end">
-        <button onClick={close} aria-label="Close" className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center active:scale-95 transition-transform backdrop-blur-md">
+        <button onClick={(e) => { e.stopPropagation(); close(); }} aria-label="Close" className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center active:scale-95 transition-transform backdrop-blur-md">
           <X className="w-6 h-6 text-white" />
         </button>
       </div>
