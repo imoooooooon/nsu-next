@@ -1,19 +1,45 @@
 import { normalizePresentation } from "./momentFrames.js";
 export const INSTANT_TTL = 24 * 60 * 60 * 1000;
-export const ARCHIVE_TTL = 365 * INSTANT_TTL;
+export const ARCHIVE_TTL = INSTANT_TTL;
 export const INSTANT_DEMO_REVISION = 2;
+
+export function isMomentLive(item, now) {
+  return item.createdAt <= now && now < item.createdAt + INSTANT_TTL;
+}
+
+export function momentDeck(items, activeId, now) {
+  const visible = items.filter((item) => isMomentLive(item, now));
+  const originalIndex = items.findIndex((item) => item.id === activeId);
+  const next = items.slice(Math.max(0, originalIndex)).find((item) => isMomentLive(item, now));
+  return { visible, index: next ? visible.findIndex((item) => item.id === next.id) : visible.length - 1 };
+}
+
+// Also discard expired media from session storage, not just from the rendered feed.
+export function expireInstants(state, now) {
+  const expired = (item) => now >= item.createdAt + INSTANT_TTL;
+  if (![...state.received, ...state.sent, ...state.recaps].some(expired)) return state;
+  const received = state.received.filter((item) => !expired(item));
+  const sent = state.sent.filter((item) => !expired(item));
+  const liveIds = new Set([...received, ...sent].map((item) => item.id));
+  return {
+    ...state, received, sent,
+    recaps: state.recaps.filter((item) => !expired(item)),
+    opened: Object.fromEntries(Object.entries(state.opened).filter(([id]) => liveIds.has(id))),
+    reactions: Object.fromEntries(Object.entries(state.reactions).filter(([id]) => liveIds.has(id))),
+    replies: state.replies.filter((reply) => liveIds.has(reply.id)),
+  };
+}
 
 export function availableInstants(state, now) {
   return state.received.filter(
     (item) =>
       !state.opened[item.id] &&
-      item.createdAt <= now &&
-      now < item.createdAt + INSTANT_TTL,
+      isMomentLive(item, now),
   );
 }
 
 export function archivedInstants(state, now) {
-  return state.sent.filter((item) => now < item.createdAt + ARCHIVE_TTL);
+  return state.sent.filter((item) => isMomentLive(item, now));
 }
 
 export function consumeInstant(state, id, now) {

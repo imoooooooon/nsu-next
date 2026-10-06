@@ -117,8 +117,9 @@
   inset: 0;
   margin: auto;
   padding: 0;
-  width: min(100%, 430px);
-  height: min(850px, 100dvh);
+  width: min(100%, 520px);
+  height: 100vh;
+  height: var(--moment-viewport-height, 100dvh);
   max-width: 100%;
   max-height: 100dvh;
   border: 1px solid #ffffff17;
@@ -126,7 +127,7 @@
   background: #080a0c;
   color: #f7f9fb;
   font-family: "Plus Jakarta Sans", sans-serif;
-  overflow: visible;
+  overflow: hidden;
   animation: instant-enter 520ms
     var(--ease-spring-soft, cubic-bezier(0.16, 1, 0.3, 1)) both;
 }
@@ -169,8 +170,8 @@
   outline-offset: 4px;
 }
 .instant-header {
-  min-height: 88px;
-  padding: 16px 17px 8px;
+  min-height: 64px;
+  padding: max(10px, env(safe-area-inset-top)) 17px 8px;
   display: flex;
   align-items: center;
   gap: 7px;
@@ -211,11 +212,13 @@
   background: #ffffff12;
 }
 .instant-content {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
   overscroll-behavior: contain;
-  padding: 0 24px max(22px, env(safe-area-inset-bottom));
+  padding: 0 20px max(12px, env(safe-area-inset-bottom));
   animation: instant-content-enter 400ms
     var(--ease-spring-soft, cubic-bezier(0.16, 1, 0.3, 1)) both;
 }
@@ -586,15 +589,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100%;
+  flex: 1;
+  min-height: 0;
+  gap: 8px;
 }
 .instant-camera-lead {
-  margin: 18px 0 23px;
+  margin: 2px 0;
   font-size: 12px;
   color: #adb6bd;
 }
 .instant-camera-window {
-  width: 100%;
+  width: min(100cqw, 100cqh, 400px);
   aspect-ratio: 1;
   position: relative;
   overflow: hidden;
@@ -649,7 +654,7 @@
   background: #ffffff09;
   border-radius: 99px;
   padding: 11px 16px;
-  margin-top: 18px;
+  margin-top: 0;
   border: 1px solid #ffffff15;
 }
 .instant-caption-input::placeholder {
@@ -762,53 +767,48 @@ button.moment-rail-person {
   outline: 2px solid #1d9bf0;
   outline-offset: 3px;
 }
+/* One bounded stage: cards shrink before the reply and reaction controls do. */
 .moment-feed {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
-  padding-top: 24px;
+  flex: 1;
+  min-height: 0;
 }
-.moment-carousel-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 44px;
-  align-items: center;
-  gap: 10px;
+.moment-deck {
+  flex: 1;
+  min-height: 0;
   position: relative;
-  margin: 30px -8px 6px;
+  container-type: size;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 0 -20px;
+  touch-action: manipulation;
 }
-.moment-carousel {
-  display: flex;
-  width: 100%;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  overscroll-behavior-x: contain;
-  scrollbar-width: none;
-  touch-action: pan-x pan-y;
-  cursor: grab;
-  border-radius: 5px;
-}
-.moment-carousel::-webkit-scrollbar {
-  display: none;
-}
-.moment-carousel:active {
-  cursor: grabbing;
-}
-.moment-carousel:focus-visible {
+.moment-deck:focus-visible {
   outline: 2px solid #57bafc;
-  outline-offset: 5px;
+  outline-offset: -4px;
+  border-radius: 20px;
 }
-.moment-page {
-  flex: 0 0 100%;
-  min-width: 0;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  padding: 5px;
-}
-.moment-photo-shell {
-  position: relative;
-  width: 100%;
+.moment-deck-card {
+  position: absolute;
+  width: min(76cqw, 88cqh, 420px);
   aspect-ratio: 1;
-  user-select: none;
+  top: 50%;
+  left: 50%;
+  transform: translate(calc(-50% + var(--deck-x)), -50%) scale(var(--deck-scale)) rotate(var(--deck-rotate));
+  transition: transform 540ms var(--ease-spring-soft, cubic-bezier(.16,1,.3,1)), opacity 380ms ease, filter 540ms ease;
+  pointer-events: none;
+  filter: blur(0);
+}
+.moment-deck-card.is-active { pointer-events: auto; }
+.moment-deck-card.is-seen { filter: blur(3px) saturate(.55); }
+.moment-tap-target {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 24%;
+  touch-action: manipulation;
 }
 .moment-photo-error {
   position: absolute;
@@ -817,209 +817,99 @@ button.moment-rail-person {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 12px;
   font-size: 12px;
 }
 .moment-photo-error button {
-  padding: 9px 18px;
+  padding: 10px 18px;
   border-radius: 99px;
-  background: #ffffff17;
+  background: #273540;
 }
+.moment-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-shrink: 0;
+  padding: 2px 0 12px;
+}
+.moment-meta .instant-byline { margin: 0; flex: 1; justify-content: center; }
+.moment-page-status { font-size: 11px; color: #9eabb6; white-space: nowrap; min-width: 35px; text-align: right; }
+.moment-bottom-controls { position: relative; flex-shrink: 0; display: grid; gap: 12px; }
 .moment-action-dock {
   display: flex;
-  flex-direction: column;
-  gap: 9px;
-  padding: 7px 0;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
   border-radius: 99px;
-  background: #ffffff05;
-  border: 1px solid #ffffff0a;
+  background: #ffffff08;
+  border: 1px solid #ffffff10;
+  width: max-content;
+  max-width: 100%;
+  justify-self: center;
 }
-.moment-action-dock button {
+.moment-action-dock button, .moment-more-reactions button {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   font-size: 22px;
   border-radius: 50%;
   border: 1px solid transparent;
 }
-.moment-action-dock button:hover {
-  background: #ffffff10;
-}
-.moment-action-dock button[aria-pressed="true"] {
-  border-color: #69c0fb;
-  background: #1d9bf030;
-}
+.moment-action-dock button:hover { background: #ffffff10; }
+.moment-action-dock button[aria-pressed="true"] { border-color: #69c0fb; background: #1d9bf030; }
 .moment-more-reactions {
   position: absolute;
-  right: 54px;
-  bottom: 4px;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
   display: flex;
-  gap: 10px;
+  gap: 4px;
   border-radius: 99px;
-  border: 1px solid #ffffff15;
+  border: 1px solid #ffffff20;
   background: #222d36;
-  padding: 11px 15px;
-  z-index: 3;
+  padding: 6px;
+  z-index: 20;
 }
-.moment-more-reactions button {
-  font-size: 22px;
-}
-.moment-carousel-layout .instant-reaction-burst {
-  right: 54px;
-}
-.moment-carousel-layout .instant-reaction-burst span {
-  bottom: 0;
-}
-.moment-pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin: 23px 0 8px;
-}
-.moment-pagination > button {
-  display: grid;
-  place-items: center;
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  border: 1px solid #ffffff16;
-}
-.moment-page-dots {
-  display: flex;
-  gap: 3px;
-  max-width: 210px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.moment-page-dots button {
-  flex: 0 0 17px;
-  width: 17px;
-  height: 28px;
-  position: relative;
-  border-radius: 6px;
-}
-.moment-page-dots button::after {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: 11px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #52616e;
-  transition:
-    background 180ms,
-    transform 300ms var(--ease-spring-soft);
-}
-.moment-page-dots button[aria-current="true"]::after {
-  background: #6cc4ff;
-  transform: scale(1.3);
-}
-.moment-page-status {
-  text-align: center;
-  font-size: 10px;
-  color: #8f9ba5;
-  margin-bottom: 25px;
-}
-.moment-feed .instant-byline {
-  margin-right: 46px;
-}
-.moment-feed .instant-reply {
-  margin-top: auto;
-}
-.moment-screen-back {
-  margin: 0;
-  padding: 3px 0 8px;
-  justify-content: flex-start;
-}
+.moment-bottom-controls .instant-reaction-burst span { bottom: 60px; }
 .moment-frame-editor {
-  width: 100%;
-  margin: 21px 0 3px;
-  padding: 16px;
-  border: 1px solid #ffffff12;
-  border-radius: 20px;
-  background: #ffffff04;
+  width: min(100%, 340px);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  flex-shrink: 0;
 }
-.moment-frame-editor legend {
-  color: #d9e7f0;
-  font-size: 11px;
-  font-weight: 600;
-  margin-bottom: 14px;
-}
-.moment-frame-options {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 6px;
-}
+.moment-frame-editor legend { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; }
+.moment-frame-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
 .moment-frame-options button {
   display: flex;
   align-items: center;
   flex-direction: column;
-  gap: 7px;
+  gap: 4px;
   border: 1px solid transparent;
-  border-radius: 12px;
-  padding: 8px 2px;
+  border-radius: 14px;
+  padding: 6px 2px;
   color: #9eacb7;
   font-size: 9px;
 }
-.moment-frame-options button[aria-pressed="true"] {
-  border-color: #52b5f6;
-  color: #d7efff;
-  background: #1d9bf014;
-}
+.moment-frame-options button[aria-pressed="true"] { border-color: #52b5f6; color: #d7efff; background: #1d9bf014; }
 .moment-frame-swatch {
   display: block;
-  width: 36px;
-  height: 36px;
+  width: 25px;
+  height: 25px;
   background: linear-gradient(145deg, #9bdaff, #347ab2);
   mask: var(--instant-mask) center / 100% 100% no-repeat;
   -webkit-mask: var(--instant-mask) center / 100% 100% no-repeat;
 }
-.moment-position-label {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  margin-top: 18px;
-  color: #c8d9e5;
-}
-.moment-position-label span {
-  font-size: 10px;
-  color: #8f9ba5;
-}
-.moment-frame-editor input[type="range"] {
-  width: 100%;
-  margin: 14px 0;
-  accent-color: #58baff;
-  cursor: pointer;
-}
-.moment-position-presets {
-  display: flex;
-  justify-content: space-between;
-  gap: 3px;
-}
-.moment-position-presets button {
-  padding: 6px 5px;
-  font-size: 9px;
-  color: #9bafbe;
-  border-radius: 99px;
-}
-.moment-position-presets button[aria-pressed="true"] {
-  color: #cceaff;
-  background: #1d9bf025;
-}
-@media (max-height: 740px) {
-  .moment-feed {
-    padding-top: 0;
-  }
-  .moment-carousel-layout {
-    margin-top: 10px;
-  }
-}
+.moment-screen-back { margin: 0; padding: 3px 0 8px; justify-content: flex-start; flex-shrink: 0; }
+.moment-archive-pagination { display: flex; justify-content: center; align-items: center; gap: 16px; font-size: 11px; flex-shrink: 0; }
 .instant-audience {
   position: relative;
-  margin: 25px 0 21px;
+  margin: 0;
+  flex-shrink: 0;
 }
 .instant-audience > button {
   display: flex;
@@ -1069,13 +959,44 @@ button.moment-rail-person {
   align-items: center;
   justify-content: center;
   gap: 40px;
+  flex-shrink: 0;
 }
+.instant-camera-stage {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  container-type: size;
+  display: grid;
+  place-items: center;
+}
+.instant-capture-controls.has-photo {
+  gap: 14px;
+  padding: 7px;
+  border: 1px solid #ffffff24;
+  border-radius: 99px;
+  background: linear-gradient(140deg, #ffffff18, #ffffff08);
+}
+.instant-share-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 46px;
+  padding: 0 24px;
+  border-radius: 99px;
+  background: #eef7ff;
+  color: #103b59;
+  font-size: 13px;
+  font-weight: 700;
+}
+.instant-camera > .instant-footnote { margin: 0; flex-shrink: 0; }
 .instant-control-spacer {
   width: 35px;
 }
 .instant-shutter {
-  width: 77px;
-  height: 77px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   border: 4px solid #555c65;
   padding: 5px;
@@ -1105,7 +1026,7 @@ button.moment-rail-person {
   animation: instant-flash 300ms ease-out both;
 }
 .instant-sent {
-  margin: 18px 0 0;
+  margin: 0;
   padding: 12px 14px;
   background: #1d9bf01c;
   border: 1px solid #1d9bf030;
@@ -1156,7 +1077,9 @@ button.moment-rail-person {
 }
 .instant-toast {
   position: absolute;
-  bottom: 18px;
+  top: 65px;
+  bottom: auto;
+  z-index: 30;
   left: 24px;
   right: 24px;
   display: flex;
@@ -1173,8 +1096,9 @@ button.moment-rail-person {
   animation: instant-content-enter 300ms ease-out;
 }
 .instant-archive-intro {
-  margin: 18px 0 30px;
+  margin: 8px 0 12px;
 }
+.instant-archive { display: flex; flex-direction: column; flex: 1; min-height: 0; }
 .instant-archive-label {
   display: flex;
   justify-content: space-between;
@@ -1186,11 +1110,18 @@ button.moment-rail-person {
   color: #82cbfd;
 }
 .instant-archive-grid {
+  flex: 1;
+  min-height: 0;
+  container-type: size;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  justify-items: center;
   gap: 10px;
 }
 .instant-archive-grid > button {
+  width: min(100%, 44cqh);
   aspect-ratio: 1;
   border-radius: 29% / 21%;
   overflow: hidden;
@@ -1220,7 +1151,7 @@ button.moment-rail-person {
   margin: 28px auto;
 }
 .instant-archive-empty {
-  padding: 70px 18px;
+  padding: 12px 18px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -1242,12 +1173,19 @@ button.moment-rail-person {
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex: 1;
+  min-height: 0;
+  gap: 8px;
 }
-.instant-archive-detail .instant-photo-card {
+.instant-archive-detail .instant-camera-stage .instant-photo-card {
+  width: min(100cqw, 100cqh, 400px);
   height: auto;
   aspect-ratio: 1;
-  margin: 16px 0;
+  margin: 0;
 }
+.instant-archive-detail > * { flex-shrink: 0; }
+.instant-archive-detail > .instant-camera-stage { flex-shrink: 1; }
+.instant-archive-detail .instant-footnote { margin: 0; }
 .instant-delete {
   color: #ffaaa1;
   display: flex;
@@ -1257,7 +1195,7 @@ button.moment-rail-person {
   border: 1px solid #ffaaa130;
   border-radius: 99px;
   padding: 12px 20px;
-  margin: 22px 0 5px;
+  margin: 0;
   font-size: 12px;
 }
 @keyframes instant-enter {
@@ -1333,7 +1271,7 @@ button.moment-rail-person {
 }
 @media (max-width: 480px) {
   .instant-dialog {
-    height: 100dvh;
+    height: var(--moment-viewport-height, 100dvh);
     width: 100%;
     border: 0;
     border-radius: 0;
@@ -1352,12 +1290,6 @@ button.moment-rail-person {
   }
   .instant-stack-count {
     margin-bottom: 20px;
-  }
-  .instant-camera-window {
-    width: min(100%, 290px);
-  }
-  .instant-camera-lead {
-    margin: 7px 0 14px;
   }
   .instant-reactions {
     transform: scale(0.88);
@@ -1381,4 +1313,37 @@ button.moment-rail-person {
   .instant-reaction-burst {
     display: none;
   }
+}
+
+/* Landscape uses the available width instead of collapsing the photo to a sliver. */
+@media (max-height: 500px) {
+  .instant-header { min-height: 52px; padding-top: 6px; }
+  .instant-camera { gap: 5px; }
+  .instant-camera-lead, .instant-camera > .instant-footnote { display: none; }
+  .instant-camera .moment-frame-options button > span:last-child { display: none; }
+  .instant-camera .moment-frame-options button { min-height: 40px; }
+  .moment-meta { padding-bottom: 4px; }
+  .moment-bottom-controls { gap: 6px; }
+  .instant-inbox-intro { margin: 4px 0 12px; }
+  .moment-empty-state .instant-empty-art { display: none; }
+}
+@media (max-height: 500px) and (min-width: 600px) {
+  .instant-dialog { width: min(100%, 900px); }
+  .instant-camera, .instant-archive-detail {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(250px, .85fr);
+    grid-template-rows: repeat(7, auto) minmax(0, 1fr);
+    column-gap: 24px;
+    align-content: center;
+    align-items: center;
+    justify-items: center;
+  }
+  .instant-camera > *, .instant-archive-detail > * { grid-column: 2; }
+  .instant-camera > .instant-camera-stage, .instant-archive-detail > .instant-camera-stage {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    height: 100%;
+  }
+  .instant-camera .instant-caption-input { width: 100%; }
+  .instant-camera .instant-camera-placeholder { padding: 18px; }
 }

@@ -143,6 +143,13 @@ export function InstantDialog({
   const [sessionMoments] = useState(() =>
     momentsForAuthor(getInstantState(), Date.now(), authorId),
   );
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    const resize = () => dialog.current?.style.setProperty("--moment-viewport-height", `${viewport?.height ?? window.innerHeight}px`);
+    resize();
+    viewport?.addEventListener("resize", resize);
+    return () => viewport?.removeEventListener("resize", resize);
+  }, []);
   const close = () => setClosing(true);
   useEffect(() => {
     const element = dialog.current;
@@ -225,9 +232,10 @@ export function InstantDialog({
             </button>
             <b>A little connection.</b>
             <p>
-              Share a photo with close friends or mutual followers. Swipe both
-              ways while the viewer is open. Viewed moments leave your feed when
-              you close it; unopened moments expire after 24 hours.
+              Share a photo with close friends or mutual followers. Tap the photo
+              to advance. Viewed cards move to the right; the next cards wait on
+              the left. All Moments disappear 24 hours after posting, including
+              your saved captures.
             </p>
             <p>Screen capture can’t be blocked in a browser.</p>
             <p>
@@ -246,7 +254,7 @@ export function InstantDialog({
             </button>
           </div>
         )}
-        <div className="instant-content" key={screen}>
+        <div className={`instant-content instant-content-${screen}`} key={screen}>
           {screen !== initialScreen && (
             <button
               className="instant-text-button moment-screen-back"
@@ -293,7 +301,7 @@ function InstantCamera() {
   const [photo, setPhoto] = useState(null);
   const [caption, setCaption] = useState("");
   const [frame, setFrame] = useState("squircle");
-  const [captionPosition, setCaptionPosition] = useState(81);
+  const captionPosition = 81;
   const [audience, setAudience] = useState("mutuals");
   const [audienceOpen, setAudienceOpen] = useState(false);
   const [sent, setSent] = useState(null);
@@ -409,6 +417,7 @@ function InstantCamera() {
   return (
     <div className="instant-camera">
       <p className="instant-camera-lead">Capture your moment</p>
+      <div className="instant-camera-stage">
       <div
         className={`instant-camera-window ${flash ? "camera-flash" : ""}`}
         style={frameStyle(frame)}
@@ -458,6 +467,7 @@ function InstantCamera() {
           />
         )}
       </div>
+      </div>
       {(photo || camera === "ready") && (
         <input
           className="instant-caption-input"
@@ -471,9 +481,7 @@ function InstantCamera() {
       {photo && (
         <MomentFrameEditor
           frame={frame}
-          captionPosition={captionPosition}
           onFrame={setFrame}
-          onPosition={setCaptionPosition}
         />
       )}
       <div className="instant-audience">
@@ -521,7 +529,7 @@ function InstantCamera() {
           </div>
         )}
       </div>
-      <div className="instant-capture-controls">
+      <div className={`instant-capture-controls ${photo ? "has-photo" : ""}`}>
         <IconButton
           label={photo ? "Retake photo" : "Switch camera"}
           disabled={!photo && camera !== "ready"}
@@ -536,11 +544,11 @@ function InstantCamera() {
         </IconButton>
         {photo ? (
           <button
-            className="instant-shutter send"
+            className="instant-share-pill"
             aria-label="Share moment"
             onClick={share}
           >
-            <ArrowRight size={31} />
+            Share moment <ArrowRight size={20} />
           </button>
         ) : (
           <button
@@ -552,11 +560,11 @@ function InstantCamera() {
             <span />
           </button>
         )}
-        <span className="instant-control-spacer" />
+        {!photo && <span className="instant-control-spacer" />}
       </div>
       <p className="instant-footnote">
         {photo
-          ? "Share this moment. Made for a little connection."
+          ? "Gone in 24 hours. A little connection for today."
           : "Take a photo, then share when you’re ready."}
       </p>
       {sent && (
@@ -596,16 +604,21 @@ function InstantArchive({ notify, onCamera }) {
   const items = archivedInstants(snapshot, now);
   const [detail, setDetail] = useState(null);
   const [editing, setEditing] = useState(false);
-  if (detail)
+  const [page, setPage] = useState(0);
+  const pageCount = Math.max(1, Math.ceil(items.length / 6));
+  const currentPage = Math.min(page, pageCount - 1);
+  if (detail && items.some((item) => item.id === detail.id))
     return (
       <div className="instant-archive-detail">
         <button className="instant-text-button" onClick={() => setDetail(null)}>
           <ArrowLeft size={16} />
           Back to archive
         </button>
+        <div className="instant-camera-stage">
         <div className="instant-photo-card" style={frameStyle(detail.frame)}>
           <img src={detail.photo} alt="Your archived moment" />
           <MomentCaption {...detail} />
+        </div>
         </div>
         <p className="instant-footnote">
           {new Date(detail.createdAt).toLocaleString()} ·{" "}
@@ -617,25 +630,17 @@ function InstantArchive({ notify, onCamera }) {
           className="instant-primary"
           onClick={() => setEditing(!editing)}
         >
-          {editing ? "Done" : "Edit frame & caption position"}
+          {editing ? "Done" : "Edit frame"}
         </button>
         {editing && (
           <MomentFrameEditor
             frame={detail.frame || "squircle"}
-            captionPosition={detail.captionPosition ?? 81}
             onFrame={(frame) => {
               updateMomentPresentation(detail.id, {
                 frame,
-                captionPosition: detail.captionPosition,
+                captionPosition: 81,
               });
-              setDetail({ ...detail, frame });
-            }}
-            onPosition={(captionPosition) => {
-              updateMomentPresentation(detail.id, {
-                frame: detail.frame,
-                captionPosition,
-              });
-              setDetail({ ...detail, captionPosition });
+              setDetail({ ...detail, frame, captionPosition: 81 });
             }}
           />
         )}
@@ -659,7 +664,7 @@ function InstantArchive({ notify, onCamera }) {
     <div className="instant-archive">
       <div className="instant-archive-intro">
         <h3>Your little everyday.</h3>
-        <p>Saved just for you, for up to a year.</p>
+        <p>Your captures from the last 24 hours.</p>
       </div>
       {items.length ? (
         <>
@@ -667,7 +672,7 @@ function InstantArchive({ notify, onCamera }) {
             <span>Recent moments</span>
           </div>
           <div className="instant-archive-grid">
-            {items.map((item) => (
+            {items.slice(currentPage * 6, currentPage * 6 + 6).map((item) => (
               <button
                 key={item.id}
                 style={frameStyle(item.frame)}
@@ -681,14 +686,18 @@ function InstantArchive({ notify, onCamera }) {
               </button>
             ))}
           </div>
+          {pageCount > 1 && <nav className="moment-archive-pagination" aria-label="Archive pages">
+            <IconButton label="Previous archive page" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}><ArrowLeft size={18} /></IconButton>
+            <span>{currentPage + 1} / {pageCount}</span>
+            <IconButton label="Next archive page" disabled={currentPage === pageCount - 1} onClick={() => setPage(currentPage + 1)}><ArrowRight size={18} /></IconButton>
+          </nav>}
         </>
       ) : (
         <div className="instant-archive-empty">
           <Grid2X2 size={36} strokeWidth={1.3} />
           <h3>Your moments start here.</h3>
           <p>
-            Moments you share will be saved here, even after your friends view
-            them.
+            Moments you share stay here until 24 hours after posting.
           </p>
           <button className="instant-primary" onClick={onCamera}>
             <Camera size={18} />

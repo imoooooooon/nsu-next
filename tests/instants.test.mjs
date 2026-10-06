@@ -10,6 +10,8 @@ import {
   initialInstantState,
   refreshInstantDemo,
   momentsForAuthor,
+  expireInstants,
+  momentDeck,
 } from "../src/shared/instantModel.js";
 import {
   MOMENT_FRAMES,
@@ -109,14 +111,45 @@ test("capture accepts only camera JPEG data and the two allowed audiences", () =
     100,
   );
 });
-test("the sender archive outlives recipient expiry but stops at one year", () => {
+test("sender captures disappear at the same 24-hour boundary as received Moments", () => {
   const state = {
     ...initialInstantState(now),
     sent: [{ id: "mine", createdAt: now }],
   };
-  assert.equal(archivedInstants(state, now + INSTANT_TTL).length, 1);
+  assert.equal(ARCHIVE_TTL, INSTANT_TTL);
+  assert.equal(archivedInstants(state, now - 1).length, 0);
   assert.equal(archivedInstants(state, now + ARCHIVE_TTL - 1).length, 1);
   assert.equal(archivedInstants(state, now + ARCHIVE_TTL).length, 0);
+});
+
+test("expiry removes media and its replies/reactions without changing live captures", () => {
+  const state = initialInstantState(now);
+  const expires = state.received[0].createdAt + INSTANT_TTL;
+  state.sent = [{ id: "fresh", createdAt: expires - 1000 }, { id: "old", createdAt: now - INSTANT_TTL }];
+  state.opened = { maliha: now };
+  state.reactions = { maliha: "❤️" };
+  state.replies = [{ id: "maliha", text: "Hello" }];
+  const expired = expireInstants(state, expires);
+  assert.deepEqual(expired.received, []);
+  assert.deepEqual(expired.sent.map((item) => item.id), ["fresh"]);
+  assert.deepEqual(expired.opened, {});
+  assert.deepEqual(expired.reactions, {});
+  assert.deepEqual(expired.replies, []);
+  assert.equal(expireInstants(expired, expires + 1), expired);
+});
+
+test("deck expiry preserves the active ID and advances only when that photo expires", () => {
+  const items = [
+    { id: "earlier", createdAt: now - INSTANT_TTL + 10 },
+    { id: "active", createdAt: now - INSTANT_TTL + 20 },
+    { id: "next", createdAt: now },
+  ];
+  let deck = momentDeck(items, "active", now + 10);
+  assert.equal(deck.visible[deck.index].id, "active");
+  assert.equal(deck.index, 0);
+  deck = momentDeck(items, "active", now + 20);
+  assert.equal(deck.visible[deck.index].id, "next");
+  assert.equal(momentDeck(items, "next", now + INSTANT_TTL).index, -1);
 });
 
 test("demo expansion preserves captures and receipts and runs only once", () => {

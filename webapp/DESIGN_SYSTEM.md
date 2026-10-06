@@ -12,9 +12,14 @@ immersive black media surface in either theme, with Ugrads blue state accents an
 Plus Jakarta Sans. The top row retains a stacked Moments entry; avatars open that
 author's Moments and note bubbles open Notes. Creation offers Notes and Moments;
 Stories remain inactive with their design retained for a future release.
-The viewer uses horizontal scroll snapping with pagination dots and a vertical
-reaction strip on the right. Four shared SVG frame shapes support captions that
-follow the edge at any position, defaulting to the top left. Keep the header title
+The viewer fits one dynamic viewport without vertical scrolling. Its tap-to-advance
+depth deck places queued cards on the left, the active card in the centre and
+blurred viewed cards on the right. Quick reactions form a horizontal pill directly
+above Reply. Four compact SVG frame choices use curved corner captions, defaulting
+to the top left; there are no freeform caption-position controls. Capture uses a
+floating share pill and a flexible media stage, with side-by-side media/controls
+on short landscape screens. All Moments, including saved captures, expire after
+24 hours. Keep the header title
 strictly Moments and retain Close, Info, Archive and Camera utilities.
 The row and chooser keep normal theme tokens. Use the existing spring curve for
 transform/opacity motion and respect reduced motion. Received Moments remain in

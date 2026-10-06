@@ -7,6 +7,8 @@ import {
   consumeInstant,
   createInstant,
   refreshInstantDemo,
+  expireInstants,
+  isMomentLive,
 } from "./instantModel.js";
 
 const STORAGE_KEY = "ugrads-instants-v1";
@@ -20,7 +22,7 @@ function load() {
       Array.isArray(saved.recaps) &&
       saved.opened
     ) {
-      const refreshed = refreshInstantDemo(saved, Date.now());
+      const refreshed = expireInstants(refreshInstantDemo(saved, Date.now()), Date.now());
       const demo = initialInstantState(Date.now()).received;
       refreshed.received = refreshed.received.map((item) => ({
         ...item,
@@ -60,7 +62,7 @@ const subscribe = (listener) => {
 export const useInstantState = () =>
   useSyncExternalStore(subscribe, getInstantState, getInstantState);
 function update(next) {
-  state = next;
+  state = expireInstants(next, Date.now());
   let persisted = true;
   try {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -113,10 +115,12 @@ export function updateMomentPresentation(id, presentation) {
   });
 }
 export function reactToInstant(id, emoji) {
+  if (!state.received.some((item) => item.id === id && isMomentLive(item, Date.now()))) return;
   update({ ...state, reactions: { ...state.reactions, [id]: emoji } });
 }
 export function replyToInstant(id, text) {
   if (!text.trim()) return;
+  if (!state.received.some((item) => item.id === id && isMomentLive(item, Date.now()))) return;
   update({
     ...state,
     replies: [
@@ -165,7 +169,12 @@ export function publishRecap(ids) {
 export function useInstantClock() {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    const refresh = () => setNow(Date.now());
+    const refresh = () => {
+      const time = Date.now();
+      const next = expireInstants(state, time);
+      if (next !== state) update(next);
+      setNow(time);
+    };
     const interval = setInterval(refresh, 1000);
     document.addEventListener("visibilitychange", refresh);
     return () => {
