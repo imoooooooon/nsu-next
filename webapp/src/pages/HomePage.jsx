@@ -1,3 +1,5 @@
+import { HomeCareerSections } from '../../../src/shared/HomeCareerSections';
+import { globalSeekingData } from '../features/seeking/data';
 import { StaffHome } from '../../../src/shared/DepartmentExperience';
 import { globalDepartments } from '../data/departments';
 import { useNavigate } from 'react-router-dom';
@@ -28,7 +30,7 @@ const HEADER_BG_DARK = 'https://res.cloudinary.com/ddgxqqe6t/image/upload/v17731
 
 export default function HomePage() {
   const { t, isDark, toggleTheme } = useTheme();
-  const { authRole } = useAppState();
+  const { authRole, savedTalentIds, handleToggleSavedTalent } = useAppState();
   const navigate = useNavigate();
   const demoAds = useDemoAds();
   const viewer = getViewerIdentity(authRole);
@@ -154,34 +156,38 @@ export default function HomePage() {
             />
           </div>
 
-          {/* Jobs */}
-          <div>
-            {canPostJobs && (
-              <div className="px-1 mb-5">
-                <button
-                  onClick={() => navigate('/jobs/post')}
-                  className="w-full py-3.5 rounded-xl font-extrabold text-sm transition-all active:scale-[0.98] bg-[#1D9BF0]/10 text-[#1D9BF0] border border-[#1D9BF0]/20 flex items-center justify-center shadow-sm hover:bg-[#1D9BF0]/15"
-                >
-                  <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> Post a Job Opportunity
-                </button>
+          <HomeCareerSections authRole={authRole} t={t} talent={globalSeekingData}
+            savedTalentIds={savedTalentIds} onToggleSave={handleToggleSavedTalent}
+            onOpenTalent={person => navigate(`/jobs/seeking/${person.id}`)}
+            onViewAll={() => navigate('/jobs/seeking')}>
+            <div>
+              {canPostJobs && (
+                <div className="px-1 mb-5">
+                  <button
+                    onClick={() => navigate('/jobs/post')}
+                    className="w-full py-3.5 rounded-xl font-extrabold text-sm transition-all active:scale-[0.98] bg-[#1D9BF0]/10 text-[#1D9BF0] border border-[#1D9BF0]/20 flex items-center justify-center shadow-sm hover:bg-[#1D9BF0]/15"
+                  >
+                    <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> Post a Job Opportunity
+                  </button>
+                </div>
+              )}
+              <SectionHeading
+                title={canPostJobs ? 'Recently Posted Jobs' : 'Latest Jobs For You'}
+                action="See All"
+                onAction={() => navigate('/jobs')}
+                className="px-1 mb-1"
+              />
+              {/* Slider on small screens (mobile parity), grid on wide screens */}
+              <div className="md:hidden">
+                <JobSlider jobs={globalJobsData} />
               </div>
-            )}
-            <SectionHeading
-              title={canPostJobs ? 'Recently Posted Jobs' : 'Latest Jobs For You'}
-              action="See All"
-              onAction={() => navigate('/jobs')}
-              className="px-1 mb-1"
-            />
-            {/* Slider on small screens (mobile parity), grid on wide screens */}
-            <div className="md:hidden">
-              <JobSlider jobs={globalJobsData} />
+              <div className="hidden md:grid grid-cols-2 gap-4 pt-4">
+                {globalJobsData.slice(0, 2).map(job => (
+                  <JobCard key={job.id} job={job} />
+                ))}
+              </div>
             </div>
-            <div className="hidden md:grid grid-cols-2 gap-4 pt-4">
-              {globalJobsData.slice(0, 2).map(job => (
-                <JobCard key={job.id} job={job} />
-              ))}
-            </div>
-          </div>
+          </HomeCareerSections>
 
           {/* Mobile-only rail content (keeps the original mobile order) */}
           <div className="xl:hidden mt-8 space-y-5">

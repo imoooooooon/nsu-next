@@ -3,8 +3,8 @@ import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
 
 /* ---------------------------------------------------------------------------
-   /welcome — 1:1 port of the mobile WelcomeScreen.
-   Centered logo + tagline, bottom-anchored auth CTAs.
+   /welcome — the entry panel within the desktop onboarding split.
+   Existing login and role-selection routes retain their original behavior.
 --------------------------------------------------------------------------- */
 
 export default function WelcomePage() {
@@ -18,11 +18,12 @@ export default function WelcomePage() {
         <img
           src="https://res.cloudinary.com/ddgxqqe6t/image/upload/v1784041954/Icon_300x-8_l1gnkq.png"
           alt="Ugrads Logo"
-          className="w-36 h-36 mb-6 object-contain"
+          className="w-24 h-24 mb-7 object-contain"
         />
 
-        <h1 className={`text-xl font-semibold tracking-tight text-center ${t.text}`}>Connect. Grow. Support.</h1>
-        <p className={`text-sm mt-2 text-center ${t.textMuted} px-4`}>North South University Verified Network</p>
+        <p className="text-[10px] font-extrabold tracking-[0.18em] uppercase text-[#1D9BF0] mb-3">Welcome to Ugrads</p>
+        <h1 className={`text-3xl font-extrabold tracking-tight text-center ${t.text}`}>Your NSU circle,<br />all in one place.</h1>
+        <p className={`text-sm mt-2 text-center ${t.textMuted} px-4`}>Connect with your community.<br />Make room for what comes next.</p>
       </div>
 
       <div className="w-full mt-auto space-y-3 animate-fade-in delay-150">

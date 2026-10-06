@@ -1,9 +1,12 @@
+import "./department-workspace.css";
 import { createElement, useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowUpRight,
   BadgeCheck,
   Building2,
+  Briefcase,
+  Droplet,
   CalendarPlus,
   Check,
   CheckCircle2,
@@ -478,7 +481,7 @@ export function DepartmentWorkspace({
       </Panel>
     );
   return (
-    <div className={`@container space-y-5 py-5 ${t.text}`}>
+    <div className={`department-workspace @container space-y-5 py-5 ${t.text}`} data-theme={isDark ? "dark" : "light"}>
       <div className="flex items-center gap-3">
         <button
           aria-label="Back to department"
@@ -494,15 +497,15 @@ export function DepartmentWorkspace({
           </h1>
         </div>
       </div>
-      <Panel t={t}>
+      <Panel t={t} className="workspace-identity">
         <div className="flex flex-wrap items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-[#1D9BF0]/10 text-[#1D9BF0] flex items-center justify-center text-sm font-extrabold">
+          <div className="workspace-entity w-14 h-14 rounded-2xl flex items-center justify-center text-sm font-extrabold">
             {dept.short}
           </div>
           <div className="flex-1 min-w-40">
             <h2 className="text-base font-extrabold">{dept.name}</h2>
             <p className={`text-xs mt-1 ${t.textMuted}`}>
-              {access.label} · North South University
+              <span className="workspace-access"><ShieldCheck size={12} />{access.label}</span>
             </p>
           </div>
           <SegmentedPill
@@ -531,179 +534,89 @@ export function DepartmentWorkspace({
         className="max-w-xl"
       />
       {section === "overview" && (
-        <div className="space-y-5">
-          <div className="grid grid-cols-2 gap-3">
-            <Panel t={t}>
-              <Eyebrow t={t}>Department community</Eyebrow>
-              <p className="text-3xl font-extrabold mt-2">
-                {dept.memberCount.toLocaleString()}
-              </p>
-              <p className={`text-xs mt-1 ${t.textMuted}`}>
-                Automatically enrolled members
-              </p>
-            </Panel>
-            <Panel t={t}>
-              <Eyebrow t={t}>
-                {access.canHelpDesk ? "Student support" : "Campus calendar"}
-              </Eyebrow>
-              <p className="text-3xl font-extrabold mt-2">
-                {access.canHelpDesk ? unresolved.length : eventCount}
-              </p>
-              <p className={`text-xs mt-1 ${t.textMuted}`}>
-                {access.canHelpDesk
-                  ? "Conversations awaiting resolution"
-                  : "Upcoming department events"}
-              </p>
-            </Panel>
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 @3xl:grid-cols-4 gap-3">
+            {[
+              { icon: Users, label: "Community members", value: dept.memberCount.toLocaleString(), note: "Auto-enrolled in your hub", tone: "blue" },
+              { icon: CalendarPlus, label: "Upcoming events", value: eventCount, note: "On the campus calendar", tone: "violet" },
+              { icon: Megaphone, label: "Broadcasts sent", value: broadcastCount, note: "In this session", tone: "teal" },
+              access.canHelpDesk
+                ? { icon: LifeBuoy, label: "Open conversations", value: unresolved.length, note: unresolved.length ? "Ready for your response" : "You're all caught up", tone: "amber" }
+                : { icon: ShieldCheck, label: "Workspace team", value: admins.length + (owner ? 1 : 0), note: "Owner and assigned admins", tone: "amber" },
+            ].map(({ icon: Icon, label, value, note, tone }) => (
+              <Panel key={label} t={t} className={`workspace-stat workspace-tone-${tone}`}>
+                <div className="workspace-stat-icon">{createElement(Icon, { size: 19 })}</div>
+                <p className="text-3xl font-extrabold tracking-tight mt-4">{value}</p>
+                <h3 className="text-xs font-extrabold mt-1">{label}</h3>
+                <p className={`text-[10px] mt-2 ${t.textMuted}`}>{note}</p>
+              </Panel>
+            ))}
           </div>
-          <div>
-            <Eyebrow t={t}>Make something happen</Eyebrow>
-            <div className="grid grid-cols-1 @lg:grid-cols-2 gap-3 mt-3">
-              {[
-                access.canBroadcast && {
-                  icon: Megaphone,
-                  title: "Publish a broadcast",
-                  text: "Reach your department with a notice or alert.",
-                  action: onBroadcast,
-                },
-                access.canCreateEvent && {
-                  icon: CalendarPlus,
-                  title: "Create an event",
-                  text: "Publish to the hub and campus calendar.",
-                  action: onEvent,
-                },
-                access.canHelpDesk && {
-                  icon: LifeBuoy,
-                  title: "Manage Help Desk",
-                  text: `${unresolved.length} open conversations with students.`,
-                  action: () =>
-                    document
-                      .getElementById("workspace-helpdesk")
-                      ?.scrollIntoView({ behavior: "smooth", block: "start" }),
-                },
-                access.canEditMetadata && {
-                  icon: Pencil,
-                  title: "Edit page details",
-                  text: "Keep your banner, location and hours up to date.",
-                  action: () => setSection("settings"),
-                },
-              ]
-                .filter(Boolean)
-                .map((item) => (
-                  <button
-                    key={item.title}
-                    onClick={item.action}
-                    className={`p-5 flex items-start gap-3 text-left rounded-2xl border ${t.border} ${t.card} hover:border-[#1D9BF0]/40 transition-all active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}
-                  >
-                    <div className="p-3 bg-[#1D9BF0]/10 rounded-xl text-[#1D9BF0]">
-                      <item.icon size={20} />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-extrabold text-sm">{item.title}</h3>
-                      <p
-                        className={`text-xs mt-1.5 leading-relaxed ${t.textMuted}`}
-                      >
-                        {item.text}
-                      </p>
-                    </div>
-                    <ArrowUpRight size={16} className={t.textMuted} />
-                  </button>
-                ))}
-            </div>
-          </div>
-          {access.canHelpDesk && (
-            <Panel t={t} className="scroll-mt-24">
-              <div
-                id="workspace-helpdesk"
-                className="flex items-center justify-between mb-2"
-              >
-                <h3 className="font-extrabold text-base">Student Help Desk</h3>
-                <span className="text-xs text-[#1D9BF0] font-bold">
-                  {unresolved.length} open
-                </span>
-              </div>
-              <p className={`text-xs mb-4 ${t.textMuted}`}>
-                Private conversations. Replies are sent as {dept.short}{" "}
-                Department.
-              </p>
-              {threads.length === 0 ? (
-                <p className={`text-sm py-8 text-center ${t.textMuted}`}>
-                  All caught up. New student questions will appear here.
-                </p>
-              ) : (
-                threads.map((thread) => (
-                  <div
-                    key={thread.id}
-                    className={`py-3 border-t ${t.borderSoft}`}
-                  >
-                    <button
-                      className="w-full text-left flex gap-3 items-start"
-                      onClick={() => onThread(thread)}
-                    >
-                      <div className={`p-2 rounded-full ${t.inputBg}`}>
-                        <UserRound size={18} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-extrabold">{thread.name}</p>
-                        <p
-                          className={`text-xs mt-1 line-clamp-2 ${t.textMuted}`}
-                        >
-                          {state.replies[thread.id]?.at(-1)?.text || thread.msg}
-                        </p>
-                        <p className={`text-[10px] mt-2 ${t.textMuted}`}>
-                          {state.resolved[thread.id] ? "Resolved" : "Open"} ·{" "}
-                          {thread.time}
-                        </p>
-                      </div>
-                      <ChevronRight size={16} />
+          <div className="grid grid-cols-1 @4xl:grid-cols-3 gap-5 items-start">
+            <div className="@4xl:col-span-2 space-y-5 min-w-0">
+              <section>
+                <h2 className="text-base font-extrabold mb-3">Create & manage</h2>
+                <div className="grid grid-cols-1 @lg:grid-cols-2 gap-3">
+                  {[
+                    access.canBroadcast && { icon: Megaphone, title: "Publish a broadcast", text: "Keep your community in the loop", tone: "blue", action: onBroadcast },
+                    access.canCreateEvent && { icon: CalendarPlus, title: "Create an event", text: "Bring your department together", tone: "violet", action: onEvent },
+                    access.canHelpDesk && { icon: LifeBuoy, title: "Manage Help Desk", text: `${unresolved.length} conversations awaiting resolution`, tone: "amber", action: () => { const target = document.getElementById("workspace-helpdesk"); target?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' }); target?.focus({ preventScroll: true }); } },
+                    access.canEditMetadata && { icon: Pencil, title: "Edit page details", text: "Your banner, contacts and hours", tone: "teal", action: () => setSection("settings") },
+                  ].filter(Boolean).map(({ icon: Icon, title, text, tone, action }) => (
+                    <button key={title} onClick={action} className={`workspace-action workspace-tone-${tone} text-left rounded-2xl border ${t.border} ${t.card} p-4 focus-visible:ring-2 focus-visible:ring-[#1D9BF0] active:scale-[0.98] transition-all`}>
+                      <div className="flex justify-between items-start mb-4"><span className="workspace-action-icon">{createElement(Icon, { size: 24 })}</span><ArrowUpRight size={17} className={t.textMuted} /></div>
+                      <h3 className="text-sm font-extrabold">{title}</h3>
+                      <p className={`text-xs mt-1.5 leading-relaxed ${t.textMuted}`}>{text}</p>
                     </button>
-                    <button
-                      onClick={() =>
-                        updateDepartmentState((s) => ({
-                          ...s,
-                          resolved: {
-                            ...s.resolved,
-                            [thread.id]: !s.resolved[thread.id],
-                          },
-                        }))
-                      }
-                      className="text-[11px] font-bold text-[#1D9BF0] ml-12 mt-2 hover:underline"
-                    >
-                      {state.resolved[thread.id]
-                        ? "Reopen conversation"
-                        : "Mark resolved"}
-                    </button>
+                  ))}
+                </div>
+              </section>
+              {access.canHelpDesk && (
+                <Panel t={t} className="workspace-support">
+                  <div id="workspace-helpdesk" tabIndex={-1} className="flex items-center gap-3 mb-4 scroll-mt-24 rounded-lg focus-visible:ring-2 focus-visible:ring-[#1D9BF0]">
+                    <span className="workspace-support-icon"><LifeBuoy size={22} /></span>
+                    <div className="flex-1"><h3 className="font-extrabold text-base">Student Help Desk</h3><p className={`text-[11px] mt-1 ${t.textMuted}`}>Reply as {dept.short} Department</p></div>
+                    <span className="workspace-status workspace-status-open">{unresolved.length} open</span>
                   </div>
-                ))
+                  {threads.length === 0 ? (
+                    <div className={`text-center py-8 ${t.textMuted}`}><CheckCircle2 className="mx-auto mb-3 text-emerald-500" size={30} /><p className="text-sm font-bold">All caught up</p><p className="text-xs mt-1">New student questions will appear here.</p></div>
+                  ) : [...threads].sort((a, b) => Number(!!state.resolved[a.id]) - Number(!!state.resolved[b.id])).map(thread => (
+                    <div key={thread.id} className={`py-4 border-t ${t.borderSoft}`}>
+                      <button className="w-full text-left flex gap-3 items-start rounded-lg hover:text-[#1D9BF0] focus-visible:ring-2 focus-visible:ring-[#1D9BF0]" onClick={() => onThread(thread)}>
+                        <span className={`w-9 h-9 shrink-0 flex items-center justify-center rounded-full text-xs font-extrabold ${t.inputBg}`}>{thread.name.split(' ').map(part => part[0]).slice(0, 2).join('')}</span>
+                        <span className="flex-1 min-w-0"><span className="block text-sm font-extrabold">{thread.name}</span><span className={`block text-xs mt-1 line-clamp-2 ${t.textMuted}`}>{state.replies[thread.id]?.at(-1)?.text || thread.msg}</span><span className={`block text-[10px] mt-2 ${t.textMuted}`}>{thread.time}</span></span>
+                        <ChevronRight size={16} className="shrink-0 mt-1" />
+                      </button>
+                      <div className="flex flex-wrap items-center justify-between gap-2 ml-12 mt-3">
+                        <span className={`workspace-status ${state.resolved[thread.id] ? 'workspace-status-done' : 'workspace-status-open'}`}>{state.resolved[thread.id] ? 'Resolved' : 'Awaiting reply'}</span>
+                        <button onClick={() => updateDepartmentState(s => ({ ...s, resolved: { ...s.resolved, [thread.id]: !s.resolved[thread.id] } }))} className="text-[11px] font-bold text-[#1D9BF0] hover:underline rounded-md focus-visible:ring-2 focus-visible:ring-[#1D9BF0]">{state.resolved[thread.id] ? 'Reopen conversation' : 'Mark resolved'}</button>
+                      </div>
+                    </div>
+                  ))}
+                </Panel>
               )}
-            </Panel>
-          )}
-          <Panel t={t}>
-            <h3 className="text-sm font-extrabold">Department activity</h3>
-            <p className={`text-xs mt-2 ${t.textMuted}`}>
-              {broadcastCount} broadcasts sent this session · {eventCount}{" "}
-              upcoming events
-            </p>
-            {access.canEditMetadata && (
-              <div className="flex flex-wrap gap-2 mt-4">
-                {onPostJob && (
-                  <Action t={t} secondary onClick={onPostJob}>
-                    Post a job
-                  </Action>
-                )}
-                {onPostBlood && (
-                  <Action t={t} secondary onClick={onPostBlood}>
-                    Post blood request
-                  </Action>
-                )}
-              </div>
-            )}
-          </Panel>
+            </div>
+            <aside className="space-y-4 min-w-0 @4xl:pt-9">
+              <Panel t={t} className="workspace-team-summary">
+                <div className="flex items-center justify-between"><span className="workspace-team-icon"><ShieldCheck size={22} /></span><span className={`text-xs font-bold ${t.textMuted}`}>{admins.length + (owner ? 1 : 0)} people</span></div>
+                <h3 className="text-base font-extrabold mt-4">Your workspace team</h3>
+                <div className="flex -space-x-2 my-4" aria-hidden="true">{[owner, ...admins.map(item => item.person)].filter(Boolean).slice(0, 5).map(person => <span key={person.id} className={`w-9 h-9 flex items-center justify-center rounded-full border-2 ${t.border} ${t.surface} text-[#1D9BF0] text-[10px] font-extrabold`}>{person.name.replace(/^(Dr\.|Mr\.|Ms\.)\s*/, '').split(' ').map(part => part[0]).slice(0, 2).join('')}</span>)}</div>
+                <p className={`text-xs leading-relaxed ${t.textMuted}`}>{owner ? `${owner.name} leads this hub.` : 'No owner assigned.'}</p>
+                <button onClick={() => setSection('team')} className="mt-5 flex w-full items-center justify-between text-xs font-extrabold text-[#1D9BF0] rounded-md focus-visible:ring-2 focus-visible:ring-[#1D9BF0]">View team & access <ArrowUpRight size={16} /></button>
+              </Panel>
+              {access.canEditMetadata && (onPostJob || onPostBlood) && <Panel t={t}>
+                <h3 className="text-sm font-extrabold mb-3">Support your community</h3>
+                {onPostJob && <button onClick={onPostJob} className="workspace-utility text-emerald-600 dark:text-emerald-400"><Briefcase size={18} /><span>Post a job</span><ChevronRight size={15} /></button>}
+                {onPostBlood && <button onClick={onPostBlood} className="workspace-utility text-red-500"><Droplet size={18} /><span>Post blood request</span><ChevronRight size={15} /></button>}
+              </Panel>}
+              <div className={`flex items-start gap-2 px-2 text-[11px] leading-relaxed ${t.textMuted}`}><Eye size={16} className="shrink-0" /><p>Only your assigned team can see this workspace.</p></div>
+            </aside>
+          </div>
         </div>
       )}
       {section === "team" && (
         <div className="grid grid-cols-1 @4xl:grid-cols-3 gap-5">
-          <Panel t={t} className="@4xl:col-span-2">
+          <Panel t={t} className="@4xl:col-span-2 workspace-team-panel">
             <div className="flex flex-wrap gap-3 items-center justify-between">
               <div>
                 <h2 className="font-extrabold text-lg">
@@ -721,7 +634,7 @@ export function DepartmentWorkspace({
             </div>
             {owner && (
               <Person person={owner} t={t} onOpen={onPerson}>
-                <span className="text-[10px] text-[#1D9BF0] font-bold flex items-center gap-1 mt-2">
+                <span className="workspace-status workspace-status-owner mt-2">
                   <KeyRound size={12} /> Super Admin · Owner
                 </span>
               </Person>
@@ -729,7 +642,7 @@ export function DepartmentWorkspace({
             {admins.map(({ person, permission: role }) => (
               <Person key={person.id} person={person} t={t} onOpen={onPerson}>
                 <div className="flex flex-wrap items-center justify-between gap-2 mt-2">
-                  <span className={`text-[10px] font-bold ${t.textMuted}`}>
+                  <span className="workspace-status workspace-status-done">
                     {PERMISSIONS[role].label}
                   </span>
                   {access.canGrantAccess && (
@@ -770,9 +683,9 @@ export function DepartmentWorkspace({
             <h3 className="font-extrabold text-sm">
               Right access, right responsibility
             </h3>
-            <div className="space-y-4 mt-4">
+            <div className="workspace-permissions space-y-4 mt-4">
               {Object.values(PERMISSIONS).map((role) => (
-                <div key={role.label}>
+                <div key={role.label} className={`p-3 rounded-xl border ${t.borderSoft} ${t.inputBg}`}>
                   <p className="text-xs font-extrabold">{role.label}</p>
                   <p className={`text-xs leading-relaxed mt-1 ${t.textMuted}`}>
                     {role.description}
@@ -786,8 +699,8 @@ export function DepartmentWorkspace({
       {section === "settings" && (
         <div className="space-y-5 max-w-3xl">
           <Panel t={t}>
-            <h2 className="text-lg font-extrabold">
-              Your department, at a glance
+            <h2 className="text-lg font-extrabold flex items-center gap-2">
+              <Settings2 size={22} className="text-teal-500" /> Your department, at a glance
             </h2>
             <p className={`text-xs mt-1 mb-5 ${t.textMuted}`}>
               {access.canEditMetadata

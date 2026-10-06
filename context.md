@@ -9,6 +9,16 @@ Use the current source files as the implementation authority and the latest user
 request as the product authority. Earlier interrupted work is also documented in
 the repository's feature and design documents linked below.
 
+## Latest follow-up: combined portal revisions (6 October 2026)
+
+Implemented the deduplicated requirements from `Shared File__Ugrads - Alumni
+Portal Startup Stages.pdf` and `Ugrads Revisions.pdf`. See `REVISIONS.md` for the
+scope and QA record. Web onboarding now has a desktop 2:1 carousel/form layout;
+both public directories omit Staff; Home shows active job-seeking requests in
+role-based order; and the shared department workspace has distinct metrics,
+action tiles, support statuses and a team rail. Staff signup, profiles and
+Department Officials remain. Moments behavior was not changed.
+
 ## Latest follow-up: Markdown Moments revisions (6 October 2026)
 
 The subsequent `Ugrads Moments Section Revisions.md` replaces the earlier PDF's

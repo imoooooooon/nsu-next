@@ -1,8 +1,9 @@
+import { HomeCareerSections } from './shared/HomeCareerSections';
 import { momentPeople } from './shared/momentPeople';
 import { InstantDialog, MomentTypePicker } from './shared/InstantExperience';
 import { MomentsRail } from './shared/MomentsRail';
 import { getDepartmentState, subscribeDepartmentState } from './shared/departmentStore';
-import { PrototypePanel, StaffHome, StaffProfile, StaffSignup, StaffDirectory } from './shared/DepartmentExperience';
+import { PrototypePanel, StaffHome, StaffProfile, StaffSignup } from './shared/DepartmentExperience';
 import { useDepartmentState, currentStaff, currentViewer, allStaff, liveDepartment } from './shared/departmentStore';
 import React, { useState, useEffect } from 'react';
 import { 
@@ -4135,25 +4136,30 @@ export default function App() {
           />
         </div>
 
-        <div>
-          {(authRole === 'alumni' || authRole === 'faculty') && (
-            <div className="px-1 mb-5">
-              <button 
-                onClick={() => setIsPostJobOpen(true)}
-                className={`w-full py-3.5 rounded-xl font-extrabold text-sm transition-all active:scale-[0.98] bg-[#1D9BF0]/10 text-[#1D9BF0] border border-[#1D9BF0]/20 flex items-center justify-center shadow-sm`}
-              >
-                <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> Post a Job Opportunity
-              </button>
+        <HomeCareerSections authRole={authRole} t={t} talent={globalSeekingData}
+          savedTalentIds={savedTalentIds} onToggleSave={handleToggleSavedTalent}
+          onOpenTalent={setSelectedTalent}
+          onViewAll={() => { handleViewAllTalent(); setJobsMode('seeking'); setActiveTab('jobs'); }}>
+          <div>
+            {(authRole === 'alumni' || authRole === 'faculty') && (
+              <div className="px-1 mb-5">
+                <button
+                  onClick={() => setIsPostJobOpen(true)}
+                  className={`w-full py-3.5 rounded-xl font-extrabold text-sm transition-all active:scale-[0.98] bg-[#1D9BF0]/10 text-[#1D9BF0] border border-[#1D9BF0]/20 flex items-center justify-center shadow-sm`}
+                >
+                  <Plus className="w-4 h-4 mr-2" strokeWidth={3} /> Post a Job Opportunity
+                </button>
+              </div>
+            )}
+            <div className="flex justify-between items-end mb-1 relative z-10 px-1">
+              <h3 className={`text-lg font-extrabold ${t.text} tracking-tight`}>
+                {(authRole === 'alumni' || authRole === 'faculty') ? 'Recently Posted Jobs' : 'Latest Jobs For You'}
+              </h3>
+              <button className="text-[#1D9BF0] font-bold text-sm hover:underline" onClick={() => setActiveTab('jobs')}>See All</button>
             </div>
-          )}
-          <div className="flex justify-between items-end mb-1 relative z-10 px-1">
-            <h3 className={`text-lg font-extrabold ${t.text} tracking-tight`}>
-              {(authRole === 'alumni' || authRole === 'faculty') ? 'Recently Posted Jobs' : 'Latest Jobs For You'}
-            </h3>
-            <button className="text-[#1D9BF0] font-bold text-sm hover:underline" onClick={() => setActiveTab('jobs')}>See All</button>
+            <JobSlider jobs={globalJobsData} isDark={isDark} t={t} onSelectJob={setSelectedJob} />
           </div>
-          <JobSlider jobs={globalJobsData} isDark={isDark} t={t} onSelectJob={setSelectedJob} />
-        </div>
+</HomeCareerSections>
 
         {/* Animated Infinite Notification Stack */}
         <div className="relative w-full h-[88px] shrink-0 overflow-hidden rounded-2xl cursor-pointer group mt-2 mb-4" onClick={() => setActiveOverlay('notifications')}>
@@ -4493,7 +4499,7 @@ export default function App() {
     /* One directory, four lenses. Departments are Entity Profiles — they live
        in the network, so they are a segment here rather than a sixth item
        competing for a slot in a five-item capsule. */
-    const availableTabs = ['Alumni', 'Student', 'Faculty', 'Staff', 'Departments'];
+    const availableTabs = ['Alumni', 'Student', 'Faculty', 'Departments'];
     const isDepartments = directorySegment === 'Departments';
 
     const viewKind = isDepartments ? 'departments' : 'people';
@@ -4501,7 +4507,7 @@ export default function App() {
 
     let displayData = isDepartments ? globalDepartments :
                       directorySegment === 'Alumni' ? globalAlumniData : 
-                      directorySegment === 'Faculty' ? globalFacultyData : directorySegment === 'Staff' ? allStaff() :
+                      directorySegment === 'Faculty' ? globalFacultyData :
                       globalStudentData;
 
     return (
@@ -4585,8 +4591,7 @@ export default function App() {
 
           {/* People in list mode — one line each: circle avatar, name +
               headline + department, and Connect as the trailing action. */}
-          {directorySegment === 'Staff' && <StaffDirectory people={displayData} t={t} view={view} onSelect={setSelectedUser} />}
-          {!isDepartments && directorySegment !== 'Staff' && view === 'list' && (
+          {!isDepartments && view === 'list' && (
             <div className={`rounded-2xl ${t.card} border ${t.border} ${t.cardShadow} overflow-hidden`}>
               <ul className={`divide-y ${isDark ? 'divide-white/[0.06]' : 'divide-black/[0.05]'}`}>
                 {displayData.map((person) => (
@@ -4623,7 +4628,7 @@ export default function App() {
             </div>
           )}
 
-          {!isDepartments && directorySegment !== 'Staff' && view === 'card' && displayData.map((person) => (
+          {!isDepartments && view === 'card' && displayData.map((person) => (
             <div 
               key={person.id} 
               className={`rounded-2xl p-5 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 cursor-pointer shadow-2xl shadow-black/5 dark:shadow-black/40 border ${t.border}`} 

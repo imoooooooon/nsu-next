@@ -1,7 +1,5 @@
-import { StaffDirectory } from '../../../../src/shared/DepartmentExperience';
-import { allStaff } from '../../../../src/shared/departmentStore';
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { Users, Building2 } from 'lucide-react';
 import { PageContainer, PageHeader } from '../../components/layout/AppShell';
 import { SearchInput, SegmentedControl, EmptyState, ViewModeToggle } from '../../components/ui';
@@ -24,7 +22,7 @@ import { useDirectoryView } from '../../lib/directoryView';
 /* One directory, four lenses. Departments are Entity Profiles — they live in
    the network, so they are a segment here rather than a sixth nav item
    competing for a slot in a five-item capsule. */
-const SEGMENTS = ['Alumni', 'Student', 'Faculty', 'Staff', 'Departments'];
+const SEGMENTS = ['Alumni', 'Student', 'Faculty', 'Departments'];
 
 const SEGMENT_DATA = {
   Alumni: globalAlumniData,
@@ -35,7 +33,6 @@ const SEGMENT_DATA = {
 export default function NetworkPage() {
   const { t } = useTheme();
   const { authRole } = useAppState();
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const q = searchParams.get('q') || '';
   const segmentParam = searchParams.get('segment');
@@ -59,7 +56,7 @@ export default function NetworkPage() {
   const [lastSegmentParam, setLastSegmentParam] = useState(segmentParam);
   if (segmentParam !== lastSegmentParam) {
     setLastSegmentParam(segmentParam);
-    if (SEGMENTS.includes(segmentParam)) setSegment(segmentParam);
+    setSegment(SEGMENTS.includes(segmentParam) ? segmentParam : 'Alumni');
   }
 
   const isDepartments = segment === 'Departments';
@@ -89,7 +86,7 @@ export default function NetworkPage() {
       );
     }
 
-    const base = segment === 'Staff' ? allStaff() : SEGMENT_DATA[segment] || [];
+    const base = SEGMENT_DATA[segment] || [];
     if (!query) return base;
     return base.filter(p =>
       p.name.toLowerCase().includes(query) ||
@@ -112,7 +109,7 @@ export default function NetworkPage() {
           className="md:flex-1"
           aria-label="Search directory"
         />
-        <SegmentedControl options={SEGMENTS} value={segment} onChange={setSegment} className="md:w-[32rem] shrink-0" />
+        <SegmentedControl options={SEGMENTS} value={segment} onChange={setSegment} className="md:w-[28rem] shrink-0" />
       </div>
 
       {/* The results line carries the view switch: it changes how these
@@ -143,8 +140,6 @@ export default function NetworkPage() {
         </div>
       ) : results.length === 0 ? (
         <EmptyState icon={Users} title="No people match your search" className={t.text} />
-      ) : segment === 'Staff' ? (
-        <StaffDirectory people={results} t={t} view={view} onSelect={p => navigate(`/network/${p.id}`)} />
       ) : view === 'list' ? (
         <PersonList people={results} />
       ) : (

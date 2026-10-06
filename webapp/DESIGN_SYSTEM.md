@@ -384,10 +384,10 @@ except the deadline and an over-long range, which warn as soon as they happen.
 
 ## 4. Route map (basename `/webapp`)
 
-Auth (in `AuthLayout` phone-width panel): `/welcome`, `/auth/role`, `/auth/login`,
+Auth (in the responsive split `AuthLayout`): `/welcome`, `/auth/role`, `/auth/login`,
 `/auth/signup`, `/auth/otp`.
 
-App (in `AppShell`): `/home` · `/network` (`?segment=Alumni|Student|Faculty|Staff|Departments`) ·
+App (in `AppShell`): `/home` · `/network` (`?segment=Alumni|Student|Faculty|Departments`) ·
 `/network/:userId` · `/departments` (redirects into the directory segment) ·
 `/departments/:deptId` (`?tab=students|alumni|faculty`) ·
 `/departments/:deptId/manage` (Official/Admin only; others bounce to the hub) · `/jobs` ·
@@ -490,3 +490,32 @@ ownership transfer require explicit confirmation; ordinary metadata saving does 
 A small Prototype control is review chrome. It is available on auth and signed-in
 screens, labels simulated delivery, and switches identities without resetting
 permission changes. Reset is explicit. New prototype state lasts for this page session.
+
+
+## 9. October 2026 revisions: onboarding, discovery and workspace
+
+The combined scope and verification record is in `../REVISIONS.md`.
+
+- Web onboarding uses a full-height 2:1 split at desktop widths (1024px+),
+  with a minimum 400px form column. The left carousel uses the existing NSU
+  building line art, three community messages, explicit previous/next buttons
+  and labelled pagination. It does not auto-advance. The form column keeps the
+  existing welcome → role → signup → OTP and login routes. Long forms scroll
+  naturally; below 1024px, only the form column remains. Mobile prototype auth
+  is unchanged. The old centred phone-frame auth convention is superseded.
+- Public Directory has four lenses: Alumni, Student, Faculty, Departments.
+  Staff keep their identity, signup and profiles; assigned staff are discoverable
+  through Department Officials, and administrators can find them in team access.
+  A legacy `?segment=Staff` URL falls back to Alumni without exposing staff results.
+- Home uses shared `HomeCareerSections`. Alumni/faculty see job-seeking requests
+  before offerings; students see offerings before requests. The compact request
+  register shows three active posts, circular person marks, separate save actions
+  and a link to the full Seeking feed. DOM order matches visual/keyboard order.
+- Department workspace uses the shared `department-workspace.css` tokens:
+  blue for broadcasting, violet for calendar tools, amber for support and teal
+  for page editing. These are local workspace wayfinding accents; public event
+  and entity colours retain their existing meanings. Tone, icon and label work
+  together, never colour alone. Count cards, action tiles, support rows and a
+  compact team rail have different compositions. The entity mark stays square;
+  team avatars stay circular. Container queries keep the phone canvas correct
+  on wide screens. Existing permission checks and confirmations still apply.
