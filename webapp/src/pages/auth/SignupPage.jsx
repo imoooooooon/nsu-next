@@ -24,7 +24,7 @@ export default function SignupPage() {
   const { authRole, setAuthMode, login } = useAppState();
   const navigate = useNavigate();
 
-  if (authRole === 'staff') return <div className="h-full overflow-y-auto pb-10"><StaffSignup t={t} isDark={isDark} onBack={() => navigate('/auth/role')} onComplete={() => { login(); navigate('/home'); }} /></div>;
+  if (authRole === 'staff') return <div className="auth-staff h-full overflow-y-auto pb-10"><StaffSignup t={t} isDark={isDark} onBack={() => navigate('/auth/role')} onComplete={() => { login(); navigate('/home'); }} /></div>;
 
   const isStudent = authRole === 'student';
   const isAlumni = authRole === 'alumni';
@@ -32,7 +32,7 @@ export default function SignupPage() {
 
   return (
     <div className={`flex flex-col h-full relative z-10 animate-fade-in`}>
-      <div className={`px-6 pt-8 pb-3 ${t.glass} border-b z-20 sticky top-0 shadow-sm`}>
+      <div className={`auth-page-header px-6 pt-8 pb-3 ${t.glass} border-b z-20 sticky top-0 shadow-sm`}>
         <div className="flex items-center">
           <button
             onClick={() => navigate('/auth/role')}
@@ -47,9 +47,9 @@ export default function SignupPage() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-6 pt-6 pb-32 relative z-10">
+      <div className="auth-page-body flex-1 overflow-y-auto px-6 pt-6 pb-32 relative z-10">
         <div className="animate-fade-in-up">
-          <div className="space-y-4">
+          <div className="auth-fields space-y-4">
             <div>
               <FieldLabel>Full Name</FieldLabel>
               <TextInput icon={User} type="text" placeholder="Alex Johnson" />
@@ -84,27 +84,29 @@ export default function SignupPage() {
               )}
             </div>
 
-            <div>
-              <FieldLabel>Password</FieldLabel>
-              <TextInput icon={Lock} type="password" placeholder="Create a password" />
-            </div>
+            <div className="auth-passwords">
+              <div>
+                <FieldLabel>Password</FieldLabel>
+                <TextInput icon={Lock} type="password" placeholder="Create a password" />
+              </div>
 
-            <div>
-              <FieldLabel>Confirm Password</FieldLabel>
-              <TextInput icon={Lock} type="password" placeholder="Confirm password" />
+              <div>
+                <FieldLabel>Confirm Password</FieldLabel>
+                <TextInput icon={Lock} type="password" placeholder="Confirm password" />
+              </div>
             </div>
 
             {isAlumni && (
-              <div className="pt-2">
+              <div className="auth-certificate-field pt-2">
                 <FieldLabel>Graduation Certificate</FieldLabel>
-                <div className={`w-full border-2 border-dashed ${t.inputBorder} ${t.inputBg} rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:border-[#1D9BF0]/50 transition-colors shadow-sm`}>
+                <div className={`auth-certificate w-full border-2 border-dashed ${t.inputBorder} ${t.inputBg} rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:border-[#1D9BF0]/50 transition-colors shadow-sm`}>
                   <div className="w-10 h-10 rounded-full bg-[#1D9BF0]/10 flex items-center justify-center mb-2">
                     <Upload className="w-5 h-5 text-[#1D9BF0]" strokeWidth={2.5} />
                   </div>
                   <span className={`text-sm font-extrabold ${t.text} mb-0.5`}>Upload Certificate</span>
                   <span className={`text-[10px] font-bold ${t.textMuted}`}>PDF, JPG or PNG (Max 5MB)</span>
                 </div>
-                <div className="flex items-start mt-3 space-x-2 bg-yellow-500/10 p-3 rounded-lg border border-yellow-500/20">
+                <div className="auth-certificate-note flex items-start mt-3 space-x-2 bg-yellow-500/10 p-3 rounded-lg border border-yellow-500/20">
                   <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" strokeWidth={2} />
                   <p className={`text-[11px] font-bold ${isDark ? 'text-yellow-500' : 'text-yellow-600'} leading-tight`}>
                     You must upload a valid certificate within 7 days to unlock messaging and job posting.
@@ -116,12 +118,12 @@ export default function SignupPage() {
 
           <button
             onClick={() => navigate('/auth/otp')}
-            className="w-full h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.98] bg-[#1D9BF0] text-white mt-8 shadow-sm hover:bg-[#1A8CD8] outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]"
+            className="auth-primary w-full h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.98] bg-[#1D9BF0] text-white mt-8 shadow-sm hover:bg-[#1A8CD8] outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]"
           >
             Send OTP
           </button>
 
-          <div className="flex items-center my-6">
+          <div className="auth-divider flex items-center my-6">
             <div className={`flex-1 border-t ${t.borderSoft}`}></div>
             <span className={`px-4 text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted}`}>OR</span>
             <div className={`flex-1 border-t ${t.borderSoft}`}></div>
@@ -129,7 +131,7 @@ export default function SignupPage() {
 
           <button
             type="button"
-            className={`w-full h-14 rounded-xl font-extrabold text-[14px] transition-all active:scale-[0.98] ${t.card} border ${t.border} ${t.text} hover:border-[#1D9BF0]/30 shadow-sm flex items-center justify-center space-x-3 mb-6 outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}
+            className={`auth-social w-full h-14 rounded-xl font-extrabold text-[14px] transition-all active:scale-[0.98] ${t.card} border ${t.border} ${t.text} hover:border-[#1D9BF0]/30 shadow-sm flex items-center justify-center space-x-3 mb-6 outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}
           >
             <GoogleMark />
             <span>Sign up with Google</span>

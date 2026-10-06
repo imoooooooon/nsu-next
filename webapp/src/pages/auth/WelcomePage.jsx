@@ -13,7 +13,7 @@ export default function WelcomePage() {
   const navigate = useNavigate();
 
   return (
-    <div className={`flex flex-col items-center justify-center h-full px-6 pt-8 pb-8 transition-colors duration-500 animate-fade-in relative z-10`}>
+    <div className={`auth-welcome flex flex-col items-center justify-center h-full px-6 pt-8 pb-8 transition-colors duration-500 animate-fade-in relative z-10`}>
       <div className="flex-1 flex flex-col items-center justify-center w-full animate-fade-in-up">
         <img
           src="https://res.cloudinary.com/ddgxqqe6t/image/upload/v1784041954/Icon_300x-8_l1gnkq.png"

@@ -24,7 +24,7 @@ export default function LoginPage() {
 
   return (
     <div className={`flex flex-col h-full relative z-10 animate-fade-in`}>
-      <div className={`px-6 pt-8 pb-3 ${t.glass} border-b z-20 sticky top-0 shadow-sm`}>
+      <div className={`auth-page-header px-6 pt-8 pb-3 ${t.glass} border-b z-20 sticky top-0 shadow-sm`}>
         <div className="flex items-center">
           <button
             onClick={() => navigate('/welcome')}
@@ -37,9 +37,9 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-6 pt-6 pb-32 relative z-10">
+      <div className="auth-page-body flex-1 overflow-y-auto px-6 pt-6 pb-32 relative z-10">
         <div className="animate-fade-in-up">
-          <div className="space-y-4">
+          <div className="auth-fields space-y-4">
             <div>
               <FieldLabel>Email Address</FieldLabel>
               <TextInput icon={Mail} type="email" placeholder="yourname@northsouth.edu" />
@@ -58,12 +58,12 @@ export default function LoginPage() {
 
           <button
             onClick={() => { login(); navigate('/home'); }}
-            className="w-full h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.98] bg-[#1D9BF0] text-white mt-8 shadow-sm hover:bg-[#1A8CD8] outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]"
+            className="auth-primary w-full h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.98] bg-[#1D9BF0] text-white mt-8 shadow-sm hover:bg-[#1A8CD8] outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]"
           >
             Log In
           </button>
 
-          <div className="flex items-center my-6">
+          <div className="auth-divider flex items-center my-6">
             <div className={`flex-1 border-t ${t.borderSoft}`}></div>
             <span className={`px-4 text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted}`}>OR</span>
             <div className={`flex-1 border-t ${t.borderSoft}`}></div>
@@ -71,7 +71,7 @@ export default function LoginPage() {
 
           <button
             type="button"
-            className={`w-full h-14 rounded-xl font-extrabold text-[14px] transition-all active:scale-[0.98] ${t.card} border ${t.border} ${t.text} hover:border-[#1D9BF0]/30 shadow-sm flex items-center justify-center space-x-3 mb-6 outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}
+            className={`auth-social w-full h-14 rounded-xl font-extrabold text-[14px] transition-all active:scale-[0.98] ${t.card} border ${t.border} ${t.text} hover:border-[#1D9BF0]/30 shadow-sm flex items-center justify-center space-x-3 mb-6 outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}
           >
             <GoogleMark />
             <span>Continue with Google</span>

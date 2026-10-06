@@ -25,7 +25,7 @@ export default function OtpPage() {
 
   return (
     <div className={`flex flex-col h-full relative z-10 animate-fade-in`}>
-      <div className={`px-6 pt-8 pb-3 ${t.glass} border-b z-20 sticky top-0 shadow-sm`}>
+      <div className={`auth-page-header px-6 pt-8 pb-3 ${t.glass} border-b z-20 sticky top-0 shadow-sm`}>
         <button
           onClick={() => navigate('/auth/signup')}
           aria-label="Go back"
@@ -35,7 +35,7 @@ export default function OtpPage() {
         </button>
       </div>
 
-      <div className="flex-1 px-6 pt-6 relative z-10">
+      <div className="auth-page-body flex-1 px-6 pt-6 relative z-10">
         <h1 className={`text-2xl font-extrabold tracking-tight ${t.text}`}>Verify Your Email</h1>
         <p className={`text-xs mt-2 font-bold ${t.textMuted}`}>Enter the 6-digit code sent to your email.</p>
 
@@ -58,7 +58,7 @@ export default function OtpPage() {
 
         <button
           onClick={() => { login(); navigate('/home'); }}
-          className="w-full h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-sm hover:bg-[#1A8CD8] outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]"
+          className="auth-primary w-full h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-sm hover:bg-[#1A8CD8] outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]"
         >
           Verify & Create Account
         </button>

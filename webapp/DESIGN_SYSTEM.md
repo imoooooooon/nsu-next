@@ -519,3 +519,14 @@ The combined scope and verification record is in `../REVISIONS.md`.
   compact team rail have different compositions. The entity mark stays square;
   team avatars stay circular. Container queries keep the phone canvas correct
   on wide screens. Existing permission checks and confirmations still apply.
+
+### Compact web onboarding density
+
+The right onboarding column uses 40px controls, 22px page headings, compact role
+cards and 6–10px field gaps on desktop. At viewport heights of 740px or less,
+controls reduce to 36px and the utility header to 48px. Password/confirmation
+and staff office/contact pairs share rows. Certificate upload uses a compact
+horizontal layout. Standard onboarding fits at 1024 × 640 and larger without
+scrolling; shorter windows or enlarged text retain natural scrolling to keep
+all fields accessible. These overrides are scoped to web auth at 1024px+,
+preserving mobile control sizing and the rest of the design system.

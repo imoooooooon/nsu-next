@@ -21,7 +21,7 @@ export default function RoleSelectPage() {
   const navigate = useNavigate();
 
   return (
-    <div className={`flex flex-col h-full px-6 pt-8 pb-8 transition-colors duration-500 animate-fade-in relative z-10`}>
+    <div className={`auth-roles flex flex-col h-full px-6 pt-8 pb-8 transition-colors duration-500 animate-fade-in relative z-10`}>
       <button
         onClick={() => navigate('/welcome')}
         className={`-ml-2 w-10 h-10 mb-6 rounded-lg flex items-center justify-center ${t.card} border ${t.borderSoft} transition-colors active:scale-95 shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0] shadow-sm`}
@@ -30,7 +30,7 @@ export default function RoleSelectPage() {
         <ArrowLeft className={`w-6 h-6 ${t.text}`} strokeWidth={2.5} />
       </button>
 
-      <div className="mb-7">
+      <div className="auth-role-heading mb-7">
         <h1 className={`text-[28px] font-extrabold tracking-tight ${t.text} leading-tight`}>Select Your Role</h1>
         <p className={`text-sm mt-1 font-bold ${t.textMuted}`}>Choose how you want to access Ugrads</p>
       </div>
@@ -79,7 +79,7 @@ export default function RoleSelectPage() {
         })}
       </div>
 
-      <div className="mt-auto pt-6 pb-5 text-center flex flex-col items-center justify-center opacity-80 animate-fade-in" style={{ animationDelay: '200ms', animationFillMode: 'both' }}>
+      <div className="auth-role-security mt-auto pt-6 pb-5 text-center flex flex-col items-center justify-center opacity-80 animate-fade-in" style={{ animationDelay: '200ms', animationFillMode: 'both' }}>
         <div className={`flex items-center justify-center space-x-1.5 text-xs font-extrabold ${t.textMuted}`}>
           <Lock className="w-4 h-4" strokeWidth={2.5} />
           <span>Secured with university authentication</span>

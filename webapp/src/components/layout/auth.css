@@ -8,6 +8,7 @@
 .auth-route .pb-32 { padding-bottom: 32px; }
 .auth-route .sticky { position: static; }
 .auth-route input { min-width: 0; }
+.auth-passwords { display: grid; gap: 16px; }
 @media (min-width: 1024px) {
   .auth-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(400px, 1fr); }
   .auth-story { display: flex; flex-direction: column; position: sticky; top: 0; height: 100dvh; min-height: 620px; overflow: hidden; padding: clamp(32px, 4vw, 72px); background: linear-gradient(150deg, #eaf6fe, #f2f5f8 62%, #dfedfa); }
@@ -19,9 +20,79 @@
   .auth-campus { position: absolute; inset: 43% -8% 7% 0; background-repeat: no-repeat; background-size: cover; background-position: center; opacity: .8; pointer-events: none; }
   .auth-story-note { position: relative; z-index: 1; display: flex; gap: 12px; align-items: center; align-self: flex-start; margin-top: auto; padding: 12px 20px 12px 12px; border-radius: 16px; }
   .auth-story-footer { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; margin-top: 36px; }
-  .auth-flow-header { padding-inline: 28px; }
-  .auth-route { padding: 0 8px; }
-  .auth-route > div { min-height: min(760px, calc(100dvh - 72px)); }
+  /* Compact desktop density; natural overflow remains available for zoom and
+     unusually short windows, rather than clipping fields or submit actions. */
+  .auth-flow-header { height: 56px; padding-inline: 24px; }
+  .auth-route { padding: 0 8px; min-height: calc(100dvh - 56px); }
+  .auth-route > div { min-height: calc(100dvh - 56px); }
+  .auth-route h1 { font-size: 22px; line-height: 1.25; }
+  .auth-route input, .auth-route button[role="combobox"] { height: 40px; font-size: 12px; }
+  .auth-route label { font-size: 10px; margin-bottom: 4px; }
+  .auth-route button.h-14 { height: 40px; font-size: 12px; }
+  .auth-page-header { padding: 12px 24px 8px; background: transparent; border: 0; }
+  .auth-page-header button { width: 32px; height: 32px; }
+  .auth-page-header button svg { width: 18px; height: 18px; }
+  .auth-page-header h1 { font-size: 18px; }
+  .auth-page-body { padding: 12px 24px; }
+  .auth-fields { display: flex; flex-direction: column; gap: 8px; }
+  .auth-fields > * { margin-block: 0; }
+  .auth-passwords { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .auth-passwords input { padding-inline: 12px; }
+  .auth-passwords svg { display: none; }
+  /* Keep review chrome away from the compact form's footer links. */
+  .auth-layout ~ div:has(> button[aria-label="Prototype controls"]) {
+    top: 16px; bottom: auto; right: calc(max(400px, 100vw / 3) + 20px);
+  }
+  .auth-primary { margin-top: 12px; }
+  .auth-divider { margin-block: 8px; }
+  .auth-social { margin-bottom: 12px; }
+  .auth-certificate { display: grid; grid-template-columns: 32px 1fr; column-gap: 10px; padding: 10px 12px; }
+  .auth-certificate > div { grid-row: span 2; width: 32px; height: 32px; margin: 0; }
+  .auth-certificate > span { font-size: 11px; }
+  .auth-certificate > span:last-child { font-size: 10px; }
+  .auth-certificate-note { padding: 8px; margin-top: 8px; }
+  .auth-roles { padding: 16px 24px 20px; }
+  .auth-roles > button { width: 32px; height: 32px; margin-bottom: 16px; }
+  .auth-role-heading { margin-bottom: 18px; }
+  .auth-role-heading p { font-size: 12px; }
+  .auth-roles [role="listbox"] { display: flex; flex-direction: column; gap: 10px; }
+  .auth-roles [role="option"] { padding: 12px; margin: 0; min-height: 72px; }
+  .auth-roles [role="option"] > div:first-child { width: 36px; height: 36px; margin-right: 12px; }
+  .auth-roles [role="option"] svg { width: 18px; height: 18px; }
+  .auth-roles [role="option"] h3 { font-size: 13px; }
+  .auth-roles [role="option"] p { font-size: 11px; }
+  .auth-role-security { padding: 16px 0 12px; }
+  .auth-role-security > div { font-size: 10px; }
+  .auth-welcome { padding: 24px; }
+  .auth-welcome img { width: 72px; height: 72px; margin-bottom: 20px; }
+  .auth-welcome p { font-size: 12px; }
+  .auth-welcome > div:last-child p { font-size: 10px; }
+  .auth-staff { padding-bottom: 0; }
+  .auth-staff > div { padding: 16px 24px 20px; }
+  .auth-staff > div > * { margin-block: 0; }
+  .auth-staff > div > div { margin-top: 12px; margin-bottom: 16px; }
+  .auth-staff h1 { margin-top: 6px; }
+  .auth-staff p { font-size: 11px; line-height: 1.5; }
+  .auth-staff form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
+  .auth-staff form > * { margin-block: 0; grid-column: 1 / -1; }
+  .auth-staff form > label:nth-of-type(5), .auth-staff form > label:nth-of-type(6) { grid-column: auto; }
+  .auth-staff form > label:nth-of-type(n+5) > span { display: block; min-height: 30px; }
+  .auth-staff label > span { font-size: 10px; }
+  .auth-staff label > :last-child { margin-top: 4px; }
+  .auth-staff button:not([role="combobox"]) { min-height: 36px; padding-block: 8px; font-size: 11px; }
+}
+@media (min-width: 1024px) and (max-height: 740px) {
+  .auth-flow-header { height: 48px; }
+  .auth-route, .auth-route > div { min-height: calc(100dvh - 48px); }
+  .auth-route input, .auth-route button[role="combobox"], .auth-route button.h-14 { height: 36px; }
+  .auth-page-header { padding-block: 8px 4px; }
+  .auth-page-body { padding-top: 8px; }
+  .auth-fields { gap: 6px; }
+  .auth-social { margin-bottom: 4px; }
+  .auth-certificate-field { padding-top: 0; }
+  .auth-staff > div { padding-block: 12px; }
+  .auth-staff form { gap: 6px 12px; }
+  .auth-staff > div > div { margin-block: 8px 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .auth-layout *, .auth-layout *::before { animation: none !important; transition: none !important; }
