@@ -90,7 +90,7 @@ export default function RoleSelectPage() {
         <button
           disabled={!authRole}
           onClick={() => navigate('/auth/signup')}
-          className={`w-full h-14 rounded-xl text-base font-extrabold transition-all active:scale-[0.97] outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0] disabled:opacity-50 disabled:cursor-not-allowed bg-[#1D9BF0] text-white shadow-sm hover:bg-[#1A8CD8]`}
+          className={`auth-continue w-full h-14 rounded-xl text-base font-extrabold transition-all active:scale-[0.97] outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0] disabled:opacity-50 disabled:cursor-not-allowed bg-[#1D9BF0] text-white shadow-sm hover:bg-[#1A8CD8]`}
         >
           Continue
         </button>

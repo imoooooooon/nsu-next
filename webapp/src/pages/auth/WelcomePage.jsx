@@ -29,13 +29,13 @@ export default function WelcomePage() {
       <div className="w-full mt-auto space-y-3 animate-fade-in delay-150">
         <button
           onClick={() => { setAuthMode('login'); navigate('/auth/login'); }}
-          className={`w-full h-14 rounded-xl text-base font-semibold transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-sm hover:bg-[#1A8CD8] outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}
+          className={`auth-primary w-full h-14 rounded-xl text-base font-semibold transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-sm hover:bg-[#1A8CD8] outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}
         >
           Log In
         </button>
         <button
           onClick={() => { setAuthMode('signup'); navigate('/auth/role'); }}
-          className={`w-full h-14 rounded-xl text-base font-semibold transition-all active:scale-[0.97] ${t.card} border ${t.borderSoft} ${t.text} shadow-sm hover:border-[#1D9BF0]/30 outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}
+          className={`auth-secondary w-full h-14 rounded-xl text-base font-semibold transition-all active:scale-[0.97] ${t.card} border ${t.borderSoft} ${t.text} shadow-sm hover:border-[#1D9BF0]/30 outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}
         >
           Create New Account
         </button>

@@ -496,8 +496,8 @@ permission changes. Reset is explicit. New prototype state lasts for this page s
 
 The combined scope and verification record is in `../REVISIONS.md`.
 
-- Web onboarding uses a full-height 2:1 split at desktop widths (1024px+),
-  with a minimum 400px form column. The left carousel uses the existing NSU
+- Web onboarding uses a full-height split at desktop widths (1024px+),
+  with a 400–460px right panel and a centered 384px inner column (336px controls). The left carousel uses the existing NSU
   building line art, three community messages, explicit previous/next buttons
   and labelled pagination. It does not auto-advance. The form column keeps the
   existing welcome → role → signup → OTP and login routes. Long forms scroll
@@ -506,7 +506,9 @@ The combined scope and verification record is in `../REVISIONS.md`.
 - Public Directory has four lenses: Alumni, Student, Faculty, Departments.
   Staff keep their identity, signup and profiles; assigned staff are discoverable
   through Department Officials, and administrators can find them in team access.
-  A legacy `?segment=Staff` URL falls back to Alumni without exposing staff results.
+  Department owners additionally see a Staff directory lens, resolved through
+  identity-based `isOfficial` access. For everyone else, a legacy `?segment=Staff`
+  URL falls back to Alumni without exposing staff results.
 - Home uses shared `HomeCareerSections`. Alumni/faculty see job-seeking requests
   before offerings; students see offerings before requests. The compact request
   register shows three active posts, circular person marks, separate save actions
@@ -530,3 +532,14 @@ horizontal layout. Standard onboarding fits at 1024 × 640 and larger without
 scrolling; shorter windows or enlarged text retain natural scrolling to keep
 all fields accessible. These overrides are scoped to web auth at 1024px+,
 preserving mobile control sizing and the rest of the design system.
+
+### Onboarding contrast and workspace refinement
+
+- The Ugrads logo anchors the upper left on desktop and the mobile auth header.
+- Opaque auth fields use `#f7f9fb` / `#1b232b` surfaces and `#cbd5df` / `#3a4855`
+  borders in light/dark mode. Muted text uses `#586675` / `#a0acb8`. Field icons
+  sit above the input surface. Secondary actions share these visible boundaries.
+- Auth primary actions use the deeper Ugrads blue `#0878c4` (`#0768aa` on hover)
+  for readable white button labels. Page groups center vertically when space permits.
+- Department KPI cards put count and icon on one row, with 16px padding. The
+  department identity and Student Help Desk cards have no colored top stroke.

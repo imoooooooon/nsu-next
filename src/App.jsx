@@ -3,7 +3,7 @@ import { momentPeople } from './shared/momentPeople';
 import { InstantDialog, MomentTypePicker } from './shared/InstantExperience';
 import { MomentsRail } from './shared/MomentsRail';
 import { getDepartmentState, subscribeDepartmentState } from './shared/departmentStore';
-import { PrototypePanel, StaffHome, StaffProfile, StaffSignup } from './shared/DepartmentExperience';
+import { PrototypePanel, StaffDirectory, StaffHome, StaffProfile, StaffSignup } from './shared/DepartmentExperience';
 import { useDepartmentState, currentStaff, currentViewer, allStaff, liveDepartment } from './shared/departmentStore';
 import React, { useState, useEffect } from 'react';
 import { 
@@ -4496,18 +4496,22 @@ export default function App() {
   };
 
   const DirectoryTab = () => {
-    /* One directory, four lenses. Departments are Entity Profiles — they live
+    /* Four public lenses; department owners also have Staff discovery.
+       Departments are Entity Profiles — they live
        in the network, so they are a segment here rather than a sixth item
        competing for a slot in a five-item capsule. */
-    const availableTabs = ['Alumni', 'Student', 'Faculty', 'Departments'];
-    const isDepartments = directorySegment === 'Departments';
+    const canBrowseStaff = globalDepartments.some(dept => getDepartmentAccess(dept, authRole).isOfficial);
+    const availableTabs = ['Alumni', 'Student', 'Faculty', ...(canBrowseStaff ? ['Staff'] : []), 'Departments'];
+    const segment = availableTabs.includes(directorySegment) ? directorySegment : 'Alumni';
+    const isDepartments = segment === 'Departments';
+    const isStaff = segment === 'Staff';
 
     const viewKind = isDepartments ? 'departments' : 'people';
     const view = directoryView[viewKind];
 
-    let displayData = isDepartments ? globalDepartments :
-                      directorySegment === 'Alumni' ? globalAlumniData : 
-                      directorySegment === 'Faculty' ? globalFacultyData :
+    let displayData = isDepartments ? globalDepartments : isStaff ? allStaff() :
+                      segment === 'Alumni' ? globalAlumniData :
+                      segment === 'Faculty' ? globalFacultyData :
                       globalStudentData;
 
     return (
@@ -4536,7 +4540,7 @@ export default function App() {
 
           <SegmentedPill
             options={availableTabs.map(seg => ({ id: seg, label: seg === 'Departments' ? 'Depts' : seg }))}
-            value={directorySegment}
+            value={segment}
             onChange={setDirectorySegment}
             t={t}
             isDark={isDark}
@@ -4549,7 +4553,7 @@ export default function App() {
               results are laid out, so it sits with them. */}
           <div className="flex items-center justify-between gap-3 mt-1">
             <p className="text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider">
-              Showing {displayData.length} results • {directorySegment}
+              Showing {displayData.length} results • {segment}
             </p>
             <ViewModeSwitch
               value={view}
@@ -4589,9 +4593,11 @@ export default function App() {
             );
           })()}
 
+          {isStaff && <StaffDirectory people={displayData} t={t} view={view} onSelect={setSelectedUser} />}
+
           {/* People in list mode — one line each: circle avatar, name +
               headline + department, and Connect as the trailing action. */}
-          {!isDepartments && view === 'list' && (
+          {!isDepartments && !isStaff && view === 'list' && (
             <div className={`rounded-2xl ${t.card} border ${t.border} ${t.cardShadow} overflow-hidden`}>
               <ul className={`divide-y ${isDark ? 'divide-white/[0.06]' : 'divide-black/[0.05]'}`}>
                 {displayData.map((person) => (
@@ -4628,7 +4634,7 @@ export default function App() {
             </div>
           )}
 
-          {!isDepartments && view === 'card' && displayData.map((person) => (
+          {!isDepartments && !isStaff && view === 'card' && displayData.map((person) => (
             <div 
               key={person.id} 
               className={`rounded-2xl p-5 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 cursor-pointer shadow-2xl shadow-black/5 dark:shadow-black/40 border ${t.border}`} 

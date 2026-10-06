@@ -22,9 +22,9 @@ export const AuthLayout = () => {
   if (isAuthed) return <Navigate to="/home" replace />;
 
   return (
-    <div className={`auth-layout ${t.bg} ${t.text} font-jakarta antialiased selection:bg-[#1D9BF0]/30`}>
+    <div data-theme={isDark ? 'dark' : 'light'} className={`auth-layout ${t.bg} ${t.text} font-jakarta antialiased selection:bg-[#1D9BF0]/30`}>
       <section className={`auth-story ${isDark ? 'auth-story-dark' : ''}`} aria-label="Discover Ugrads" aria-roledescription="carousel">
-        <div className="auth-brand"><GraduationCap size={30} className="text-[#1D9BF0]" /><span>Ugrads<span className="auth-brand-caption">NORTH SOUTH UNIVERSITY NETWORK</span></span></div>
+        <div className="auth-brand"><img src="https://res.cloudinary.com/ddgxqqe6t/image/upload/v1784041954/Icon_300x-8_l1gnkq.png" alt="" width="40" height="40" /><span>Ugrads<span className="auth-brand-caption">NORTH SOUTH UNIVERSITY NETWORK</span></span></div>
         <div className="auth-story-copy" aria-live="polite" aria-atomic="true">
           <div key={slide} className="animate-fade-in-up">
             <p className="text-xs uppercase tracking-[0.2em] font-extrabold text-[#1D9BF0] mb-5">{content.label}</p>
@@ -41,7 +41,8 @@ export const AuthLayout = () => {
       </section>
       <main className={`auth-flow ${t.surface}`}>
         <header className={`auth-flow-header border-b ${t.borderSoft}`}>
-          <span className={`flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted}`}><BadgeCheck size={16} className="text-[#1D9BF0]" /> NSU verified network</span>
+          <span className="auth-mobile-brand"><img src="https://res.cloudinary.com/ddgxqqe6t/image/upload/v1784041954/Icon_300x-8_l1gnkq.png" alt="" width="28" height="28" /> Ugrads</span>
+          <span className={`auth-network-label flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted}`}><BadgeCheck size={16} className="text-[#1D9BF0]" /> NSU verified network</span>
           <button onClick={toggleTheme} aria-label="Toggle theme" className={`p-2.5 rounded-xl hover:bg-[#1D9BF0]/10 ${t.text} focus-visible:ring-2 focus-visible:ring-[#1D9BF0] active:scale-95`}>{isDark ? <Sun size={19} /> : <Moon size={19} />}</button>
         </header>
         <div key={location.pathname} className="auth-route animate-fade-in"><Outlet /></div>

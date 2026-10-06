@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Users, Building2 } from 'lucide-react';
 import { PageContainer, PageHeader } from '../../components/layout/AppShell';
 import { SearchInput, SegmentedControl, EmptyState, ViewModeToggle } from '../../components/ui';
@@ -10,6 +10,8 @@ import { globalDepartments, findDepartmentById } from '../../data/departments';
 import { getDepartmentAccess, getViewerDepartmentId } from '../../lib/departmentAccess';
 import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
+import { allStaff, useDepartmentState } from '../../../../src/shared/departmentStore';
+import { StaffDirectory } from '../../../../src/shared/DepartmentExperience';
 import { useDirectoryView } from '../../lib/directoryView';
 
 /* ---------------------------------------------------------------------------
@@ -19,7 +21,8 @@ import { useDirectoryView } from '../../lib/directoryView';
    instead of the single mobile column.
 --------------------------------------------------------------------------- */
 
-/* One directory, four lenses. Departments are Entity Profiles — they live in
+/* Four public lenses; department owners also have Staff discovery.
+   Departments are Entity Profiles — they live in
    the network, so they are a segment here rather than a sixth nav item
    competing for a slot in a five-item capsule. */
 const SEGMENTS = ['Alumni', 'Student', 'Faculty', 'Departments'];
@@ -33,12 +36,16 @@ const SEGMENT_DATA = {
 export default function NetworkPage() {
   const { t } = useTheme();
   const { authRole } = useAppState();
+  useDepartmentState();
+  const navigate = useNavigate();
+  const canBrowseStaff = globalDepartments.some(dept => getDepartmentAccess(dept, authRole).isOfficial);
+  const segments = canBrowseStaff ? [...SEGMENTS.slice(0, 3), 'Staff', 'Departments'] : SEGMENTS;
   const [searchParams] = useSearchParams();
   const q = searchParams.get('q') || '';
   const segmentParam = searchParams.get('segment');
   const [search, setSearch] = useState(q);
-  const [segment, setSegment] = useState(
-    SEGMENTS.includes(segmentParam) ? segmentParam : 'Alumni'
+  const [selectedSegment, setSegment] = useState(
+    segments.includes(segmentParam) ? segmentParam : 'Alumni'
   );
 
   /* The desktop TopBar submits global searches to /network?q=… . Adjusting
@@ -56,10 +63,12 @@ export default function NetworkPage() {
   const [lastSegmentParam, setLastSegmentParam] = useState(segmentParam);
   if (segmentParam !== lastSegmentParam) {
     setLastSegmentParam(segmentParam);
-    setSegment(SEGMENTS.includes(segmentParam) ? segmentParam : 'Alumni');
+    setSegment(segments.includes(segmentParam) ? segmentParam : 'Alumni');
   }
 
+  const segment = segments.includes(selectedSegment) ? selectedSegment : 'Alumni';
   const isDepartments = segment === 'Departments';
+  const isStaff = segment === 'Staff';
 
   /* The view mode is remembered per KIND of object (lib/directoryView.js):
      the people lenses share one mode with every department roster, and
@@ -86,13 +95,14 @@ export default function NetworkPage() {
       );
     }
 
-    const base = SEGMENT_DATA[segment] || [];
+    const base = isStaff ? allStaff() : SEGMENT_DATA[segment] || [];
     if (!query) return base;
     return base.filter(p =>
       p.name.toLowerCase().includes(query) ||
-      p.company.toLowerCase().includes(query) ||
+      (p.company || p.office || '').toLowerCase().includes(query) ||
       p.role.toLowerCase().includes(query) ||
-      p.skills.some(skill => skill.toLowerCase().includes(query))
+      (p.dept || '').toLowerCase().includes(query) ||
+      (p.skills || []).some(skill => skill.toLowerCase().includes(query))
     );
   })();
 
@@ -100,16 +110,16 @@ export default function NetworkPage() {
     <PageContainer className="animate-fade-in">
       <PageHeader title="Directory" subtitle="Connect with the NSU Network" />
 
-      <div className="flex flex-col md:flex-row md:items-center gap-3 mb-4">
+      <div className="flex flex-col xl:flex-row xl:items-center gap-3 mb-4">
         <SearchInput
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onClear={() => setSearch('')}
-          placeholder={isDepartments ? 'Search department, school...' : 'Search name, company...'}
+          placeholder={isDepartments ? 'Search department, school...' : isStaff ? 'Search staff, department, office...' : 'Search name, company...'}
           className="md:flex-1"
           aria-label="Search directory"
         />
-        <SegmentedControl options={SEGMENTS} value={segment} onChange={setSegment} className="md:w-[28rem] shrink-0" />
+        <SegmentedControl options={segments} value={segment} onChange={setSegment} className={`${canBrowseStaff ? 'xl:w-[32rem]' : 'xl:w-[28rem]'} shrink-0`} />
       </div>
 
       {/* The results line carries the view switch: it changes how these
@@ -140,6 +150,8 @@ export default function NetworkPage() {
         </div>
       ) : results.length === 0 ? (
         <EmptyState icon={Users} title="No people match your search" className={t.text} />
+      ) : isStaff ? (
+        <StaffDirectory people={results} t={t} view={view} onSelect={person => navigate(`/network/${person.id}`)} />
       ) : view === 'list' ? (
         <PersonList people={results} />
       ) : (

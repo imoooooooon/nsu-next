@@ -545,10 +545,12 @@ export function DepartmentWorkspace({
                 : { icon: ShieldCheck, label: "Workspace team", value: admins.length + (owner ? 1 : 0), note: "Owner and assigned admins", tone: "amber" },
             ].map(({ icon: Icon, label, value, note, tone }) => (
               <Panel key={label} t={t} className={`workspace-stat workspace-tone-${tone}`}>
-                <div className="workspace-stat-icon">{createElement(Icon, { size: 19 })}</div>
-                <p className="text-3xl font-extrabold tracking-tight mt-4">{value}</p>
-                <h3 className="text-xs font-extrabold mt-1">{label}</h3>
-                <p className={`text-[10px] mt-2 ${t.textMuted}`}>{note}</p>
+                <div className="workspace-stat-heading">
+                  <p className="text-2xl font-extrabold tracking-tight">{value}</p>
+                  <div className="workspace-stat-icon">{createElement(Icon, { size: 19 })}</div>
+                </div>
+                <h3 className="text-xs font-extrabold mt-2">{label}</h3>
+                <p className={`text-[10px] mt-1 ${t.textMuted}`}>{note}</p>
               </Panel>
             ))}
           </div>

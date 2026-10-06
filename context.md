@@ -427,3 +427,16 @@ judging screenshots or clicking underlying page controls.
 
 Treat this as context, not a new request to refactor the whole project. Preserve
 the completed revisions and follow the user's next instruction.
+
+## 12. Latest onboarding / department follow-up — 6 October 2026
+
+Onboarding now has a capped 400–460px desktop right panel with 336px-wide form
+controls, visible light/dark borders and icons, vertically grouped content, and
+the actual Ugrads logo at top left. The 1024×640 laptop check remains scroll-free
+for alumni signup, staff signup and role selection. See `webapp/DESIGN_SYSTEM.md`.
+
+Staff stays absent from the public directory, but department owners (`isOfficial`)
+now regain the Staff tab on mobile and web. It reacts to live identity/ownership
+changes; staff profiles remain linked through Department Officials. Admin identity
+and Student Help Desk panels no longer have colored top strokes. Four overview
+KPI cards now place icons beside the counts and are about 113px tall on desktop.

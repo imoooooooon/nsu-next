@@ -23,7 +23,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   return (
-    <div className={`flex flex-col h-full relative z-10 animate-fade-in`}>
+    <div className={`auth-login flex flex-col h-full relative z-10 animate-fade-in`}>
       <div className={`auth-page-header px-6 pt-8 pb-3 ${t.glass} border-b z-20 sticky top-0 shadow-sm`}>
         <div className="flex items-center">
           <button

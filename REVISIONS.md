@@ -8,8 +8,8 @@ labels an embedded admin screenshot; it does not describe another feature.
 
 | Requirement | Implementation | Surfaces |
 | --- | --- | --- |
-| Desktop onboarding should feel like a web experience | Full-height 2:1 composition with the existing NSU line art, three manually controlled carousel slides and the existing authentication routes in the right column. Long forms remain scrollable. | Web; responsive single column below 1024px |
-| Hide Staff from Directory | Four public lenses; legacy web Staff links fall back to Alumni. Staff accounts, signup, profiles, assigned officials and team lookup remain available. | Mobile + web |
+| Desktop onboarding should feel like a web experience | Full-height split composition with a capped 400–460px right panel with the existing NSU line art, three manually controlled carousel slides and the existing authentication routes in the right column. Long forms remain scrollable. | Web; responsive single column below 1024px |
+| Hide Staff from Directory | Four public lenses, plus Staff for department owners only; legacy web Staff links fall back to Alumni for non-owners. Staff accounts, signup, profiles, assigned officials and team lookup remain available. | Mobile + web |
 | Polish department admin view | Distinct count cards, coloured/icon-led action tiles, support queue with open/resolved labels, team summary rail, role chips and grouped permission guidance. Open conversations sort before resolved ones. | Shared mobile + web workspace |
 | Add job-seeking requests to Home | Three active requests, details and save actions, plus Seeking feed links. Alumni/faculty: requests then offerings. Students: offerings then requests. | Shared mobile + web preview |
 
@@ -37,3 +37,14 @@ No backend authentication, permissions or delivery behavior was added.
   public directory tabs; student/faculty Home ordering; saved requests reflected
   in the Seeking feed; mobile Home links and ordering.
 - Prototype state was exercised only on local test origins. No deployment.
+
+## Follow-up polish — 6 October 2026
+
+- Capped onboarding controls at 336px on desktop; centered shorter page groups.
+- Real Ugrads logo in the upper left, including the mobile web header.
+- Visible input icons, light/dark field boundaries and secondary actions; stronger
+  primary-button and warning-text contrast.
+- Restored owner-only Staff discovery on both surfaces using live ownership access.
+- Removed identity/help-desk accent strokes and reduced desktop KPI cards to about 113px.
+- Verified 1024×640 alumni/staff signup and role selection without overflow; mobile
+  OTP layout, owner Staff search/profile navigation and student tab exclusion.
