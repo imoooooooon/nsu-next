@@ -50,7 +50,7 @@ const NavItem = ({ item, isDark, collapsed, active }) => (
     to={item.to}
     aria-current={active ? 'page' : undefined}
     title={collapsed ? item.label : undefined}
-    className={`relative flex items-center h-[48px] rounded-xl transition-all duration-300 ease-out overflow-hidden group outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0] ${
+    className={`relative flex shrink-0 items-center h-[48px] rounded-xl transition-all duration-300 ease-out overflow-hidden group outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0] ${
       active
         ? `${isDark ? 'nav-active-dark text-white' : 'nav-active-light text-black'}`
         : `bg-transparent ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-black'}`
@@ -103,7 +103,7 @@ export const Sidebar = () => {
         isDark ? 'nav-capsule-dark' : 'nav-capsule-light'
       } ${collapsed ? 'w-[76px]' : 'w-[76px] xl:w-[248px]'}`}
     >
-      <nav className="flex-1 flex flex-col space-y-1 overflow-y-auto hide-scrollbar">
+      <nav aria-label="Main navigation" className="sidebar-nav min-h-0 flex-1 flex flex-col gap-1 overflow-y-auto overscroll-contain [&>*]:shrink-0">
         <GroupLabel collapsed={collapsed} t={t}>Menu</GroupLabel>
         {NAV_MAIN.map(item => (
           <NavItem key={item.label} item={item} isDark={isDark} collapsed={collapsed} active={item.match(location)} />

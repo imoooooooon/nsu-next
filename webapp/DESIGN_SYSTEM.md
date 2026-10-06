@@ -546,8 +546,9 @@ preserving mobile control sizing and the rest of the design system.
 
 ### Campus branding and contact revisions — 7 October 2026
 
-The auth shell uses `HogwartsCampus.jsx`, a local SVG that inherits the light/dark
-illustration tone. The brand caption is “Your Campus Network” and the first slide
+The auth shell uses `HogwartsCampus.jsx` with the local transparent Hogwarts
+line-art PNG, filling the lower panel edge to edge. A vertical mask softens its
+edges; multiply in light mode and inverted screen in dark mode keep ink subtle. The brand caption is “Your Campus Network” and the first slide
 uses the campus-neutral community copy. The authenticated top bar shows the Ugrads
 logotype without an institutional tagline.
 
@@ -562,3 +563,8 @@ show the selected donor/family and blood request rather than an unrelated thread
 The donor phone fixtures are scoped to emergency support. The mobile web request
 contact panel follows the details instead of obscuring content with a fixed bar.
 The four workspace KPI cards retain icon tints without decorative corner rings.
+
+Sidebar main links have a non-shrinking 48px height, with compact 36px department
+subnavigation. The menu scrolls independently above the fixed footer. Donor card
+actions use two equal columns with an 8px gap and 40px buttons in both states;
+phone details remain full width above them.

@@ -1,0 +1,8 @@
+# Hogwarts welcome illustration
+
+Generated with the built-in image generation tool, with transparent background enabled.
+Saved asset: `webapp/src/assets/hogwarts-campus-lineart.png`.
+
+## Generation prompt
+
+Use case: stylized-concept. Create a premium architectural pen-and-ink line-art panorama of Hogwarts castle and its campus, for the lower half of a university community welcome webpage. Wide landscape composition, approximately 2:1. Detailed recognizable Hogwarts: asymmetrical cluster of tall round stone towers with steep conical spires, the Great Hall with gothic lancet windows and richly articulated slate roof, courtyards, smaller turrets, and a large arched stone viaduct approaching from the left foreground. Three-quarter architectural perspective, believable spatial depth, precise elegant fine strokes, varied line weights, rich window and masonry details without excessive dark shading. Castle buildings and the bridge must fill almost the entire width edge to edge, with the tallest spires reaching nearly the upper edge, close enough to read architecture rather than a tiny distant castle surrounded by empty space. Very little empty sky, subtle rocky terrace below, no big mountains or lake dominating the composition. Monochrome muted medium blue ink. Actual transparent background and transparent open spaces between strokes, no paper texture, no solid white background, no opaque building fills. Airy refined architectural travel sketch, polished professional editorial quality. No people, words, labels, border, lettering, logo or watermark. Generate only the artwork, no webpage or mockup.

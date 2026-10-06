@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../../context/AppStateContext';
 import { useTheme } from '../../theme/ThemeContext';
 
-export function EmergencyContact({ phone, label, peer, headline, bloodGroup }) {
+export function EmergencyContact({ phone, label, peer, headline, bloodGroup, secondaryAction }) {
   const { t, isDark } = useTheme();
   const { setChatContext, showToast } = useAppState();
   const navigate = useNavigate();
@@ -29,7 +29,10 @@ export function EmergencyContact({ phone, label, peer, headline, bloodGroup }) {
         </div>
         {phone && <button type="button" onClick={copyPhone} aria-label={`Copy ${label.toLowerCase()}`} title="Copy phone number" className={`p-2 rounded-lg ${t.textMuted} hover:text-[#1D9BF0] focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}><Copy size={16} /></button>}
       </div>
-      <button type="button" onClick={message} className="w-full h-10 rounded-lg bg-[#0878C4] text-white font-bold text-xs flex items-center justify-center gap-2 hover:bg-[#0768AA] focus-visible:ring-2 focus-visible:ring-[#1D9BF0] active:scale-[.98]" aria-label={`Message ${peer.name}`}><MessageSquare size={16} />Message</button>
+      <div className={secondaryAction ? 'grid grid-cols-2 gap-2' : undefined}>
+        <button type="button" onClick={message} className="w-full min-w-0 h-10 rounded-lg bg-[#0878C4] text-white font-bold text-xs flex items-center justify-center gap-1.5 hover:bg-[#0768AA] focus-visible:ring-2 focus-visible:ring-[#1D9BF0] active:scale-[.98]" aria-label={`Message ${peer.name}`}><MessageSquare size={16} className="shrink-0" />Message</button>
+        {secondaryAction}
+      </div>
     </div>
   );
 }

@@ -55,6 +55,9 @@ body {
 .nav-active-light { background-color: #f1f2f4; }
 .nav-active-dark { background-color: #2c2c2e; }
 
+/* The menu scrolls independently; navigation rows never compress above the footer. */
+.sidebar-nav { scrollbar-width: thin; scrollbar-color: rgb(125 145 165 / .35) transparent; }
+
 /* Motion vocabulary (same curves and names as the mobile app) */
 @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes fadeInUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }

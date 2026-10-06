@@ -453,6 +453,17 @@ sample donor numbers without prototype labels in the UI. Donor profile links
 carry `?from=emergency` to preserve contact actions. `ChatView` renders emergency
 handoff context without the unrelated seeded conversation.
 
-Auth now uses local `HogwartsCampus.jsx` vector artwork, theme colours and campus
+Auth uses `HogwartsCampus.jsx` with local campus artwork, theme colours and campus
 wording. The authenticated TopBar’s NSU tagline and KPI corner rings were removed.
 The previously compact onboarding dimensions and owner-only Staff tab remain.
+
+## 14. Sidebar, donor actions and welcome artwork — 7 October 2026
+
+Desktop sidebar links retain 48px heights; an independent thin-scrollbar menu
+keeps the Settings/profile footer fixed when owner navigation exceeds the height.
+Emergency donor cards place Message and Request Blood in one equal-width row,
+including the Request Sent state. Other contact panels keep a full-width Message.
+The welcome shell now uses a detailed generated Hogwarts architectural panorama
+(`webapp/src/assets/hogwarts-campus-lineart.png`) across the lower left panel,
+with a soft edge fade and light/dark blend treatments. Prompt provenance lives
+in `output/revisions/hogwarts-illustration-prompt.md`.

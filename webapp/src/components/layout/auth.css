@@ -36,8 +36,10 @@
   .auth-story-copy { position: relative; z-index: 1; margin-top: clamp(48px, 9vh, 100px); }
   .auth-story-title { white-space: pre-line; font-size: clamp(32px, 3.1vw, 56px); line-height: 1.12; letter-spacing: -.055em; font-weight: 800; }
   .auth-story-subtitle { margin-top: 16px; max-width: 560px; font-size: clamp(13px, 1.15vw, 18px); line-height: 1.5; font-weight: 600; }
-  .auth-campus { position: absolute; left: -3%; bottom: 9%; width: 108%; height: 40%; color: #7caaca; opacity: .65; pointer-events: none; }
-  .auth-story-dark .auth-campus { color: #477fa5; opacity: .7; }
+  .auth-campus { position: absolute; left: -3%; bottom: 3%; width: 106%; height: 53%; pointer-events: none; opacity: .34; mix-blend-mode: multiply; mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 74%, transparent); }
+  .auth-campus img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+  .auth-story-dark .auth-campus { mix-blend-mode: screen; opacity: .3; }
+  .auth-story-dark .auth-campus img { filter: grayscale(1) invert(1); }
   .auth-story-note { position: relative; z-index: 1; display: flex; gap: 12px; align-items: center; align-self: flex-start; margin-top: auto; padding: 12px 20px 12px 12px; border-radius: 16px; }
   .auth-story-footer { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; margin-top: 36px; }
   /* Compact desktop density; natural overflow remains available for zoom and
@@ -108,7 +110,7 @@
   .auth-staff button:not([role="combobox"]) { min-height: 36px; padding-block: 8px; font-size: 11px; }
 }
 @media (min-width: 1024px) and (max-height: 740px) {
-  .auth-campus { height: 34%; }
+  .auth-campus { height: 48%; bottom: 2%; }
   .auth-story-copy { margin-top: 32px; }
   .auth-story-copy > div > p:last-child { margin-top: 12px; font-size: 12px; max-width: 420px; }
   .auth-story-subtitle { margin-top: 10px; }

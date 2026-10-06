@@ -83,22 +83,24 @@ export default function DonorDirectoryPage() {
                     </span>
                   </div>
 
-                  <div className="mb-3">
-                    <EmergencyContact phone={getDonorPhone(person)} label="Donor phone number" peer={{ id: person.id, name: person.name, role: roleType, subtitle: person.dept }} headline={`${person.blood} blood donation`} bloodGroup={person.blood} />
-                  </div>
-                  <div className="flex w-full">
-                    <div className="flex-1" onClick={(e) => { e.stopPropagation(); toggleRequested(person.id); }}>
-                      {requested ? (
-                        <div className={`flex items-center justify-center h-10 rounded-lg font-bold text-[13px] ${isDark ? 'bg-white/10 text-white' : 'bg-white text-black shadow-sm'} border ${t.border} transition-all cursor-pointer`}>
-                          <CheckCircle2 className="w-4 h-4 mr-2 text-red-500" strokeWidth={2.5} /> Request Sent
-                        </div>
-                      ) : (
-                        <button className="w-full h-10 rounded-lg font-bold text-[13px] transition-all active:scale-[0.97] bg-red-500 hover:bg-red-600 text-white shadow-sm flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-red-500">
-                          <AlertTriangle className="w-4 h-4 mr-1.5" strokeWidth={2.5} /> Request Blood
-                        </button>
-                      )}
-                    </div>
-                  </div>
+                  <EmergencyContact
+                    phone={getDonorPhone(person)}
+                    label="Donor phone number"
+                    peer={{ id: person.id, name: person.name, role: roleType, subtitle: person.dept }}
+                    headline={`${person.blood} blood donation`}
+                    bloodGroup={person.blood}
+                    secondaryAction={
+                      <button
+                        type="button"
+                        onClick={() => toggleRequested(person.id)}
+                        aria-pressed={requested}
+                        className={`w-full min-w-0 h-10 rounded-lg font-bold text-xs whitespace-nowrap transition-colors active:scale-[.98] flex items-center justify-center gap-1.5 outline-none focus-visible:ring-2 focus-visible:ring-red-500 ${requested ? `${isDark ? 'bg-white/10 text-white' : 'bg-white text-black'} border ${t.border}` : 'bg-red-500 hover:bg-red-600 text-white'}`}
+                      >
+                        {requested ? <CheckCircle2 size={16} className="shrink-0 text-red-500" /> : <AlertTriangle size={16} className="shrink-0" />}
+                        {requested ? 'Request Sent' : 'Request Blood'}
+                      </button>
+                    }
+                  />
                 </div>
               </div>
             );
