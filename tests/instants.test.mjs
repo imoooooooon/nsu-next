@@ -21,7 +21,7 @@ import {
 import { momentPeople } from "../src/shared/momentPeople.js";
 
 const now = 1_800_000_000_000;
-test("profile entry selects only that author’s unexpired, unopened moments", () => {
+test("profile entry includes that author’s viewed Moments until they expire", () => {
   const state = initialInstantState(now);
   assert.deepEqual(
     momentsForAuthor(state, now, "user-1").map((item) => item.id),
@@ -30,10 +30,24 @@ test("profile entry selects only that author’s unexpired, unopened moments", (
   const opened = consumeInstant(state, "maliha", now);
   assert.deepEqual(
     momentsForAuthor(opened, now, "user-1").map((item) => item.id),
-    ["maliha-afternoon"],
+    ["maliha", "maliha-afternoon"],
   );
   assert.equal(momentsForAuthor(state, now + INSTANT_TTL, "user-1").length, 0);
   assert.equal(momentsForAuthor(state, now, "unknown").length, 0);
+  assert.equal(momentsForAuthor(state, now - INSTANT_TTL, "user-1").length, 0);
+  const expires = state.received[0].createdAt + INSTANT_TTL;
+  assert.equal(momentsForAuthor(opened, expires - 1, "user-1").length, 1);
+  assert.equal(momentsForAuthor(opened, expires, "user-1").length, 0);
+});
+test("an exhausted stack stays empty while profiles can replay their unexpired photos", () => {
+  const initial = initialInstantState(now);
+  const viewed = initial.received.reduce((state, item) => consumeInstant(state, item.id, now), initial);
+  const restored = JSON.parse(JSON.stringify(viewed));
+  assert.equal(availableInstants(restored, now + 1000).length, 0);
+  assert.equal(momentsForAuthor(restored, now + 1000, "user-1").length, 2);
+  assert.equal(consumeInstant(restored, "maliha", now + 1000), restored);
+  assert.equal(availableInstants(restored, now + 1000).length, 0);
+  assert.equal(momentsForAuthor(restored, now + INSTANT_TTL, "user-1").length, 0);
 });
 test("capture persists the chosen frame and caption position, with safe defaults", () => {
   for (const frame of MOMENT_FRAMES) {

@@ -141,7 +141,9 @@ export function InstantDialog({
   const [info, setInfo] = useState(false);
   const [notice, setNotice] = useState("");
   const [sessionMoments] = useState(() =>
-    momentsForAuthor(getInstantState(), Date.now(), authorId),
+    authorId
+      ? momentsForAuthor(getInstantState(), Date.now(), authorId)
+      : availableInstants(getInstantState(), Date.now()),
   );
   useEffect(() => {
     const viewport = window.visualViewport;
@@ -234,7 +236,8 @@ export function InstantDialog({
             <p>
               Share a photo with close friends or mutual followers. Tap the photo
               to advance. Viewed cards move to the right; the next cards wait on
-              the left. All Moments disappear 24 hours after posting, including
+              the left. The stack shows unseen Moments; profiles let you revisit
+              their Moments. All Moments disappear 24 hours after posting, including
               your saved captures.
             </p>
             <p>Screen capture can’t be blocked in a browser.</p>

@@ -158,8 +158,8 @@ export function initialInstantState(now) {
 }
 
 export function momentsForAuthor(state, now, authorId) {
-  return availableInstants(state, now).filter(
-    (item) => !authorId || item.authorId === authorId,
+  return state.received.filter(
+    (item) => item.authorId === authorId && isMomentLive(item, now),
   );
 }
 

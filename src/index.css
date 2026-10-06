@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Keep body-portaled Moments aligned with the mobile app canvas. */
+:root { --ugrads-app-width: 430px; }
+
 /* ---------------------------------------------------------------------------
    Shadows — a whisper, not elevation (client direction).
 

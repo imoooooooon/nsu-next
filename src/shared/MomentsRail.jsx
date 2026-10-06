@@ -58,7 +58,8 @@ export function MomentsRail({ moments, t, isDark, onCreateClick, onOpenNote }) {
         <InstantEntry t={t} />
         {moments.map((group) => {
           const note = group.items.find((item) => item.type === "note");
-          const count = momentsForAuthor(snapshot, now, group.id).length;
+          const photos = momentsForAuthor(snapshot, now, group.id);
+          const count = photos.filter((item) => !snapshot.opened[item.id]).length;
           return (
             <div className={`moment-rail-person ${t.text}`} key={group.id}>
               <div className="moment-rail-profile">
@@ -72,8 +73,8 @@ export function MomentsRail({ moments, t, isDark, onCreateClick, onOpenNote }) {
                   </button>
                 )}
                 <button
-                  className={`moment-rail-avatar ${isDark ? "dark" : ""} ${count ? "has-moments" : ""}`}
-                  aria-label={`Open ${group.user.name}'s moments, ${count} new`}
+                  className={`moment-rail-avatar ${isDark ? "dark" : ""} ${count ? "has-moments" : photos.length ? "has-viewed-moments" : ""}`}
+                  aria-label={`Open ${group.user.name}'s moments, ${photos.length} available, ${count} new`}
                   onClick={() => setAuthor(group)}
                 >
                   <User size={30} strokeWidth={1.5} />

@@ -112,7 +112,7 @@ export function MomentsFeed({ items, authorName, notify, onCamera }) {
     <div className="instant-inbox moment-empty-state">
       <div className="instant-inbox-intro">
         <span className="instant-eyebrow">UGRADS MOMENTS</span>
-        <h3>{snoozed ? "A little quiet time." : authorName && !finished ? `No new moments from ${authorName}.` : "All caught up."}</h3>
+        <h3>{snoozed ? "A little quiet time." : authorName && !finished ? `No moments from ${authorName} right now.` : "All caught up."}</h3>
         <p>{snoozed ? "Your feed is snoozed for 24 hours." : "Come back for another glimpse of their day."}</p>
       </div>
       <div className="instant-empty-art">{snoozed ? <Moon size={48} strokeWidth={1} /> : <Check size={48} strokeWidth={1} />}</div>

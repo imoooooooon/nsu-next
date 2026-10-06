@@ -16,11 +16,17 @@ controls and one-year sender archive described in the previous PDF revision.
 
 - Creation offers **Notes / Moments**. Stories remain inactive; their earlier
   design and code are retained for a future release.
-- The top row keeps its stacked Moments entry. Avatars and names open the selected
-  author's unread photos; note bubbles open the separate Notes viewer.
+- The top-row stack shows only unseen Moments and becomes empty once all are seen.
+  Avatars/names and author URLs open all of that person's unexpired photos,
+  including viewed ones. Profile replay does not add photos back to the stack.
+  Blue avatar rings indicate unseen photos; muted dashed rings indicate available
+  photos that have all been seen. Note bubbles open the separate Notes viewer.
 - The viewer is a bounded, non-scrolling screen using the dynamic viewport height.
   The header retains Moments, Close, Info, Archive and Camera. Media shrinks to fit
   the available space while the reaction and reply controls stay visible.
+  In the mobile prototype it shares the home's 430px maximum canvas width and
+  square screen edges, including when viewed on a desktop. Header, author metadata,
+  reply text and touch targets use sizes consistent with the app.
 - A horizontal depth deck puts unseen queued cards on the left, the active photo
   in the centre, and blurred, receded viewed cards on the right. Tap the active
   photo to advance. The last tap reaches the caught-up state. A Previous control
@@ -29,7 +35,8 @@ controls and one-year sender archive described in the previous PDF revision.
   scrolls normally.
 - Photos are marked viewed only after successful loading while active. Failed
   photos offer Retry and Skip without consuming them. Closing/hiding the dialog
-  ends the session; reopening excludes viewed photos.
+  ends the session; reopening the stack excludes viewed photos, while reopening
+  a profile allows replay until the original 24-hour expiry.
 - **All photo Moments expire 24 hours after posting**, including sender captures.
   Expired media is removed from the feed, an open deck, archive/detail view and
   session store, along with associated receipts, reactions and replies. The

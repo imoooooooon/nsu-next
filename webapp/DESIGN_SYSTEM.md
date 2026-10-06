@@ -10,7 +10,8 @@ re-architected for desktop with proper routing. **Every page must follow this do
 The shared Moments experience (`../src/shared/InstantExperience.jsx`) is an
 immersive black media surface in either theme, with Ugrads blue state accents and
 Plus Jakarta Sans. The top row retains a stacked Moments entry; avatars open that
-author's Moments and note bubbles open Notes. Creation offers Notes and Moments;
+author's unexpired Moments (including already viewed photos), while the stack
+contains only unseen photos. Note bubbles open Notes. Creation offers Notes and Moments;
 Stories remain inactive with their design retained for a future release.
 The viewer fits one dynamic viewport without vertical scrolling. Its tap-to-advance
 depth deck places queued cards on the left, the active card in the centre and
@@ -21,6 +22,9 @@ floating share pill and a flexible media stage, with side-by-side media/controls
 on short landscape screens. All Moments, including saved captures, expire after
 24 hours. Keep the header title
 strictly Moments and retain Close, Info, Archive and Camera utilities.
+The mobile prototype's dialog must match its home canvas (430px maximum, full
+available height, square edges), even on a desktop monitor. Use the shared
+`--ugrads-app-width` token rather than a wider independent modal width.
 The row and chooser keep normal theme tokens. Use the existing spring curve for
 transform/opacity motion and respect reduced motion. Received Moments remain in
 the top-row experience; do not add a feed card or global navigation item.
