@@ -235,8 +235,8 @@ export function InstantDialog({
             <b>A little connection.</b>
             <p>
               Share a photo with close friends or mutual followers. Tap the photo
-              to advance. Viewed cards move to the right; the next cards wait on
-              the left. The stack shows unseen Moments; profiles let you revisit
+              to advance. Viewed cards move to the left; the next cards arrive
+              from the right. The stack shows unseen Moments; profiles let you revisit
               their Moments. All Moments disappear 24 hours after posting, including
               your saved captures.
             </p>

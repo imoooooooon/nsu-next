@@ -27,8 +27,9 @@ controls and one-year sender archive described in the previous PDF revision.
   In the mobile prototype it shares the home's 430px maximum canvas width and
   square screen edges, including when viewed on a desktop. Header, author metadata,
   reply text and touch targets use sizes consistent with the app.
-- A horizontal depth deck puts unseen queued cards on the left, the active photo
-  in the centre, and blurred, receded viewed cards on the right. Tap the active
+- A horizontal depth deck puts unseen queued cards on the right, the active photo
+  in the centre, and blurred, receded viewed cards on the left. Tapping advances
+  the deck from right to left. Tap the active
   photo to advance. The last tap reaches the caught-up state. A Previous control
   and keyboard navigation allow revisiting within the current viewing session.
   Swipe/drag is no longer the viewer's navigation mechanism; the home row still

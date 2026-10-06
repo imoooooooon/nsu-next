@@ -7,6 +7,8 @@ import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
 import { getViewerIdentity } from '../../data/people';
 import { Verified } from '../ui';
+import { DepartmentOwnerNav } from '../../features/departments/DepartmentOwnerNav';
+import { useOwnedDepartment } from '../../lib/useOwnedDepartment';
 
 /* ---------------------------------------------------------------------------
    Desktop sidebar — the mobile liquid-glass capsule nav, stood upright and
@@ -91,6 +93,7 @@ export const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const viewer = getViewerIdentity(authRole);
+  const ownedDepartment = useOwnedDepartment();
 
   const collapsed = isSidebarCollapsed;
 
@@ -109,7 +112,10 @@ export const Sidebar = () => {
         <GroupLabel collapsed={collapsed} t={t}><span className="block pt-4">Campus</span></GroupLabel>
         <div className={`${collapsed ? 'block' : 'xl:hidden'} my-3 mx-2 border-t ${isDark ? 'border-white/10' : 'border-black/10'}`}></div>
         {NAV_CAMPUS.map(item => (
-          <NavItem key={item.label} item={item} isDark={isDark} collapsed={collapsed} active={item.match(location)} />
+          <div key={item.label}>
+            <NavItem item={item} isDark={isDark} collapsed={collapsed} active={item.match(location) && !(item.label === 'Departments' && ownedDepartment)} />
+            {item.label === 'Departments' && ownedDepartment && <DepartmentOwnerNav sidebar collapsed={collapsed} />}
+          </div>
         ))}
       </nav>
 

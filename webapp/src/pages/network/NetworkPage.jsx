@@ -5,6 +5,7 @@ import { PageContainer, PageHeader } from '../../components/layout/AppShell';
 import { SearchInput, SegmentedControl, EmptyState, ViewModeToggle } from '../../components/ui';
 import { PersonCard, PersonList } from '../../features/network/PersonCard';
 import { DepartmentList, DepartmentGrid, MyDepartmentPanel } from '../../features/departments/DepartmentDirectory';
+import { DepartmentOwnerNav } from '../../features/departments/DepartmentOwnerNav';
 import { globalAlumniData, globalFacultyData, globalStudentData } from '../../data/people';
 import { globalDepartments, findDepartmentById } from '../../data/departments';
 import { getDepartmentAccess, getViewerDepartmentId } from '../../lib/departmentAccess';
@@ -109,6 +110,7 @@ export default function NetworkPage() {
   return (
     <PageContainer className="animate-fade-in">
       <PageHeader title="Directory" subtitle="Connect with the NSU Network" />
+      {isDepartments && <DepartmentOwnerNav />}
 
       <div className="flex flex-col xl:flex-row xl:items-center gap-3 mb-4">
         <SearchInput

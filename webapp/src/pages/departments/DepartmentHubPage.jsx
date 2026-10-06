@@ -15,6 +15,7 @@ import {
   EntityAvatar, EntityVerified, AccessBadge, DepartmentStats, DepartmentInfoRow,
 } from '../../features/departments/DepartmentPrimitives';
 import { DepartmentBloodRequestModal } from '../../features/departments/DepartmentBloodRequestModal';
+import { DepartmentOwnerNav } from '../../features/departments/DepartmentOwnerNav';
 import { DepartmentOfficials, DepartmentEvents } from '../../features/departments/DepartmentHubSections';
 import {
   findDepartmentById, departmentJobs, departmentBloodRequests,
@@ -126,6 +127,7 @@ export default function DepartmentHubPage() {
       </DetailHeader>
 
       <DepartmentEntry dept={dept} authRole={authRole} t={t} isDark={isDark} onManage={() => navigate(`/departments/${dept.id}/manage`)} />
+      {access.isOfficial && <DepartmentOwnerNav />}
       {/* ------------------------------------------------- identity hero */}
       <TintedCard tint="blueSoft" className="p-6 lg:p-8 mb-5" contentClassName="flex flex-col sm:flex-row sm:items-start gap-6 lg:gap-8">
         <EntityAvatar dept={dept} size="3xl" className="mx-auto sm:mx-0" />

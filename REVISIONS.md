@@ -48,3 +48,23 @@ No backend authentication, permissions or delivery behavior was added.
 - Removed identity/help-desk accent strokes and reduced desktop KPI cards to about 113px.
 - Verified 1024×640 alumni/staff signup and role selection without overflow; mobile
   OTP layout, owner Staff search/profile navigation and student tab exclusion.
+
+## Ugrads Revisions (1).pdf — 7 October 2026
+
+| Revision | Implementation |
+| --- | --- |
+| Moments advance right to left on tap | Queued cards enter from the right; viewed cards recede left. Shared mobile/web deck and help text updated. |
+| Owner-only Departments Home / Admin | Nested desktop links and compact-screen department tabs. Home opens `/network?segment=Departments`; Admin opens the currently owned department’s `/manage` route. |
+| Web emergency numbers and messaging | Donor cards/details and request cards/details show contact numbers. Copy is separate from Message; chats preserve the selected contact and blood request. Bangladesh-format phone fixtures added as explicitly requested by the user. |
+| Remove corner circles from KPI cards | Removed the shared stat-card decorative pseudo-element. |
+| Hogwarts-style campus line art | Local, theme-aware SVG study of towers, Great Hall, clock courtyard, viaduct and lakeside cliff. |
+| Campus-neutral welcome wording | Updated brand caption, first slide label/headline/subtitle/body and welcome form copy. |
+| Remove institutional tagline under authenticated logotype | Shared web TopBar shows Ugrads only. |
+
+Validation for the seven revisions: all 25 existing model tests passed; web lint
+and changed shared Moments lint passed; both production builds passed with the
+existing bundle-size warnings. Browser QA checked right-to-left tap advancement
+and Previous, owner/non-owner navigation, desktop and mobile department pages,
+KPI decorations, donor detail contacts, donor/family message handoffs, mobile
+request contact placement, and light/dark welcome layouts. Welcome fits at
+1024×640. No captured browser errors.

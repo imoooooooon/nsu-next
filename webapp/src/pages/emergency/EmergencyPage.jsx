@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Info, Droplet } from 'lucide-react';
+import { Info, Droplet, Phone } from 'lucide-react';
 import { PageContainer, PageHeader } from '../../components/layout/AppShell';
 import { IconButton, Card, Button, Modal, MicroHeading, Toggle } from '../../components/ui';
 import { bloodGroups, globalEmergencyRequests } from '../../data/emergency';
@@ -111,6 +111,7 @@ export default function EmergencyPage() {
                   <h4 className={`font-semibold ${t.text} text-base leading-tight`}>{req.hospital}</h4>
                   <p className={`text-sm font-medium ${t.textMuted} mt-1`}>{req.units} units needed</p>
                   <p className={`text-sm font-medium ${t.textMuted}`}>{req.distance} away</p>
+                  <p className={`flex items-center gap-2 mt-3 text-xs font-bold ${t.text}`}><Phone size={14} className={t.textMuted} aria-hidden="true" /><span>Family contact: <span className="select-all">{req.contact}</span></span></p>
                 </div>
                 <button
                   onClick={() => navigate(`/emergency/requests/${req.id}`)}

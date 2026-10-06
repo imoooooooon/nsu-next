@@ -11,6 +11,7 @@ import {
 import { allDirectoryUsers } from "../../data/people";
 import { getDepartmentEvents } from "../../data/events";
 import { DepartmentBloodRequestModal } from "../../features/departments/DepartmentBloodRequestModal";
+import { DepartmentOwnerNav } from "../../features/departments/DepartmentOwnerNav";
 export default function DepartmentManagePage() {
   const { t, isDark } = useTheme();
   const { authRole, showToast, sentBroadcasts } = useAppState();
@@ -21,6 +22,7 @@ export default function DepartmentManagePage() {
   if (!dept) return <Navigate to="/departments" replace />;
   return (
     <PageContainer>
+      <DepartmentOwnerNav />
       <DepartmentWorkspace
         key={dept.id}
         dept={dept}

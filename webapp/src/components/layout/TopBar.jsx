@@ -75,7 +75,6 @@ export const TopBar = () => {
             />
             <div className={`hidden ${isSidebarCollapsed ? '' : 'xl:flex'} flex-col ml-2 min-w-0`}>
               <span className={`text-[15px] font-extrabold tracking-tight leading-tight ${t.text}`}>Ugrads</span>
-              <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#1D9BF0]">NSU Verified Network</span>
             </div>
           </Link>
         </div>

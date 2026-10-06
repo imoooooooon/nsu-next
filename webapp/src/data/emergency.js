@@ -1,4 +1,8 @@
-/* Emergency blood-support demo data — identical to the shipped mobile prototype. */
+import { allDirectoryUsers } from './people';
+
+/* Sample contacts are scoped to emergency support, not public profile data. */
+const donorPhones = Object.fromEntries(allDirectoryUsers.map(person => [person.id, `01700${String(person.id).padStart(6, '0')}`]));
+export const getDonorPhone = person => person.phone || donorPhones[person.id] || null;
 
 export const globalEmergencyRequests = [
   { id: 1, hospital: 'Apollo Hospital', location: 'Bashundhara, Dhaka', bg: 'B+', distance: '2.3km', urgency: 'Critical', units: 2, match: 'Perfect Match', time: '10m ago', description: 'Patient is undergoing open heart surgery. Blood is required immediately.', contact: '01711223344', patientName: 'Rahim Uddin' },

@@ -1,5 +1,5 @@
 import { StaffProfile } from '../../../../src/shared/DepartmentExperience';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft, Share, MapPin, Droplets, MessageSquare, CheckCircle2,
   Briefcase, GraduationCap, Users,
@@ -7,6 +7,9 @@ import {
 import { PageContainer, DetailHeader } from '../../components/layout/AppShell';
 import { IconButton, Button, Card, TintedCard, Avatar, Verified, EmptyState } from '../../components/ui';
 import { findUserById } from '../../data/people';
+import { getDonorPhone } from '../../data/emergency';
+import { EmergencyContact } from '../../features/emergency/EmergencyContact';
+import { getPersonRole } from '../../lib/roleStyles';
 import { findDepartmentByCode } from '../../data/departments';
 import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
@@ -23,7 +26,9 @@ export default function UserProfilePage() {
   const { showToast, requestedSet, toggleRequested } = useAppState();
   const navigate = useNavigate();
   const { userId } = useParams();
-  const close = useCloseTo('/network');
+  const [searchParams] = useSearchParams();
+  const isEmergency = searchParams.get('from') === 'emergency';
+  const close = useCloseTo(isEmergency ? '/emergency' : '/network');
   const user = findUserById(userId);
 
   if (!user) {
@@ -112,7 +117,11 @@ export default function UserProfilePage() {
           </div>
 
           {/* Actions stay a comfortable button width instead of stretching. */}
-          <div className="flex items-center space-x-3 w-full sm:max-w-sm">
+          {isEmergency ? (
+            <div className="w-full sm:max-w-sm">
+              <EmergencyContact phone={getDonorPhone(user)} label="Donor phone number" peer={{ id: user.id, name: user.name, role: getPersonRole(user), subtitle: user.dept }} headline={`${user.blood} blood donation`} bloodGroup={user.blood} />
+            </div>
+          ) : <div className="flex items-center space-x-3 w-full sm:max-w-sm">
             <div className="flex-1">
               {requested ? (
                 <button
@@ -128,7 +137,7 @@ export default function UserProfilePage() {
               )}
             </div>
             <IconButton icon={MessageSquare} label={`Message ${user.name}`} size="lg" onClick={() => navigate('/messages/1')} />
-          </div>
+          </div>}
         </div>
       </TintedCard>
 

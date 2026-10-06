@@ -14,8 +14,8 @@ author's unexpired Moments (including already viewed photos), while the stack
 contains only unseen photos. Note bubbles open Notes. Creation offers Notes and Moments;
 Stories remain inactive with their design retained for a future release.
 The viewer fits one dynamic viewport without vertical scrolling. Its tap-to-advance
-depth deck places queued cards on the left, the active card in the centre and
-blurred viewed cards on the right. Quick reactions form a horizontal pill directly
+depth deck places queued cards on the right, the active card in the centre and
+blurred viewed cards on the left. Tapping advances from right to left. Quick reactions form a horizontal pill directly
 above Reply. Four compact SVG frame choices use curved corner captions, defaulting
 to the top left; there are no freeform caption-position controls. Capture uses a
 floating share pill and a flexible media stage, with side-by-side media/controls
@@ -497,8 +497,8 @@ permission changes. Reset is explicit. New prototype state lasts for this page s
 The combined scope and verification record is in `../REVISIONS.md`.
 
 - Web onboarding uses a full-height split at desktop widths (1024px+),
-  with a 400–460px right panel and a centered 384px inner column (336px controls). The left carousel uses the existing NSU
-  building line art, three community messages, explicit previous/next buttons
+  with a 400–460px right panel and a centered 384px inner column (336px controls). The left carousel uses the local Hogwarts-style
+  vector line art, three community messages, explicit previous/next buttons
   and labelled pagination. It does not auto-advance. The form column keeps the
   existing welcome → role → signup → OTP and login routes. Long forms scroll
   naturally; below 1024px, only the form column remains. Mobile prototype auth
@@ -543,3 +543,22 @@ preserving mobile control sizing and the rest of the design system.
   for readable white button labels. Page groups center vertically when space permits.
 - Department KPI cards put count and icon on one row, with 16px padding. The
   department identity and Student Help Desk cards have no colored top stroke.
+
+### Campus branding and contact revisions — 7 October 2026
+
+The auth shell uses `HogwartsCampus.jsx`, a local SVG that inherits the light/dark
+illustration tone. The brand caption is “Your Campus Network” and the first slide
+uses the campus-neutral community copy. The authenticated top bar shows the Ugrads
+logotype without an institutional tagline.
+
+Department owners alone receive nested Home/Admin links in the desktop Departments
+menu; compact screens show the same links on department pages. Home selects the
+Departments directory lens, Admin opens the owned department workspace. Active
+state and availability follow live identity-based ownership.
+
+Emergency contact numbers are selectable with a separate copy action; Message is
+the communication action. Donor detail pages retain emergency context, and chats
+show the selected donor/family and blood request rather than an unrelated thread.
+The donor phone fixtures are scoped to emergency support. The mobile web request
+contact panel follows the details instead of obscuring content with a fixed bar.
+The four workspace KPI cards retain icon tints without decorative corner rings.

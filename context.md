@@ -440,3 +440,19 @@ now regain the Staff tab on mobile and web. It reacts to live identity/ownership
 changes; staff profiles remain linked through Department Officials. Admin identity
 and Student Help Desk panels no longer have colored top strokes. Four overview
 KPI cards now place icons beside the counts and are about 113px tall on desktop.
+
+## 13. Seven PDF revisions — 7 October 2026
+
+Implemented `Ugrads Revisions (1).pdf`; see `REVISIONS.md` for the item map.
+Moments now advance right to left, with queued cards right and seen cards left.
+Owner-only department Home/Admin links use live ownership and appear in the
+sidebar and compact web pages. Admin opens the owned department’s manage route.
+Emergency donor/request contacts display selectable phone numbers, copy and
+contact-specific messaging; the user explicitly requested Bangladesh-format
+sample donor numbers without prototype labels in the UI. Donor profile links
+carry `?from=emergency` to preserve contact actions. `ChatView` renders emergency
+handoff context without the unrelated seeded conversation.
+
+Auth now uses local `HogwartsCampus.jsx` vector artwork, theme colours and campus
+wording. The authenticated TopBar’s NSU tagline and KPI corner rings were removed.
+The previously compact onboarding dimensions and owner-only Staff tab remain.

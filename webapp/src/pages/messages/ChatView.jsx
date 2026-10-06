@@ -63,6 +63,7 @@ export default function ChatView() {
   const isHandoff = chatId === 'new';
   const conversation = isHandoff ? null : findConversationById(chatId, getViewerDepartmentId(authRole));
   const seekingHandoff = isHandoff ? chatContext?.seeking : null;
+  const emergencyHandoff = isHandoff ? chatContext?.emergency : null;
 
   useEffect(() => {
     const onDown = (e) => {
@@ -194,6 +195,14 @@ export default function ChatView() {
         )}
 
         <div className="max-w-3xl mx-auto flex flex-col space-y-4">
+          {emergencyHandoff && (
+            <div className={`rounded-2xl p-4 border border-red-500/20 ${isDark ? 'bg-red-500/10' : 'bg-red-50'}`}>
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-red-500">Emergency support</p>
+              <p className={`mt-1 text-sm font-extrabold ${t.text}`}>{emergencyHandoff.headline}</p>
+              {emergencyHandoff.phone && <p className={`mt-2 text-xs ${t.textMuted}`}>Contact number: <span className={`select-all font-bold ${t.text}`}>{emergencyHandoff.phone}</span></p>}
+              <p className={`mt-3 text-xs leading-relaxed ${t.textMuted}`}>Start your conversation with {peerName} about this blood request.</p>
+            </div>
+          )}
           {seekingHandoff && (
             <>
               <div className={`shrink-0 rounded-2xl p-3.5 ${isDark ? 'bg-white/5' : 'bg-black/[0.03]'} border ${t.borderSoft} animate-fade-in`}>
@@ -213,7 +222,7 @@ export default function ChatView() {
             </>
           )}
 
-          {!seekingHandoff && (
+          {!isHandoff && (
             <>
               <div className="flex items-center justify-center my-2 space-x-4 opacity-70">
                 <div className={`h-px w-8 ${isDark ? 'bg-white/20' : 'bg-black/10'}`}></div>

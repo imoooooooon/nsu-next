@@ -1,7 +1,8 @@
 import { useParams } from 'react-router-dom';
-import { ArrowLeft, Share, MapPin, Droplets, Phone, Droplet } from 'lucide-react';
+import { Share, MapPin, Droplets, Droplet } from 'lucide-react';
 import { PageContainer, DetailHeader } from '../../components/layout/AppShell';
-import { IconButton, Card, TintedCard, Button, EmptyState } from '../../components/ui';
+import { IconButton, Card, TintedCard, EmptyState } from '../../components/ui';
+import { EmergencyContact } from '../../features/emergency/EmergencyContact';
 import { findEmergencyById } from '../../data/emergency';
 import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
@@ -9,8 +10,8 @@ import { useCloseTo } from '../../lib/navigation';
 
 /* ---------------------------------------------------------------------------
    /emergency/requests/:requestId — the mobile EmergencyRequestView as a route.
-   Desktop moves the "Contact Family" CTA into a sticky rail; mobile keeps the
-   fixed bottom bar.
+   Desktop keeps contact details in a sticky rail; smaller screens place them
+   after the request details so the phone number and messaging action stay readable.
 --------------------------------------------------------------------------- */
 
 export default function EmergencyRequestPage() {
@@ -40,7 +41,7 @@ export default function EmergencyRequestPage() {
     ? 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20'
     : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20';
 
-  const contactFamily = () => showToast('Calling family contact (demo)');
+  const contact = <EmergencyContact phone={req.contact} label="Family contact number" peer={{ name: `${req.patientName}’s family`, role: 'Member', subtitle: req.hospital }} headline={`${req.bg} blood needed · ${req.hospital}`} bloodGroup={req.bg} />;
 
   return (
     <PageContainer className="animate-fade-in">
@@ -49,7 +50,7 @@ export default function EmergencyRequestPage() {
         <IconButton icon={Share} label="Share request" onClick={() => showToast('Request link copied')} />
       </DetailHeader>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-28 lg:pb-0">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* ------------------------------------------------- main column */}
         <div className="lg:col-span-2 min-w-0 space-y-5">
           <TintedCard tint="red" className="p-6" contentClassName="flex flex-col items-center text-center">
@@ -102,12 +103,10 @@ export default function EmergencyRequestPage() {
         </div>
 
         {/* -------------------------------------------------- sticky rail */}
-        <aside className="hidden lg:block">
-          <div className="sticky top-20 space-y-4">
+        <aside>
+          <div className="lg:sticky lg:top-20 space-y-4">
             <Card>
-              <Button variant="danger" full icon={Phone} onClick={contactFamily} className="shadow-lg shadow-red-600/30">
-                Contact Family
-              </Button>
+              {contact}
               <p className={`text-[10px] font-bold ${t.textMuted} text-center mt-3 leading-relaxed`}>
                 Verified request • Shared with {req.bg} donors nearby
               </p>
@@ -116,14 +115,6 @@ export default function EmergencyRequestPage() {
         </aside>
       </div>
 
-      {/* --------------------------------------------- mobile bottom CTA */}
-      <div className="lg:hidden fixed bottom-24 inset-x-0 z-30 px-5">
-        <div className={`${t.glass} border ${t.border} rounded-2xl p-3 shadow-xl`}>
-          <Button variant="danger" full icon={Phone} onClick={contactFamily}>
-            Contact Family
-          </Button>
-        </div>
-      </div>
     </PageContainer>
   );
 }

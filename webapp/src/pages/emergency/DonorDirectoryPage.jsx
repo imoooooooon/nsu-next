@@ -1,8 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, CheckCircle2, AlertTriangle, MessageSquare, Users, User } from 'lucide-react';
+import { ArrowLeft, MapPin, CheckCircle2, AlertTriangle, Users, User } from 'lucide-react';
 import { PageContainer, PageHeader } from '../../components/layout/AppShell';
 import { IconButton, Verified, EmptyState } from '../../components/ui';
 import { allDirectoryUsers } from '../../data/people';
+import { getDonorPhone } from '../../data/emergency';
+import { EmergencyContact } from '../../features/emergency/EmergencyContact';
 import { getRoleStyles, getPersonRole } from '../../lib/roleStyles';
 import { useTheme } from '../../theme/ThemeContext';
 import { useAppState } from '../../context/AppStateContext';
@@ -45,7 +47,7 @@ export default function DonorDirectoryPage() {
             return (
               <div
                 key={person.id}
-                onClick={() => navigate(`/network/${person.id}`)}
+                onClick={() => navigate(`/network/${person.id}?from=emergency`)}
                 className={`rounded-2xl p-4 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 cursor-pointer shadow-sm border ${t.borderSoft} ${isDark ? 'bg-[#1A1A1A]/60' : 'bg-white/60'} backdrop-blur-md`}
               >
                 <div className="relative z-10">
@@ -81,7 +83,10 @@ export default function DonorDirectoryPage() {
                     </span>
                   </div>
 
-                  <div className="flex space-x-2 w-full">
+                  <div className="mb-3">
+                    <EmergencyContact phone={getDonorPhone(person)} label="Donor phone number" peer={{ id: person.id, name: person.name, role: roleType, subtitle: person.dept }} headline={`${person.blood} blood donation`} bloodGroup={person.blood} />
+                  </div>
+                  <div className="flex w-full">
                     <div className="flex-1" onClick={(e) => { e.stopPropagation(); toggleRequested(person.id); }}>
                       {requested ? (
                         <div className={`flex items-center justify-center h-10 rounded-lg font-bold text-[13px] ${isDark ? 'bg-white/10 text-white' : 'bg-white text-black shadow-sm'} border ${t.border} transition-all cursor-pointer`}>
@@ -93,13 +98,6 @@ export default function DonorDirectoryPage() {
                         </button>
                       )}
                     </div>
-                    <button
-                      aria-label={`Message ${person.name}`}
-                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-black/5 text-black hover:bg-black/10'} transition-colors active:scale-95 shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]`}
-                      onClick={(e) => { e.stopPropagation(); navigate('/messages/1'); }}
-                    >
-                      <MessageSquare className="w-4 h-4" strokeWidth={2.5} />
-                    </button>
                   </div>
                 </div>
               </div>

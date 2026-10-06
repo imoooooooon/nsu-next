@@ -21,9 +21,9 @@ function MomentSlide({ item, offset, onAdvance, last }) {
     <div
       className={`moment-deck-card ${active ? "is-active" : offset > 0 ? "is-queued" : "is-seen"}`}
       style={{
-        "--deck-x": `${active ? 0 : (offset > 0 ? -1 : 1) * (27 + depth * 10)}%`,
+        "--deck-x": `${active ? 0 : (offset > 0 ? 1 : -1) * (27 + depth * 10)}%`,
         "--deck-scale": active ? 1 : 0.89 - depth * 0.055,
-        "--deck-rotate": `${active ? 0 : (offset > 0 ? -1 : 1) * depth * 3}deg`,
+        "--deck-rotate": `${active ? 0 : (offset > 0 ? 1 : -1) * depth * 3}deg`,
         zIndex: active ? 10 : 5 - depth,
         opacity: Math.abs(offset) > 3 ? 0 : active ? 1 : offset > 0 ? 0.8 : 0.38,
       }}

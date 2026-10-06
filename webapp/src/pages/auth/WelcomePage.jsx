@@ -22,8 +22,8 @@ export default function WelcomePage() {
         />
 
         <p className="text-[10px] font-extrabold tracking-[0.18em] uppercase text-[#1D9BF0] mb-3">Welcome to Ugrads</p>
-        <h1 className={`text-3xl font-extrabold tracking-tight text-center ${t.text}`}>Your NSU circle,<br />all in one place.</h1>
-        <p className={`text-sm mt-2 text-center ${t.textMuted} px-4`}>Connect with your community.<br />Make room for what comes next.</p>
+        <h1 className={`text-3xl font-extrabold tracking-tight text-center ${t.text}`}>Your campus community,<br />all in one place.</h1>
+        <p className={`text-sm mt-2 text-center ${t.textMuted} px-4`}>Connect, collaborate, and discover<br />what comes next.</p>
       </div>
 
       <div className="w-full mt-auto space-y-3 animate-fade-in delay-150">
