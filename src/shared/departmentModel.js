@@ -178,8 +178,9 @@ export function departmentWithState(dept, state) {
 
 export function resolveAccess(dept, viewer, state) {
   const d = departmentWithState(dept, state);
-  const isOfficial = !!d && d.officialId === viewer.personId;
-  const permission = d?.assignments[viewer.personId];
+  const eligible = d?.status !== 'archived' && viewer.accountStatus !== 'suspended';
+  const isOfficial = eligible && !!d && d.officialId === viewer.personId;
+  const permission = eligible ? d?.assignments[viewer.personId] : undefined;
   const isAdmin = isOfficial || !!permission;
   const isMember = isAdmin || (!!d && d.code === viewer.dept);
   return {
@@ -202,7 +203,7 @@ export function resolveAccess(dept, viewer, state) {
     canGrantAccess: isOfficial,
     canTransfer: isOfficial,
     canRequestOwnership:
-      !!d &&
+      eligible && !!d &&
       d.officialId == null &&
       viewer.role === "faculty" &&
       viewer.verified === true,

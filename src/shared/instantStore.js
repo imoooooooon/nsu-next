@@ -1,3 +1,4 @@
+import { publicState, restricted, subscribeBridge } from './adminBridge.js';
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { normalizePresentation, STORIES_ENABLED } from "./momentFrames.js";
 import {
@@ -207,3 +208,11 @@ export function useMomentRecaps() {
   );
 }
 const getRecaps = () => state.recaps;
+
+function applyMomentRestrictions() {
+  const admin = publicState();
+  const keep = item => !restricted(admin, 'moment', item.id);
+  if ([...state.received, ...state.sent, ...state.recaps].some(item => !keep(item))) update({ ...state, received:state.received.filter(keep), sent:state.sent.filter(keep), recaps:state.recaps.filter(keep) });
+}
+applyMomentRestrictions();
+subscribeBridge(applyMomentRestrictions);

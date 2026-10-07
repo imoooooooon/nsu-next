@@ -1,3 +1,4 @@
+import { publicPerson, subscribeBridge } from '../../../src/shared/adminBridge.js';
 import { allStaff, currentStaff, currentViewer } from '../../../src/shared/departmentStore';
 /* Directory demo data — identical records to the shipped mobile prototype. */
 
@@ -97,3 +98,7 @@ export const getViewerIdentity = (authRole) => {
     email: 'hasan.tarik@northsouth.edu',
   };
 };
+
+const refreshMembers = () => { [globalAlumniData, globalFacultyData, globalStudentData].forEach(list => list.forEach(person => Object.assign(person, publicPerson(person)))); };
+refreshMembers();
+subscribeBridge(refreshMembers);

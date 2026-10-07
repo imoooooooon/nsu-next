@@ -1,3 +1,4 @@
+import { publicState, restricted } from '../../../../src/shared/adminBridge.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import {
@@ -231,6 +232,7 @@ export default function ChatView() {
               </div>
 
               {/* image message */}
+              {!restricted(publicState(), 'message', `dm:${chatId}:msg-1`) ? (
               <div className={`self-start max-w-[80%] lg:max-w-[70%] relative group mb-2 select-none ${reactingTo === 'msg-1' ? 'z-50' : ''}`} data-msg-id="msg-1" {...pressHandlers}>
                 {reactingTo === 'msg-1' && <ChatReactionMenu align="left" msgId="msg-1" reactions={reactions} onReact={handleReaction} isDark={isDark} />}
                 {reactingTo === 'msg-1' && <ChatMessageActionsMenu align="left" isOwn={false} onDismiss={() => setReactingTo(null)} t={t} isDark={isDark} />}
@@ -248,8 +250,10 @@ export default function ChatView() {
                 </div>
                 <span className={`text-[10px] font-bold ${t.textMuted} mt-4 ml-1 block`}>11:30 AM</span>
               </div>
+              ) : <p className={`text-xs ${t.textMuted}`}>Message removed after review.</p>}
 
               {/* incoming text */}
+              {!restricted(publicState(), 'message', `dm:${chatId}:msg-2`) ? (
               <div className={`self-start max-w-[80%] lg:max-w-[70%] relative group mb-2 select-none ${reactingTo === 'msg-2' ? 'z-50' : ''}`} data-msg-id="msg-2" {...pressHandlers}>
                 {reactingTo === 'msg-2' && <ChatReactionMenu align="left" msgId="msg-2" reactions={reactions} onReact={handleReaction} isDark={isDark} />}
                 {reactingTo === 'msg-2' && <ChatMessageActionsMenu align="left" isOwn={false} onDismiss={() => setReactingTo(null)} t={t} isDark={isDark} />}
@@ -261,8 +265,10 @@ export default function ChatView() {
                 </div>
                 <span className={`text-[10px] font-bold ${t.textMuted} mt-4 ml-1 block`}>11:32 AM</span>
               </div>
+              ) : <p className={`text-xs ${t.textMuted}`}>Message removed after review.</p>}
 
               {/* outgoing reply */}
+              {!restricted(publicState(), 'message', `dm:${chatId}:msg-3`) ? (
               <div className={`self-end max-w-[80%] lg:max-w-[70%] relative mt-4 select-none ${reactingTo === 'msg-3' ? 'z-50' : ''}`} data-msg-id="msg-3" {...pressHandlers}>
                 {reactingTo === 'msg-3' && <ChatReactionMenu align="right" msgId="msg-3" reactions={reactions} onReact={handleReaction} isDark={isDark} />}
                 {reactingTo === 'msg-3' && <ChatMessageActionsMenu align="right" isOwn onDismiss={() => setReactingTo(null)} t={t} isDark={isDark} />}
@@ -281,6 +287,7 @@ export default function ChatView() {
                   <CheckCheck className="w-3.5 h-3.5 text-[#1D9BF0]" strokeWidth={2.5} />
                 </div>
               </div>
+              ) : <p className={`text-xs ${t.textMuted}`}>Message removed after review.</p>}
 
               {sentMessages.length === 0 && (
                 <div className="self-start max-w-[80%] mt-2">
@@ -295,7 +302,7 @@ export default function ChatView() {
           )}
 
           {/* messages sent in this session */}
-          {sentMessages.map(msg => (
+          {sentMessages.filter(msg => !restricted(publicState(), 'message', `dm:${chatId}:${msg.id}`)).map(msg => (
             <div key={msg.id} className="self-end max-w-[80%] lg:max-w-[70%] animate-fade-in-up">
               <div className="p-3.5 rounded-2xl rounded-tr-sm bg-[#1D9BF0] text-white shadow-md shadow-[#1D9BF0]/30 w-fit ml-auto">
                 <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap break-words">{msg.text}</p>

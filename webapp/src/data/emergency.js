@@ -1,3 +1,4 @@
+import { publicRows, subscribeBridge } from '../../../src/shared/adminBridge.js';
 import { allDirectoryUsers } from './people';
 
 /* Sample contacts are scoped to emergency support, not public profile data. */
@@ -15,3 +16,8 @@ export const bloodGroups = [
   { bg: 'A+', count: 42 }, { bg: 'B+', count: 85 }, { bg: 'O+', count: 64 }, { bg: 'AB+', count: 18 },
   { bg: 'A-', count: 12 }, { bg: 'B-', count: 23 }, { bg: 'O-', count: 15 }, { bg: 'AB-', count: 5 }
 ];
+
+const bridgeSeed = structuredClone(globalEmergencyRequests);
+const refreshPublicRecords = () => { globalEmergencyRequests.splice(0, globalEmergencyRequests.length, ...publicRows('requests', bridgeSeed)); };
+refreshPublicRecords();
+subscribeBridge(refreshPublicRecords);

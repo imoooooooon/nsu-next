@@ -1,3 +1,5 @@
+import { useAdminBridge } from '../../../src/shared/useAdminBridge.js';
+import { authorSeekingAction, ownSeekingPosts, publicState, readSubmissions, seekingSubmission, submitPublic } from '../../../src/shared/adminBridge.js';
 import { useDepartmentState } from '../../../src/shared/departmentStore';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { globalMySeekingPosts } from '../features/seeking/data';
@@ -37,6 +39,7 @@ const flipInSet = (prev, id) => {
 
 export const AppStateProvider = ({ children }) => {
   const departmentState = useDepartmentState();
+  const bridgeVersion = useAdminBridge();
   /* Auth (demo) — seeded from the persisted session. */
   const [authRole, setAuthRole] = useState(() => readSession()?.authRole || 'student'); // 'student' | 'alumni' | 'faculty'
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
@@ -74,7 +77,14 @@ export const AppStateProvider = ({ children }) => {
   /* Seeking work module */
   const [seekingFilters, setSeekingFilters] = useState(EMPTY_SEEKING_FILTERS);
   const [savedTalentIds, setSavedTalentIds] = useState(new Set(['talent-004', 'talent-011', 'talent-012']));
-  const [mySeekingPosts, setMySeekingPosts] = useState(globalMySeekingPosts);
+  const [localSeekingPosts, setMySeekingPosts] = useState(() => { try { return JSON.parse(localStorage.getItem('ugrads-own-seeking-v1')) || globalMySeekingPosts; } catch { return globalMySeekingPosts; } });
+  const mySeekingPosts = useMemo(() => {
+    const state = publicState();
+    let submitted = []; try { submitted = readSubmissions().filter(r => r.collection === 'seeking').map(r => r.row.publicData).filter(Boolean); } catch { /* retain local drafts */ }
+    const all = [...localSeekingPosts, ...submitted.filter(p => !localSeekingPosts.some(x => x.id === p.id))];
+    return ownSeekingPosts(all, state, bridgeVersion);
+  }, [localSeekingPosts, bridgeVersion]);
+  useEffect(() => { try { localStorage.setItem('ugrads-own-seeking-v1', JSON.stringify(localSeekingPosts)); } catch { queueMicrotask(() => showToast('Your draft could not be saved to browser storage.')); } }, [localSeekingPosts, showToast]);
   const toggleSavedTalentSet = useCallback((id) => setSavedTalentIds(prev => flipInSet(prev, id)), []);
 
   /* Chat hand-off context (Seeking → Messages) */
@@ -168,6 +178,7 @@ export const AppStateProvider = ({ children }) => {
   }, [showToast]);
 
   const handleSubmitSeekingPost = useCallback((post) => {
+    if (post.status !== 'draft') submitPublic('seeking', seekingSubmission(post));
     setMySeekingPosts(prev => {
       const exists = prev.some(p => p.id === post.id);
       return exists ? prev.map(p => (p.id === post.id ? post : p)) : [post, ...prev];
@@ -176,6 +187,8 @@ export const AppStateProvider = ({ children }) => {
 
   const handleMySeekingAction = useCallback((postId, action) => {
     const duplicateId = `my-seek-${Date.now()}`;
+    const current = mySeekingPosts.find(p => p.id === postId);
+    if (current) { try { authorSeekingAction(current, action); } catch (error) { showToast(error.message); return; } }
     setMySeekingPosts(prev => {
       switch (action) {
         case 'pause':
@@ -201,21 +214,21 @@ export const AppStateProvider = ({ children }) => {
     });
     const messages = {
       pause: 'Post paused',
-      resume: 'Post is active again',
-      renew: 'Post renewed for 30 days',
+      resume: 'Post availability updated',
+      renew: 'Renewal submitted for review',
       unavailable: 'Marked as unavailable',
       duplicate: 'Post duplicated as a draft',
       delete: 'Post deleted',
       withdraw: 'Post withdrawn',
     };
     if (messages[action]) showToast(messages[action]);
-  }, [showToast]);
+  }, [showToast, mySeekingPosts]);
 
   const login = useCallback(() => setIsAuthed(true), []);
   const logout = useCallback(() => setIsAuthed(false), []);
 
   const value = useMemo(() => ({
-    departmentState, authRole, setAuthRole, authMode, setAuthMode, isAuthed, login, logout,
+    bridgeVersion, departmentState, authRole, setAuthRole, authMode, setAuthMode, isAuthed, login, logout,
     toastMsg, showToast,
     requestedSet, toggleRequested,
     registeredEventIds, setRegisteredEventIds,
@@ -238,7 +251,7 @@ export const AppStateProvider = ({ children }) => {
     profileVisibility, setProfileVisibility,
     activeSessions, setActiveSessions,
   }), [
-    departmentState, authRole, authMode, isAuthed, login, logout, toastMsg, showToast,
+    bridgeVersion, departmentState, authRole, authMode, isAuthed, login, logout, toastMsg, showToast,
     requestedSet, toggleRequested,
     registeredEventIds, goingEventIds, interestedEventIds, reminderEventIds, followedOrganizerIds,
     seekingFilters, savedTalentIds, toggleSavedTalentSet, handleToggleSavedTalent,

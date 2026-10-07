@@ -1,3 +1,4 @@
+import { publicDepartments, subscribeBridge } from '../../../src/shared/adminBridge.js';
 import { liveDepartment } from '../../../src/shared/departmentStore';
 /* Department (Entity Profile) demo data.
    Keep these records byte-identical with the mobile module at
@@ -268,3 +269,8 @@ export const departmentJobs = {
   bba: [],
   architecture: [],
 };
+
+const departmentSeeds = structuredClone(globalDepartments);
+const refreshDepartmentRecords = () => globalDepartments.splice(0, globalDepartments.length, ...publicDepartments(departmentSeeds));
+refreshDepartmentRecords();
+subscribeBridge(refreshDepartmentRecords);

@@ -1,3 +1,4 @@
+import { donorListed } from '../../../../src/shared/adminBridge.js';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, CheckCircle2, AlertTriangle, Users, User } from 'lucide-react';
 import { PageContainer, PageHeader } from '../../components/layout/AppShell';
@@ -23,7 +24,7 @@ export default function DonorDirectoryPage() {
   const close = useCloseTo('/emergency');
 
   const bg = decodeURIComponent(bloodGroup || '');
-  const donors = allDirectoryUsers.filter(u => u.blood === bg);
+  const donors = allDirectoryUsers.filter(person => donorListed(person)).filter(u => u.blood === bg);
 
   return (
     <PageContainer className="animate-fade-in">

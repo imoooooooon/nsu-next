@@ -1,3 +1,5 @@
+import { globalEmergencyRequests } from '../../data/emergency';
+import { useAdminBridge } from '../../../../src/shared/useAdminBridge';
 import { useNavigate } from 'react-router-dom';
 import { Droplet, ChevronRight } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeContext';
@@ -6,6 +8,8 @@ import { useTheme } from '../../theme/ThemeContext';
 export const EmergencySnippet = ({ className = '' }) => {
   const { t } = useTheme();
   const navigate = useNavigate();
+  useAdminBridge();
+  const request = globalEmergencyRequests[0];
 
   return (
     <div
@@ -21,20 +25,20 @@ export const EmergencySnippet = ({ className = '' }) => {
           </div>
           <div className="flex items-center space-x-1.5 bg-red-500/10 px-2 py-1 rounded-md border border-red-500/20">
             <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]"></span>
-            <span className="text-red-500 text-[9px] font-extrabold tracking-wide uppercase">Live</span>
+            <span className="text-red-500 text-[9px] font-extrabold tracking-wide uppercase">{request ? 'Open request' : 'Directory'}</span>
           </div>
         </div>
 
         <div className="flex items-center space-x-3">
           <div className="w-11 h-11 shrink-0 rounded-xl bg-red-500 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.3)] text-white font-extrabold text-base border border-red-400">
-            B+
+            {request?.bg || '—'}
           </div>
           <div className="flex-1 min-w-0">
-            <h4 className={`text-sm font-extrabold ${t.text} leading-tight truncate`}>Urgent Blood Required</h4>
+            <h4 className={`text-sm font-extrabold ${t.text} leading-tight truncate`}>{request?.hospital || 'No open requests'}</h4>
             <div className="flex items-center mt-1 space-x-1.5">
-              <p className={`${t.textMuted} text-[10px] font-bold truncate`}>Needed immediately</p>
+              <p className={`${t.textMuted} text-[10px] font-bold truncate`}>{request?.urgency || 'Explore the donor directory'}</p>
               <span className="w-1 h-1 rounded-full bg-gray-400/50 shrink-0"></span>
-              <p className={`${t.textMuted} text-[10px] font-extrabold shrink-0`}>2.3 km away</p>
+              <p className={`${t.textMuted} text-[10px] font-extrabold shrink-0`}>{request?.location || ''}</p>
             </div>
           </div>
           <ChevronRight className="w-5 h-5 text-red-500/50 group-hover:text-red-500 transition-colors shrink-0" strokeWidth={2.5} />

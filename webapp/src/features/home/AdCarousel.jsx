@@ -1,3 +1,6 @@
+import { publicRows, publicState } from '../../../../src/shared/adminBridge.js';
+import { useAdminBridge } from '../../../../src/shared/useAdminBridge.js';
+import { useAppState } from '../../context/AppStateContext';
 import { useEffect, useMemo, useState } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
 import { Dots } from '../../components/ui';
@@ -60,7 +63,11 @@ export const useDemoAds = () => useMemo(() => [
   },
 ], []);
 
-export const AdCarousel = ({ ads }) => {
+export const AdCarousel = ({ ads: fallbackAds }) => {
+  useAdminBridge();
+  const { authRole } = useAppState();
+  const state = publicState();
+  const ads = state?.campaigns ? publicRows('campaigns', [], state).filter(c => c.audience === 'all' || c.audience === authRole).sort((a,b) => a.priority - b.priority).map(c => ({ id:c.id, link:c.destination, content:<a href={c.destination} className="relative w-full h-full block text-white"><img src={c.image} alt={c.alt} className="absolute inset-0 w-full h-full object-cover" /><div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/20 flex flex-col justify-center px-[6cqw]"><strong className="text-[4.6cqw] leading-tight">{c.title}</strong><span className="text-[2.8cqw] mt-2">{c.copy}</span></div></a> })) : fallbackAds;
   const { isDark } = useTheme();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -104,7 +111,7 @@ export const AdCarousel = ({ ads }) => {
       >
         <div
           className="flex transition-transform duration-500 ease-out h-full"
-          style={{ transform: `translateX(calc(-${currentIndex * 100}% + ${dragOffset}px))` }}
+          style={{ transform: `translateX(calc(-${(currentIndex % ads.length) * 100}% + ${dragOffset}px))` }}
         >
           {ads.map((ad, idx) => (
             <div key={idx} className="w-full h-full shrink-0 cursor-pointer flex items-center justify-center bg-cover bg-center">

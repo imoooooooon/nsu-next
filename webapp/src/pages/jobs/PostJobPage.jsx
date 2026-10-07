@@ -1,3 +1,5 @@
+import { submitPublic } from '../../../../src/shared/adminBridge.js';
+import { currentViewer } from '../../../../src/shared/departmentStore.js';
 import { useState } from 'react';
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Clock } from 'lucide-react';
@@ -15,7 +17,7 @@ import { EntityAvatar } from '../../features/departments/DepartmentPrimitives';
 
 export default function PostJobPage() {
   const { t, isDark } = useTheme();
-  const { authRole } = useAppState();
+  const { authRole, showToast } = useAppState();
   const navigate = useNavigate();
   const closeToJobs = useCloseTo('/jobs');
   const [searchParams] = useSearchParams();
@@ -64,23 +66,23 @@ export default function PostJobPage() {
       )}
 
       {!isSubmitted ? (
-        <Card className="space-y-5">
+        <form onSubmit={e => { e.preventDefault(); const v = Object.fromEntries(new FormData(e.currentTarget)); if (Date.parse(v.deadline + 'T23:59:59+06:00') <= Date.now()) { showToast('Choose a future application deadline.'); return; } try { submitPublic('hiring', { ...v, id: `job-${crypto.randomUUID()}`, memberId: String(currentViewer(authRole).personId), departmentId: postingAsDept?.id || '', deadline: v.deadline + 'T23:59:59+06:00', skills: v.skills.split(',').map(x => x.trim()).filter(Boolean), status: 'pending' }); setIsSubmitted(true); } catch (error) { showToast(error.message); } }}><Card className="space-y-5">
           <Field label="Job Title">
-            <TextInput type="text" placeholder="e.g. Frontend Developer" />
+            <TextInput name="title" required type="text" placeholder="e.g. Frontend Developer" />
           </Field>
 
           <div className="grid grid-cols-2 gap-4">
             <Field label="Company">
-              <TextInput type="text" placeholder="e.g. Pathao" />
+              <TextInput name="company" required type="text" placeholder="e.g. Pathao" />
             </Field>
             <Field label="Location">
-              <TextInput type="text" placeholder="e.g. Dhaka, BD" />
+              <TextInput name="location" required type="text" placeholder="e.g. Dhaka, BD" />
             </Field>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <Field label="Job Type">
-              <SelectInput defaultValue="Full-Time" aria-label="Job type">
+              <SelectInput name="category" defaultValue="Full-Time" aria-label="Job type">
                 <option value="Full-Time">Full-Time</option>
                 <option value="Part-Time">Part-Time</option>
                 <option value="Internship">Internship</option>
@@ -88,26 +90,26 @@ export default function PostJobPage() {
               </SelectInput>
             </Field>
             <Field label="Salary">
-              <TextInput type="text" placeholder="e.g. Negotiable" />
+              <TextInput name="compensation" required type="text" placeholder="e.g. Negotiable" />
             </Field>
           </div>
 
           <Field label="Application Deadline">
-            <TextInput type="text" placeholder="e.g. 15 Oct 2024" />
+            <TextInput name="deadline" required type="date" />
           </Field>
 
           <Field label="Job Description">
-            <TextArea rows={4} placeholder="Describe the role and responsibilities..." />
+            <TextArea name="description" required rows={4} placeholder="Describe the role and responsibilities..." />
           </Field>
 
           <Field label="Requirements (comma separated)">
-            <TextArea rows={3} placeholder="e.g. React, Node.js, 2+ years experience" />
+            <TextArea name="skills" required rows={3} placeholder="e.g. React, Node.js, 2+ years experience" />
           </Field>
 
-          <Button full onClick={() => setIsSubmitted(true)} className="shadow-lg shadow-[#1D9BF0]/40">
+          <Button full type="submit" className="shadow-lg shadow-[#1D9BF0]/40">
             Submit for Approval
           </Button>
-        </Card>
+        </Card></form>
       ) : (
         <div className="flex flex-col items-center justify-center px-6 py-16 animate-fade-in-up">
           <div className="w-24 h-24 bg-yellow-500/10 rounded-full flex items-center justify-center mb-6 border border-yellow-500/20 shadow-xl shadow-yellow-500/10">

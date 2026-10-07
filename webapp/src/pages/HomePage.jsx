@@ -205,7 +205,7 @@ export default function HomePage() {
             {/* Third job surfaces here so the rail stays alive */}
             <div>
               <SectionHeading title="Spotlight Role" size="md" className="px-1 mb-3" />
-              <JobCard job={globalJobsData[2]} />
+              {globalJobsData[2] && <JobCard job={globalJobsData[2]} />}
             </div>
           </div>
         </aside>

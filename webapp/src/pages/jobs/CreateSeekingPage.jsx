@@ -86,7 +86,7 @@ export default function CreateSeekingPage() {
   };
 
   const handleSubmit = () => {
-    handleSubmitSeekingPost(buildSeekingPostFromDraft(draft, viewer, 'pending'));
+    try { handleSubmitSeekingPost(buildSeekingPostFromDraft(draft, viewer, 'pending')); } catch (error) { showToast(error.message); return; }
     showToast('Post submitted for review');
     navigate('/jobs/seeking/my-posts');
   };

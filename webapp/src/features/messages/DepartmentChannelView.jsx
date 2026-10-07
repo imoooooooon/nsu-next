@@ -1,3 +1,4 @@
+import { publicState, restricted } from '../../../../src/shared/adminBridge.js';
 import { useDepartmentState, updateDepartmentState } from '../../../../src/shared/departmentStore';
 import { useEffect, useRef, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
@@ -128,8 +129,8 @@ export default function DepartmentChannelView({ conversation }) {
   const canWrite = isBroadcast ? access.canBroadcast : !isAdminThread || access.canHelpDesk;
   const isMuted = mutedChannelIds.has(conversation.id);
 
-  const history = dept ? (departmentBroadcasts[dept.id] || []) : [];
-  const sessionBroadcasts = dept ? (sentBroadcasts[dept.id] || []) : [];
+  const history = dept ? (departmentBroadcasts[dept.id] || []).filter(message => !restricted(publicState(), 'broadcast', String(message.id))) : [];
+  const sessionBroadcasts = dept ? (sentBroadcasts[dept.id] || []).filter(message => !restricted(publicState(), 'broadcast', String(message.id))) : [];
 
   useEffect(() => {
     threadEndRef.current?.scrollIntoView({ behavior: 'smooth' });

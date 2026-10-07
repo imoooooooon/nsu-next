@@ -1,3 +1,6 @@
+import { recordParticipation } from '../../../../src/shared/adminBridge.js';
+import { currentViewer } from '../../../../src/shared/departmentStore.js';
+import { useAdminBridge } from '../../../../src/shared/useAdminBridge.js';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { AlertTriangle, ArrowLeft, ArrowUpRight, BadgeCheck, Users, Bell, Building2, CalendarDays, CheckCircle2, Clock, Heart, MapPin } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeContext';
@@ -13,6 +16,7 @@ import { useCloseTo } from '../../lib/navigation';
 /* /events/:eventId — ported from EventDetailsScreen in the mobile app,
    with the mobile bottom CTA replaced by a sticky action rail on desktop. */
 export default function EventDetailsPage() {
+  useAdminBridge();
   const { eventId } = useParams();
   const navigate = useNavigate();
   const event = findEventById(eventId);
@@ -39,7 +43,7 @@ const EventDetailsView = ({ event }) => {
   const navigate = useNavigate();
   const goBack = useCloseTo('/events');
   const {
-    showToast,
+    showToast, authRole,
     setRegisteredEventIds,
     goingEventIds, setGoingEventIds,
     interestedEventIds, setInterestedEventIds,
@@ -61,6 +65,7 @@ const EventDetailsView = ({ event }) => {
 
   const handleRegisterToggle = () => {
     if (isPast || displayStatus === 'Closed' || displayStatus === 'Cancelled') return;
+    try { recordParticipation(event, currentViewer(authRole).personId, 'registered', !isRegistered); } catch (error) { showToast(error.message); return; }
     setRegisteredEventIds(prev => {
       const next = new Set(prev);
       if (next.has(event.id)) { next.delete(event.id); showToast('Registration cancelled'); }
@@ -70,6 +75,7 @@ const EventDetailsView = ({ event }) => {
   };
 
   const handleGoingToggle = () => {
+    try { recordParticipation(event, currentViewer(authRole).personId, 'going', !isGoing); } catch (error) { showToast(error.message); return; }
     setGoingEventIds(prev => {
       const next = new Set(prev);
       if (next.has(event.id)) { next.delete(event.id); showToast('Removed from Going'); }
@@ -79,6 +85,7 @@ const EventDetailsView = ({ event }) => {
   };
 
   const handleInterestedToggle = () => {
+    try { recordParticipation(event, currentViewer(authRole).personId, 'interested', !isInterested); } catch (error) { showToast(error.message); return; }
     setInterestedEventIds(prev => {
       const next = new Set(prev);
       if (next.has(event.id)) { next.delete(event.id); showToast('Removed from Interested'); }

@@ -1,8 +1,9 @@
+import { publicRows, subscribeBridge } from '../../../src/shared/adminBridge.js';
 import { getDepartmentState, subscribeDepartmentState } from '../../../src/shared/departmentStore';
 /* Events demo data — identical to the shipped mobile prototype.
    All "past / upcoming" logic is computed against this fixed reference date. */
 
-export const EVENTS_REFERENCE_DATE = new Date('2026-07-12T12:00:00');
+export const EVENTS_REFERENCE_DATE = new Date();
 
 export const EVENT_CATEGORIES = ['All', 'Academic', 'Workshop', 'Competition', 'Career', 'Recruitment', 'Networking', 'Research', 'Cultural', 'Sports', 'Volunteer'];
 
@@ -293,5 +294,7 @@ export const getDepartmentEvents = (deptId) =>
     .filter(e => e.deptId === deptId && isUpcomingEvent(e))
     .sort((a, b) => a.date.localeCompare(b.date));
 
-export let globalEventsData = [...seedEventsData, ...getDepartmentState().events];
-subscribeDepartmentState(() => { globalEventsData = [...seedEventsData, ...getDepartmentState().events]; });
+export let globalEventsData = publicRows('events', [...seedEventsData, ...getDepartmentState().events]);
+const refreshEvents = () => { globalEventsData = publicRows('events', [...seedEventsData, ...getDepartmentState().events]); };
+subscribeDepartmentState(refreshEvents);
+subscribeBridge(refreshEvents);

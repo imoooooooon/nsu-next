@@ -1,3 +1,4 @@
+import { publicRows, subscribeBridge } from '../../../src/shared/adminBridge.js';
 /* Jobs demo data — identical records to the shipped mobile prototype. */
 
 export const globalJobsData = [
@@ -7,3 +8,8 @@ export const globalJobsData = [
 ];
 
 export const findJobById = (id) => globalJobsData.find(j => String(j.id) === String(id)) || null;
+
+const bridgeSeed = structuredClone(globalJobsData);
+const refreshPublicRecords = () => { globalJobsData.splice(0, globalJobsData.length, ...publicRows('hiring', bridgeSeed)); };
+refreshPublicRecords();
+subscribeBridge(refreshPublicRecords);

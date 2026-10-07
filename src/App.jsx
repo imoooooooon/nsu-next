@@ -1,3 +1,6 @@
+import { BloodRequestForm } from './shared/BloodRequestForm.jsx';
+import { useAdminBridge } from './shared/useAdminBridge.js';
+import { authorSeekingAction, ownSeekingPosts, publicRows, publicState, publicPerson, donorListed, submitPublic, seekingSubmission, subscribeBridge } from './shared/adminBridge.js';
 import { HomeCareerSections } from './shared/HomeCareerSections';
 import { momentPeople } from './shared/momentPeople';
 import { InstantDialog, MomentTypePicker } from './shared/InstantExperience';
@@ -107,7 +110,7 @@ const CustomEventsIcon = ({ className }) => (
   </svg>
 );
 // --- GLOBAL DEMO EVENTS DATA ---
-const EVENTS_REFERENCE_DATE = new Date('2026-07-12T12:00:00');
+const EVENTS_REFERENCE_DATE = new Date();
 
 /* Organizers vs Posted by (client revision) — same model as webapp/src/data/events.js:
    · `organizer` is the LEAD organizer — the one the Follow button follows
@@ -389,7 +392,7 @@ const seedEventsData = [
    and on the hub without two lists that could drift apart. "Upcoming" = ends
    on or after the reference date and not cancelled — soonest first. Same
    rule as the web's `getDepartmentEvents` (webapp/src/data/events.js). */
-let globalEventsData = [...seedEventsData, ...getDepartmentState().events];
+let globalEventsData = publicRows('events', [...seedEventsData, ...getDepartmentState().events]);
 const isUpcomingEvent = (event) =>
   event.registrationStatus !== 'Cancelled' &&
   new Date(`${event.endDate || event.date}T23:59:59`) >= EVENTS_REFERENCE_DATE;
@@ -403,9 +406,11 @@ let departmentEvents = Object.fromEntries(globalDepartments.map(d => [
 
 
 subscribeDepartmentState(() => {
-  globalEventsData = [...seedEventsData, ...getDepartmentState().events];
+  globalEventsData = publicRows('events', [...seedEventsData, ...getDepartmentState().events]);
   departmentEvents = Object.fromEntries(globalDepartments.map(d => [d.id, globalEventsData.filter(e => e.deptId === d.id && isUpcomingEvent(e)).sort((a, b) => a.date.localeCompare(b.date))]));
 });
+
+subscribeBridge(() => { globalEventsData = publicRows('events', [...seedEventsData, ...getDepartmentState().events]); departmentEvents = Object.fromEntries(globalDepartments.map(d => [d.id, globalEventsData.filter(e => e.deptId === d.id && isUpcomingEvent(e))])); });
 
 const JobSlider = ({ jobs, isDark, t, onSelectJob }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -568,7 +573,10 @@ const JobSlider = ({ jobs, isDark, t, onSelectJob }) => {
   );
 };
 
-const AdCarousel = ({ ads, isDark }) => {
+const AdCarousel = ({ ads: fallbackAds, isDark, authRole }) => {
+  useAdminBridge();
+  const admin = publicState();
+  const ads = admin?.campaigns ? publicRows('campaigns', [], admin).filter(c => c.audience === 'all' || c.audience === authRole).sort((a,b) => a.priority - b.priority).map(c => ({ id:c.id, content:<a href={c.destination} className="relative w-full h-full block text-white"><img src={c.image} alt={c.alt} className="absolute inset-0 w-full h-full object-cover" /><div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/20 flex flex-col justify-center px-6"><strong className="text-lg leading-tight">{c.title}</strong><span className="text-xs mt-2">{c.copy}</span></div></a> })) : fallbackAds;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [dragStartX, setDragStartX] = useState(null);
@@ -622,7 +630,7 @@ const AdCarousel = ({ ads, isDark }) => {
       >
         <div 
           className="flex transition-transform duration-500 ease-out h-[130px]"
-          style={{ transform: `translateX(calc(-${currentIndex * 100}% + ${dragOffset}px))` }}
+          style={{ transform: `translateX(calc(-${(currentIndex % ads.length) * 100}% + ${dragOffset}px))` }}
         >
           {ads.map((ad, idx) => (
             <div 
@@ -1083,18 +1091,9 @@ const SettingsFlowOverlay = ({ type, onClose, t, isDark, authRole, appLanguage, 
   );
 };
 
-const EmergencyFlowOverlay = ({ onClose }) => (
-  <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-6" onClick={onClose}>
-    <div className="bg-white dark:bg-[#1A1A1A] w-full max-w-sm rounded-2xl p-6 shadow-2xl flex flex-col items-center animate-fade-in-up" onClick={e => e.stopPropagation()}>
-      <div className="w-16 h-16 bg-red-100 dark:bg-red-500/20 rounded-full flex items-center justify-center mb-4">
-        <Droplet className="w-8 h-8 text-red-500" strokeWidth={2} />
-      </div>
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2 text-center">Emergency Flow Placeholder</h2>
-      <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">This feature flow is under development.</p>
-      <button onClick={onClose} className="w-full py-3 bg-red-500 hover:bg-red-600 transition-colors text-white font-bold rounded-xl active:scale-95">
-        Close
-      </button>
-    </div>
+const EmergencyFlowOverlay = ({ onClose, authRole, isDark }) => (
+  <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={onClose}>
+    <div className={`w-full max-w-sm max-h-[90%] overflow-auto rounded-2xl p-5 ${isDark ? 'bg-[#171717]' : 'bg-white'}`} onClick={e => e.stopPropagation()}><BloodRequestForm onClose={onClose} authRole={authRole} isDark={isDark} /></div>
   </div>
 );
 
@@ -3182,6 +3181,7 @@ const JobsTab = ({
 };
 
 export default function App() {
+  useAdminBridge();
   useDepartmentState();
 
   // --- EVENTS MODULE STATE ---
@@ -3242,7 +3242,8 @@ export default function App() {
   const [isCreateSeekingOpen, setIsCreateSeekingOpen] = useState(false);
   const [createSeekingDraft, setCreateSeekingDraft] = useState(null);
   const [isMySeekingOpen, setIsMySeekingOpen] = useState(false);
-  const [mySeekingPosts, setMySeekingPosts] = useState(globalMySeekingPosts);
+  const [localMySeekingPosts, setMySeekingPosts] = useState(globalMySeekingPosts);
+  const mySeekingPosts = ownSeekingPosts(localMySeekingPosts);
   const [chatContext, setChatContext] = useState(null);
 
   const [emergencyViewMode, setEmergencyViewMode] = useState('list');
@@ -3363,18 +3364,18 @@ export default function App() {
     { id: 220, name: 'Zarin Tasnim', role: 'Student', company: 'North South University', dept: 'Architecture', skills: ['Urban Design', 'GIS', 'Research'], batch: 'Batch 213', location: 'Dhaka, BD', followers: '330', blood: 'A-', verified: true, about: "Thesis on flood-adaptive neighbourhoods in Sylhet.", experience: [{ title: 'Research Intern', company: 'Dhaka Urban Lab', duration: '2025 - Present' }] }
   ];
 
-  const globalJobsData = [
+  const globalJobsData = publicRows('hiring', [
     { id: 1, title: 'UI/UX Designer Intern', company: 'Brain Station 23', type: 'Internship', location: 'Remote', salary: 'Paid stipend', deadline: '2 days left', posted: '2h ago', preview: 'We are looking for a passionate UI/UX design intern to help build intuitive user interfaces for our upcoming fintech products. You will work closely with the product team.', match: true, urgent: true, reqs: ['Figma', 'Prototyping', 'Design Systems'], postedBy: { userId: 4, name: 'Fahim Shahriar', role: 'Senior Product Designer', verified: true, type: 'Alumni' } },
     { id: 2, title: 'Frontend Developer', company: 'Pathao', type: 'Full-Time', location: 'Dhaka, BD', salary: 'Negotiable', deadline: '12 days left', posted: '1d ago', preview: 'Join our core engineering team to build high-performance web applications using React and Next.js. Minimum 1 year experience required.', match: true, urgent: false, reqs: ['React', 'Next.js', 'Tailwind CSS'], postedBy: { userId: 2, name: 'Tahmid Hasan', role: 'Product Lead', verified: true, type: 'Alumni' } },
     { id: 3, title: 'Product Marketing Manager', company: '10 Minute School', type: 'Full-Time', location: 'Dhaka, BD', salary: 'Competitive', deadline: '5 days left', posted: '3d ago', preview: 'Drive the go-to-market strategy for our new flagship educational courses. Work closely with product and sales teams to ensure successful launches.', match: false, urgent: false, reqs: ['Marketing', 'Strategy', 'Copywriting'], postedBy: { userId: 3, name: 'Ayman Sadiq', role: 'CEO & Founder', verified: true, type: 'Alumni' } },
-  ];
+  ]);
 
-  const allDirectoryUsers = [...globalAlumniData, ...globalFacultyData, ...globalStudentData];
+  const allDirectoryUsers = [...globalAlumniData, ...globalFacultyData, ...globalStudentData].map(p => publicPerson(p));
 
-  const globalEmergencyRequests = [
+  const globalEmergencyRequests = publicRows('requests', [
     { id: 1, hospital: 'Apollo Hospital', location: 'Bashundhara, Dhaka', bg: 'B+', distance: '2.3km', urgency: 'Critical', units: 2, match: 'Perfect Match', time: '10m ago', description: 'Patient is undergoing open heart surgery. Blood is required immediately.', contact: '01711223344', patientName: 'Rahim Uddin' },
     { id: 2, hospital: 'Square Hospital', location: 'Panthapath, Dhaka', bg: 'O+', distance: '5.1km', urgency: 'Needed Today', units: 1, match: 'Compatible', time: '1h ago', description: 'Accident patient in ICU. Need O+ blood by tonight.', contact: '01811223344', patientName: 'Karim Hasan' }
-  ];
+  ]);
 
   
 
@@ -3435,6 +3436,7 @@ export default function App() {
   };
 
   const handleSubmitSeekingPost = (post) => {
+    if (post.status !== 'draft') { try { submitPublic('seeking', seekingSubmission(post)); } catch (error) { showToast(error.message); return; } }
     setMySeekingPosts(prev => {
       const exists = prev.some(p => p.id === post.id);
       return exists ? prev.map(p => (p.id === post.id ? post : p)) : [post, ...prev];
@@ -3442,6 +3444,8 @@ export default function App() {
   };
 
   const handleMySeekingAction = (postId, action) => {
+    const current = mySeekingPosts.find(p => p.id === postId);
+    if (current) { try { authorSeekingAction(current, action); } catch (error) { showToast(error.message); return; } }
     const duplicateId = `my-seek-${Date.now()}`;
     setMySeekingPosts(prev => {
       switch (action) {
@@ -4040,7 +4044,7 @@ export default function App() {
         </div>
         {/* --- END MOMENTS FEATURE --- */}
 
-        <AdCarousel ads={demoAds} isDark={isDark} />
+        <AdCarousel ads={demoAds} isDark={isDark} authRole={authRole} />
 
         {/* Redesigned Quick Actions: Custom Layered Icons + Label */}
         <div className="w-full pt-0 pb-2 relative z-10">
@@ -4136,7 +4140,7 @@ export default function App() {
           />
         </div>
 
-        <HomeCareerSections authRole={authRole} t={t} talent={globalSeekingData}
+        <HomeCareerSections authRole={authRole} t={t} talent={publicRows('seeking', globalSeekingData)}
           savedTalentIds={savedTalentIds} onToggleSave={handleToggleSavedTalent}
           onOpenTalent={setSelectedTalent}
           onViewAll={() => { handleViewAllTalent(); setJobsMode('seeking'); setActiveTab('jobs'); }}>
@@ -4221,20 +4225,20 @@ export default function App() {
                </div>
                <div className="flex items-center space-x-1.5 bg-red-500/10 px-2 py-1 rounded-md border border-red-500/20">
                  <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]"></span>
-                 <span className="text-red-500 text-[9px] font-extrabold tracking-wide uppercase">Live</span>
+                 <span className="text-red-500 text-[9px] font-extrabold tracking-wide uppercase">{globalEmergencyRequests.length ? 'Open request' : 'Directory'}</span>
                </div>
             </div>
             
             <div className="flex items-center space-x-3">
                <div className="w-11 h-11 shrink-0 rounded-xl bg-red-500 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.3)] text-white font-extrabold text-base border border-red-400">
-                 B+
+                 {globalEmergencyRequests[0]?.bg || '—'}
                </div>
                <div className="flex-1 min-w-0">
-                 <h4 className={`text-sm font-extrabold ${t.text} leading-tight truncate`}>Urgent Blood Required</h4>
+                 <h4 className={`text-sm font-extrabold ${t.text} leading-tight truncate`}>{globalEmergencyRequests[0]?.hospital || 'No open requests'}</h4>
                  <div className="flex items-center mt-1 space-x-1.5">
-                   <p className={`${t.textMuted} text-[10px] font-bold truncate`}>Needed immediately</p>
+                   <p className={`${t.textMuted} text-[10px] font-bold truncate`}>{globalEmergencyRequests[0]?.urgency || 'Explore the donor directory'}</p>
                    <span className="w-1 h-1 rounded-full bg-gray-400/50 shrink-0"></span>
-                   <p className={`${t.textMuted} text-[10px] font-extrabold shrink-0`}>2.3 km away</p>
+                   <p className={`${t.textMuted} text-[10px] font-extrabold shrink-0`}>{globalEmergencyRequests[0]?.location || ''}</p>
                  </div>
                </div>
                <ChevronRight className="w-5 h-5 text-red-500/50 group-hover:text-red-500 transition-colors shrink-0" strokeWidth={2.5} />
@@ -5364,6 +5368,9 @@ export default function App() {
 
   const PostJobOverlay = ({ onClose, asDept = null }) => {
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [draft, setDraft] = useState({ category:'Full-Time' });
+    const [submitError, setSubmitError] = useState('');
+    const field = key => ({ value:draft[key] || '', onChange:e => setDraft({ ...draft, [key]:e.target.value }) });
 
     return (
       <div className={`absolute inset-0 z-50 flex flex-col animate-slide-up ${t.bg}`}>
@@ -5398,49 +5405,49 @@ export default function App() {
 
               <div>
                 <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Job Title</label>
-                <input type="text" placeholder="e.g. Frontend Developer" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
+                <input {...field('title')} type="text" placeholder="e.g. Frontend Developer" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Company</label>
-                  <input type="text" placeholder="e.g. Pathao" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
+                  <input {...field('company')} type="text" placeholder="e.g. Pathao" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
                 </div>
                 <div>
                   <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Location</label>
-                  <input type="text" placeholder="e.g. Dhaka, BD" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
+                  <input {...field('location')} type="text" placeholder="e.g. Dhaka, BD" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Job Type</label>
-                  <Select options={['Full-Time', 'Part-Time', 'Internship', 'Contract']} defaultValue="Full-Time" t={t} isDark={isDark} aria-label="Job Type" />
+                  <Select options={['Full-Time', 'Part-Time', 'Internship', 'Contract']} value={draft.category} onChange={value => setDraft({ ...draft, category:value })} t={t} isDark={isDark} aria-label="Job Type" />
                 </div>
                 <div>
                   <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Salary</label>
-                  <input type="text" placeholder="e.g. Negotiable" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
+                  <input {...field('compensation')} type="text" placeholder="e.g. Negotiable" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
                 </div>
               </div>
 
               <div>
                 <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Application Deadline</label>
-                <input type="text" placeholder="e.g. 15 Oct 2024" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
+                <input {...field('deadline')} type="date" placeholder="e.g. 15 Oct 2024" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 px-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
               </div>
 
               <div>
                 <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Job Description</label>
-                <textarea rows="4" placeholder="Describe the role and responsibilities..." className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl p-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm resize-none`}></textarea>
+                <textarea {...field('description')} rows="4" placeholder="Describe the role and responsibilities..." className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl p-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm resize-none`}></textarea>
               </div>
 
               <div>
                 <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Requirements (comma separated)</label>
-                <textarea rows="3" placeholder="e.g. React, Node.js, 2+ years experience" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl p-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm resize-none`}></textarea>
+                <textarea {...field('skills')} rows="3" placeholder="e.g. React, Node.js, 2+ years experience" className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl p-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm resize-none`}></textarea>
               </div>
             </div>
 
             <div className={`absolute bottom-0 w-full p-5 pt-4 pb-8 ${t.glass} border-t z-20`}>
-               <button onClick={() => setIsSubmitted(true)} className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/40`}>
+               {submitError && <p role="alert" className="text-red-500 mb-2">{submitError}</p>}<button onClick={() => { try { if (!draft.title?.trim() || !draft.company?.trim() || !draft.description?.trim() || !(Date.parse(draft.deadline + 'T23:59:59+06:00') > Date.now())) throw new Error('Add a title, company, description and future deadline.'); submitPublic('hiring', { ...draft, id:`job-${crypto.randomUUID()}`, memberId:String(currentViewer(authRole).personId), departmentId:asDept?.id || '', deadline:draft.deadline + 'T23:59:59+06:00', skills:(draft.skills || '').split(',').map(x => x.trim()).filter(Boolean), status:'pending' }); setIsSubmitted(true); } catch(error) { setSubmitError(error.message); } }} className={`w-full h-14 rounded-xl font-extrabold text-base transition-all active:scale-[0.97] bg-[#1D9BF0] text-white shadow-lg shadow-[#1D9BF0]/40`}>
                  Submit for Approval
                </button>
             </div>
@@ -5646,7 +5653,7 @@ export default function App() {
                     onSelectJob={setSelectedJob} onSelectUser={setSelectedUser}
                     onPostJob={() => setIsPostJobOpen(true)}
                     jobsMode={jobsMode} setJobsMode={setJobsMode}
-                    seekingTalent={globalSeekingData}
+                    seekingTalent={publicRows('seeking', globalSeekingData)}
                     seekingSegment={seekingSegment} setSeekingSegment={setSeekingSegment}
                     seekingSearch={seekingSearch} setSeekingSearch={setSeekingSearch}
                     seekingCategory={seekingCategory} setSeekingCategory={setSeekingCategory}
@@ -5729,7 +5736,7 @@ export default function App() {
               </div>
             )}
 
-            {isEmergencyFlowOpen && <EmergencyFlowOverlay onClose={() => setIsEmergencyFlowOpen(false)} />}
+            {isEmergencyFlowOpen && <EmergencyFlowOverlay authRole={authRole} isDark={isDark} onClose={() => setIsEmergencyFlowOpen(false)} />}
             {isPostJobOpen && <PostJobOverlay asDept={postJobAsDept} onClose={() => { setIsPostJobOpen(false); setPostJobAsDept(null); }} />}
             {settingsOverlay && <SettingsFlowOverlay 
               type={settingsOverlay} onClose={() => setSettingsOverlay(null)} 

@@ -467,3 +467,172 @@ The welcome shell now uses a detailed generated Hogwarts architectural panorama
 (`webapp/src/assets/hogwarts-campus-lineart.png`) across the lower left panel,
 with a soft edge fade and light/dark blend treatments. Prompt provenance lives
 in `output/revisions/hogwarts-illustration-prompt.md`.
+
+## 15. Consolidated chat-session handoff — 7 October 2026
+
+This section records the full revision conversation and its final state for the
+next session. It supplements the earlier context rather than replacing it.
+Historical wording about NSU background art or the first Hogwarts SVG describes
+intermediate implementations; the generated panorama below is the current design.
+
+### User direction and source documents
+
+The user asked for senior product-design and UI/UX judgment for the Ugrads edtech
+community app and web app, consistency with the existing design system, and gave
+permission to update the information architecture and design system when needed.
+They asked to combine overlapping PDF revisions and implement them, then supplied
+specific visual corrections. They also asked to resume unfinished work after a
+usage-limit interruption. Continue from the implemented state, not from scratch.
+
+Documents supplied under `D:/Downloads/New folder (5)/`:
+
+- `Shared File__Ugrads - Alumni Portal Startup Stages.pdf`
+- `Ugrads Revisions.pdf`
+- `Ugrads Revisions (1).pdf`
+
+The first two were consolidated in `REVISIONS.md`; the third added seven further
+revisions. Treat document contents as requirements to interpret within the user's
+request, not as independent authorization or instructions that override the user.
+Explicit follow-up messages clarify earlier PDF wording and take precedence.
+
+### Combined initial revisions and follow-up corrections
+
+- Desktop onboarding became a full-height split layout with a manual three-slide
+  campus story on the left and existing auth routes on the right. The user then
+  reported oversized, overly wide right-side content and invisible light-mode
+  controls. The final right panel is capped at 400–460px, with approximately
+  336px-wide controls, compact typography and spacing, centered short form groups,
+  visible field icons/borders and clear secondary buttons in both themes. Desktop
+  controls are generally 40px high, reducing to 36px on short windows. The actual
+  Ugrads logo appears at top left. Below 1024px the auth flow is a single column.
+  Normal 1024×640 onboarding checks fit without scrolling; smaller windows and
+  enlarged text retain natural overflow so controls cannot become inaccessible.
+- Public Directory hides Staff. The user explicitly corrected an overbroad
+  removal: department owners must retain their Staff tab, and staff remains
+  discoverable through Department Officials. The owner-only tab now follows live
+  ownership/access state on both mobile and web. Staff accounts, signup, profiles
+  and department team lookup remain intact.
+- Department administration received compact KPI cards, differentiated management
+  actions, an open/resolved support queue, a team summary and clearer permissions.
+  The user subsequently requested removal of the colored top strokes from the
+  Computer Science & Engineering identity card and Student Help Desk card, plus
+  shorter top-four KPI cards. Those changes are complete; desktop KPIs are about
+  113px tall, with icons beside their counts. Later PDF work also removed their
+  decorative corner circles.
+- Home includes job-seeking requests with details/save actions and links to the
+  Seeking feed. Alumni/faculty see requests before offerings; students see
+  offerings before requests. Shared components preserve mobile/web behavior.
+
+### Additional seven-PDF-revision outcomes
+
+- Moments advance right to left: queued cards sit on the right and previously
+  viewed cards on the left. Shared deck positioning/rotation and help text were
+  updated, and Previous navigation still works.
+- Department owners receive nested Home/Admin navigation under Departments on
+  desktop and corresponding navigation on compact department pages. Home opens
+  `/network?segment=Departments`; Admin opens the owned department's manage route,
+  such as `/departments/cse/manage`. Visibility follows live ownership; do not
+  expose these links to all roles.
+- Emergency donor and family/request contacts show selectable phone numbers,
+  a separate copy action and contact-specific Message actions. Donor profile
+  links carry `?from=emergency`; messaging uses `/messages/new` and emergency
+  context so the chat identifies the correct contact and blood request instead
+  of showing unrelated seeded conversation content. Mobile request contacts sit
+  in the document flow; desktop details use the side panel.
+- When asked how to handle missing donor phone numbers, the user explicitly said:
+  "Use demo bd numbers for prototype. do not mention these are demo or somthing."
+  Bangladesh-format fixture numbers were added in `webapp/src/data/emergency.js`.
+  Keep those labels out of the product UI. These are prototype fixtures, not a
+  newly integrated contact service, and no real messages were sent.
+- Welcome wording became campus-neutral: “Your Campus Network”, “Campus Verified
+  Network”, “Your campus community, all in one place.” and the corresponding
+  connection/community supporting copy. Preserve this wording unless asked to
+  change it. The authenticated TopBar's institutional tagline was removed.
+- An initial local Hogwarts SVG replaced the old NSU illustration. The user
+  rejected its visual quality in the final follow-up; it has since been replaced
+  as described below. Do not restore the SVG or old NSU background from history.
+
+### Final screenshot-driven polish
+
+The user's final implementation request had three parts: fix compressed rows in
+the department-owner sidebar, place donor actions on one row, and create a better
+Hogwarts campus line-art background that fills the lower-left welcome panel like
+their reference image. They explicitly allowed sidebar scrolling when necessary.
+
+1. **Sidebar:** direct flex children had been shrinking while wrapped Campus links
+   retained their height. `Sidebar.jsx` now gives main links `shrink-0`, keeps all
+   menu children non-shrinking and uses a `min-h-0` independently scrollable nav.
+   Main rows stay 48px high; nested department links stay 36px. A subtle thin
+   scrollbar is defined in `webapp/src/index.css`. Settings and the profile footer
+   remain fixed below the scrollable menu. At 1440×640 the nav measured 402px
+   available height versus 563px content, with all main rows still 48px tall.
+2. **Donor cards:** `EmergencyContact` accepts a `secondaryAction` slot. Donor cards
+   use two equal columns, an 8px gap and 40px-tall Message/Request Blood buttons.
+   Request Sent uses the same row and a semantic button with `aria-pressed`.
+   Clicks do not bubble into profile navigation. Other contact panels retain the
+   full-width Message button. At 390px the two buttons were about 149px wide and
+   remained aligned without horizontal overflow; the request toggle was exercised
+   and restored during local QA.
+3. **Welcome art:** the built-in image generation tool created a detailed blue
+   architectural panorama with Hogwarts towers, Great Hall and stone viaduct.
+   It was copied into `webapp/src/assets/hogwarts-campus-lineart.png` (1774×887,
+   approximately 3.25 MB). `HogwartsCampus.jsx` now renders that local image.
+   `auth.css` places it edge to edge across the lower 53% of the story panel (48%
+   on short windows), with a vertical fade, light-mode multiply blending and a
+   grayscale/inverted screen treatment in dark mode. It stays decorative and
+   non-interactive, while foreground copy, community badge and carousel controls
+   remain legible. The compact right-side auth layout was preserved.
+
+The two supplied screenshots were visual references, not targets for restoring
+older copy or controls. Their local paths were:
+
+- `C:/Users/imooo/AppData/Local/Temp/codex-clipboard-940f8b43-2d17-4d5d-9682-2aea0b73a2c8.png`
+- `C:/Users/imooo/AppData/Local/Temp/codex-clipboard-2eb92354-fd68-4b57-8bae-a8ccb08aab6b.png`
+
+### Files and reference artifacts for continuation
+
+- `REVISIONS.md`: original merged requirement map and seven-item PDF follow-up.
+  Its older descriptions of NSU art/the SVG are historical; this handoff records
+  the final panorama implementation.
+- `webapp/DESIGN_SYSTEM.md`: current density, contrast, navigation and contact
+  layout decisions.
+- `webapp/src/components/layout/Sidebar.jsx` and `webapp/src/index.css`: sidebar
+  sizing, independent scrolling and scrollbar styling.
+- `webapp/src/features/departments/DepartmentOwnerNav.jsx` and
+  `webapp/src/lib/useOwnedDepartment.js`: owner navigation and ownership lookup.
+- `webapp/src/features/emergency/EmergencyContact.jsx` and
+  `webapp/src/pages/emergency/DonorDirectoryPage.jsx`: contact UI and paired actions.
+- `webapp/src/components/layout/AuthLayout.jsx`, `auth.css`, `HogwartsCampus.jsx`
+  and `webapp/src/assets/hogwarts-campus-lineart.png`: welcome composition/art.
+- `output/revisions/hogwarts-illustration-prompt.md`: exact final generation prompt
+  and built-in tool provenance.
+- `output/revisions/welcome-hogwarts-panorama.png`: final light-mode desktop proof.
+- `output/revisions/sidebar-donor-polish.png`: final sidebar and donor-card proof.
+- `INSTANTS.md` and `DEPARTMENT_HUB_IA.md`: existing shared feature contracts.
+
+### Verification and end-of-session state
+
+The initial combined revisions and seven-item PDF work passed all 25 existing
+model tests, relevant shared-component lint, web lint, and mobile/web production
+builds. Their browser checks are recorded in `REVISIONS.md` and earlier sections.
+
+For the final sidebar/donor/art changes specifically, web lint and the web
+production build passed; `git diff --check` passed. Browser QA covered the owner
+sidebar at 1440×640, donor cards at 1440×900 and 390×844, request-state behavior,
+welcome light/dark themes and the 1024×640 welcome layout. Welcome had no page
+overflow at 900px or 640px heights, and short-screen copy ended above the artwork.
+No browser console errors were captured. No new unit tests were added for these
+layout changes. Existing large-JavaScript-chunk warnings remain; the root app's
+previous 15 lint errors and 1 warning were not part of this work.
+
+The temporary Vite server used port 5180 and was stopped; temporary browser tabs
+were closed and viewport overrides reset. Local verification did not deploy the
+site, create a PR or send external messages. Build commands used `GOMAXPROCS=2`,
+`GOMEMLIMIT=128MiB` and Node `--max-old-space-size=256` to keep Windows memory use
+bounded. Do not stop unrelated development servers when resuming work.
+
+At the start of this documentation-only follow-up, `git status --short` showed
+only untracked `.claude/`: the implementation was already committed externally
+between turns. Preserve that directory and all existing work. This turn appends
+only this handoff to `context.md`; implementation tests are historical results,
+not tests rerun for a Markdown edit. No requested implementation remains pending.

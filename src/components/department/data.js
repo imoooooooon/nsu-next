@@ -1,3 +1,4 @@
+import { publicDepartments, subscribeBridge } from '../../shared/adminBridge.js';
 import { liveDepartment } from '../../shared/departmentStore';
 /* Department (Entity Profile) demo data.
    Keep these records byte-identical with the web app's
@@ -268,3 +269,8 @@ export const departmentJobs = {
   bba: [],
   architecture: [],
 };
+
+const departmentSeeds = structuredClone(globalDepartments);
+const refreshDepartmentRecords = () => globalDepartments.splice(0, globalDepartments.length, ...publicDepartments(departmentSeeds));
+refreshDepartmentRecords();
+subscribeBridge(refreshDepartmentRecords);

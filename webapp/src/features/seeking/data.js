@@ -1,3 +1,4 @@
+import { publicRows, subscribeBridge } from '../../../../src/shared/adminBridge.js';
 export const globalSeekingData = [
   {
     id: 'talent-001', category: 'Internship', headline: 'Seeking Marketing Internship',
@@ -238,3 +239,8 @@ export const globalMySeekingPosts = [
     postedDate: '25 Jul 2026', views: 0, saves: 0, messages: 0
   }
 ];
+
+const bridgeSeed = structuredClone(globalSeekingData);
+const refreshPublicRecords = () => { globalSeekingData.splice(0, globalSeekingData.length, ...publicRows('seeking', bridgeSeed)); };
+refreshPublicRecords();
+subscribeBridge(refreshPublicRecords);

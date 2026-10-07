@@ -1,0 +1,2749 @@
+{
+  "members": [
+    {
+      "id": 1,
+      "name": "Sarah Rahman",
+      "role": "Software Engineer",
+      "company": "Google",
+      "dept": "CSE",
+      "skills": [
+        "System Design",
+        "React",
+        "Node.js"
+      ],
+      "batch": "Batch 19",
+      "location": "Dhaka, BD",
+      "followers": "12.4k",
+      "blood": "O+",
+      "verified": true,
+      "about": "Passionate software engineer with 4+ years of experience building scalable web applications. Always eager to connect with fellow NSUers and mentor juniors.",
+      "experience": [
+        {
+          "title": "Software Engineer",
+          "company": "Google",
+          "duration": "2022 - Present"
+        },
+        {
+          "title": "Frontend Developer",
+          "company": "Pathao",
+          "duration": "2020 - 2022"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 2,
+      "name": "Tahmid Hasan",
+      "role": "Product Lead",
+      "company": "Pathao",
+      "dept": "ECE",
+      "skills": [
+        "Product Mgt",
+        "Growth"
+      ],
+      "batch": "Batch 18",
+      "location": "Dhaka, BD",
+      "followers": "8.2k",
+      "blood": "B+",
+      "verified": true,
+      "about": "Building products that move millions. Former engineer turned product manager.",
+      "experience": [
+        {
+          "title": "Product Lead",
+          "company": "Pathao",
+          "duration": "2021 - Present"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 3,
+      "name": "Ayman Sadiq",
+      "role": "CEO & Founder",
+      "company": "10 Minute School",
+      "dept": "BBA",
+      "skills": [
+        "EdTech",
+        "Leadership",
+        "Marketing"
+      ],
+      "batch": "Batch 15",
+      "location": "Dhaka, BD",
+      "followers": "1.2M",
+      "blood": "A+",
+      "verified": true,
+      "about": "Making education accessible for everyone in Bangladesh.",
+      "experience": [
+        {
+          "title": "CEO",
+          "company": "10 Minute School",
+          "duration": "2015 - Present"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 4,
+      "name": "Fahim Shahriar",
+      "role": "Senior Product Designer",
+      "company": "Optimizely",
+      "dept": "Architecture",
+      "skills": [
+        "UI/UX",
+        "Figma",
+        "User Research"
+      ],
+      "batch": "Batch 14",
+      "location": "Dhaka, BD",
+      "followers": "5.6k",
+      "blood": "B-",
+      "verified": true,
+      "about": "Crafting intuitive digital experiences. Passionate about solving complex user problems.",
+      "experience": [
+        {
+          "title": "Senior Designer",
+          "company": "Optimizely",
+          "duration": "2021 - Present"
+        },
+        {
+          "title": "UX Designer",
+          "company": "Pathao",
+          "duration": "2018 - 2021"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 5,
+      "name": "Sadia Islam",
+      "role": "Data Scientist",
+      "company": "Microsoft",
+      "dept": "CSE",
+      "skills": [
+        "Python",
+        "Machine Learning",
+        "SQL"
+      ],
+      "batch": "Batch 17",
+      "location": "Seattle, WA",
+      "followers": "8.9k",
+      "blood": "O+",
+      "verified": true,
+      "about": "Data enthusiast. Working on scalable machine learning models to improve cloud infrastructure.",
+      "experience": [
+        {
+          "title": "Data Scientist",
+          "company": "Microsoft",
+          "duration": "2020 - Present"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 6,
+      "name": "Arif Chowdhury",
+      "role": "Engineering Manager",
+      "company": "Shopify",
+      "dept": "CSE",
+      "skills": [
+        "Distributed Systems",
+        "Go",
+        "Leadership"
+      ],
+      "batch": "Batch 16",
+      "location": "Toronto, CA",
+      "followers": "9.7k",
+      "blood": "A-",
+      "verified": true,
+      "about": "Leading a platform infrastructure team. Happy to mentor NSU juniors starting out in systems careers.",
+      "experience": [
+        {
+          "title": "Engineering Manager",
+          "company": "Shopify",
+          "duration": "2023 - Present"
+        },
+        {
+          "title": "Senior Engineer",
+          "company": "Shopify",
+          "duration": "2019 - 2023"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 7,
+      "name": "Nabil Ahmed",
+      "role": "Senior Software Engineer",
+      "company": "bKash",
+      "dept": "CSE",
+      "skills": [
+        "Kotlin",
+        "Microservices",
+        "Kafka"
+      ],
+      "batch": "Batch 18",
+      "location": "Dhaka, BD",
+      "followers": "4.1k",
+      "blood": "B+",
+      "verified": true,
+      "about": "Building payment rails used by millions every day. Happy to review CVs for juniors applying to fintech.",
+      "experience": [
+        {
+          "title": "Senior Software Engineer",
+          "company": "bKash",
+          "duration": "2021 - Present"
+        },
+        {
+          "title": "Software Engineer",
+          "company": "Chaldal",
+          "duration": "2018 - 2021"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 8,
+      "name": "Rumana Akter",
+      "role": "Machine Learning Engineer",
+      "company": "Meta",
+      "dept": "CSE",
+      "skills": [
+        "PyTorch",
+        "Recommender Systems",
+        "Python"
+      ],
+      "batch": "Batch 17",
+      "location": "London, UK",
+      "followers": "7.3k",
+      "blood": "A+",
+      "verified": true,
+      "about": "Working on ranking models for feeds. I run a monthly ML reading circle for NSU students.",
+      "experience": [
+        {
+          "title": "ML Engineer",
+          "company": "Meta",
+          "duration": "2022 - Present"
+        },
+        {
+          "title": "Research Assistant",
+          "company": "NSU CSE",
+          "duration": "2016 - 2017"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 9,
+      "name": "Tanvir Hasan",
+      "role": "Cloud Solutions Architect",
+      "company": "AWS",
+      "dept": "CSE",
+      "skills": [
+        "AWS",
+        "Kubernetes",
+        "Terraform"
+      ],
+      "batch": "Batch 15",
+      "location": "Singapore, SG",
+      "followers": "6.8k",
+      "blood": "O-",
+      "verified": true,
+      "about": "Helping enterprises move to the cloud across APAC. Ask me about certifications and remote careers.",
+      "experience": [
+        {
+          "title": "Solutions Architect",
+          "company": "AWS",
+          "duration": "2020 - Present"
+        },
+        {
+          "title": "DevOps Engineer",
+          "company": "Grameenphone",
+          "duration": "2016 - 2020"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 10,
+      "name": "Ishrat Jahan",
+      "role": "Hardware Design Engineer",
+      "company": "Intel",
+      "dept": "ECE",
+      "skills": [
+        "Verilog",
+        "ASIC Design",
+        "Timing Analysis"
+      ],
+      "batch": "Batch 16",
+      "location": "Portland, OR",
+      "followers": "3.9k",
+      "blood": "AB+",
+      "verified": true,
+      "about": "Designing the next generation of low-power silicon. Former VLSI lab TA at NSU.",
+      "experience": [
+        {
+          "title": "Hardware Design Engineer",
+          "company": "Intel",
+          "duration": "2021 - Present"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 11,
+      "name": "Mahir Faisal",
+      "role": "Network Planning Lead",
+      "company": "Robi Axiata",
+      "dept": "ECE",
+      "skills": [
+        "5G",
+        "RF Planning",
+        "LTE"
+      ],
+      "batch": "Batch 17",
+      "location": "Dhaka, BD",
+      "followers": "2.2k",
+      "blood": "B+",
+      "verified": true,
+      "about": "Planning the 5G rollout across Dhaka division. Always hiring sharp ECE interns.",
+      "experience": [
+        {
+          "title": "Network Planning Lead",
+          "company": "Robi Axiata",
+          "duration": "2020 - Present"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 12,
+      "name": "Priyanka Das",
+      "role": "Embedded Systems Engineer",
+      "company": "Samsung R&D",
+      "dept": "ECE",
+      "skills": [
+        "Embedded C",
+        "RTOS",
+        "IoT"
+      ],
+      "batch": "Batch 19",
+      "location": "Dhaka, BD",
+      "followers": "1.6k",
+      "blood": "O+",
+      "verified": true,
+      "about": "Firmware for wearables. Robotics club alumna and competition mentor.",
+      "experience": [
+        {
+          "title": "Embedded Engineer",
+          "company": "Samsung R&D",
+          "duration": "2022 - Present"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 13,
+      "name": "Shahriar Kabir",
+      "role": "Investment Analyst",
+      "company": "BRAC Bank",
+      "dept": "BBA",
+      "skills": [
+        "Valuation",
+        "Financial Modeling",
+        "Equity Research"
+      ],
+      "batch": "Batch 18",
+      "location": "Dhaka, BD",
+      "followers": "2.9k",
+      "blood": "A-",
+      "verified": true,
+      "about": "Covering banking and telecom equities. CFA Level III candidate.",
+      "experience": [
+        {
+          "title": "Investment Analyst",
+          "company": "BRAC Bank",
+          "duration": "2021 - Present"
+        },
+        {
+          "title": "Analyst Intern",
+          "company": "IDLC Finance",
+          "duration": "Summer 2019"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 14,
+      "name": "Farhana Mim",
+      "role": "Brand Manager",
+      "company": "Unilever Bangladesh",
+      "dept": "BBA",
+      "skills": [
+        "Brand Strategy",
+        "Consumer Insights",
+        "Marketing"
+      ],
+      "batch": "Batch 17",
+      "location": "Dhaka, BD",
+      "followers": "5.4k",
+      "blood": "B+",
+      "verified": true,
+      "about": "Leading a personal-care brand portfolio. Mentor in the Unilever Future Leaders programme.",
+      "experience": [
+        {
+          "title": "Brand Manager",
+          "company": "Unilever Bangladesh",
+          "duration": "2022 - Present"
+        },
+        {
+          "title": "Management Trainee",
+          "company": "Unilever Bangladesh",
+          "duration": "2020 - 2022"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 15,
+      "name": "Kamrul Islam",
+      "role": "Audit Senior",
+      "company": "KPMG",
+      "dept": "BBA",
+      "skills": [
+        "Audit",
+        "IFRS",
+        "Risk Advisory"
+      ],
+      "batch": "Batch 19",
+      "location": "Dhaka, BD",
+      "followers": "1.2k",
+      "blood": "O+",
+      "verified": false,
+      "about": "Audit and assurance for financial services clients. ACCA affiliate.",
+      "experience": [
+        {
+          "title": "Audit Senior",
+          "company": "KPMG",
+          "duration": "2022 - Present"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 16,
+      "name": "Rafia Sultana",
+      "role": "Associate Architect",
+      "company": "Delta Design Studio",
+      "dept": "Architecture",
+      "skills": [
+        "Revit",
+        "Sustainable Design",
+        "Urban Housing"
+      ],
+      "batch": "Batch 16",
+      "location": "Dhaka, BD",
+      "followers": "2.4k",
+      "blood": "A+",
+      "verified": true,
+      "about": "Designing climate-responsive low-income housing. Thesis jury member at NSU.",
+      "experience": [
+        {
+          "title": "Associate Architect",
+          "company": "Delta Design Studio",
+          "duration": "2020 - Present"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 17,
+      "name": "Ayon Rahman",
+      "role": "Urban Designer",
+      "company": "Dhaka Urban Lab",
+      "dept": "Architecture",
+      "skills": [
+        "Urban Design",
+        "GIS",
+        "Public Space"
+      ],
+      "batch": "Batch 15",
+      "location": "Dhaka, BD",
+      "followers": "1.9k",
+      "blood": "B-",
+      "verified": true,
+      "about": "Reimagining Dhaka's public spaces and waterfronts. Runs a walking-tour series for students.",
+      "experience": [
+        {
+          "title": "Urban Designer",
+          "company": "Dhaka Urban Lab",
+          "duration": "2019 - Present"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 18,
+      "name": "Sabbir Hossain",
+      "role": "DevOps Engineer",
+      "company": "Chaldal",
+      "dept": "CSE",
+      "skills": [
+        "Docker",
+        "CI/CD",
+        "Linux"
+      ],
+      "batch": "Batch 20",
+      "location": "Dhaka, BD",
+      "followers": "980",
+      "blood": "A+",
+      "verified": true,
+      "about": "Keeping groceries moving with reliable infrastructure. Open to mentoring final-year students.",
+      "experience": [
+        {
+          "title": "DevOps Engineer",
+          "company": "Chaldal",
+          "duration": "2023 - Present"
+        }
+      ],
+      "identity": "Alumni"
+    },
+    {
+      "id": 101,
+      "name": "Dr. Aminul Islam",
+      "role": "Professor",
+      "company": "North South University",
+      "dept": "CSE",
+      "skills": [
+        "Machine Learning",
+        "AI",
+        "Algorithms"
+      ],
+      "batch": "Faculty",
+      "location": "Dhaka, BD",
+      "followers": "2.1k",
+      "blood": "A+",
+      "verified": true,
+      "about": "Ph.D. from MIT. 15+ years of teaching and research experience.",
+      "experience": [
+        {
+          "title": "Professor",
+          "company": "NSU",
+          "duration": "2010 - Present"
+        }
+      ],
+      "identity": "Faculty"
+    },
+    {
+      "id": 102,
+      "name": "Dr. Nova Ahmed",
+      "role": "Associate Professor",
+      "company": "North South University",
+      "dept": "ECE",
+      "skills": [
+        "HCI",
+        "IoT",
+        "Embedded Systems"
+      ],
+      "batch": "Faculty",
+      "location": "Dhaka, BD",
+      "followers": "1.8k",
+      "blood": "O+",
+      "verified": true,
+      "about": "Passionate about building technologies for emerging markets.",
+      "experience": [
+        {
+          "title": "Assoc. Professor",
+          "company": "NSU",
+          "duration": "2015 - Present"
+        }
+      ],
+      "identity": "Faculty"
+    },
+    {
+      "id": 103,
+      "name": "Dr. Shazzad Hosain",
+      "role": "Professor",
+      "company": "North South University",
+      "dept": "ECE",
+      "skills": [
+        "VLSI",
+        "Nanotechnology",
+        "Circuit Design"
+      ],
+      "batch": "Faculty",
+      "location": "Dhaka, BD",
+      "followers": "1.5k",
+      "blood": "AB+",
+      "verified": true,
+      "about": "Senior faculty member focusing on advanced VLSI design and quantum computing.",
+      "experience": [
+        {
+          "title": "Professor",
+          "company": "NSU",
+          "duration": "2008 - Present"
+        }
+      ],
+      "identity": "Faculty"
+    },
+    {
+      "id": 104,
+      "name": "Ms. Nabila Rahman",
+      "role": "Lecturer",
+      "company": "North South University",
+      "dept": "BBA",
+      "skills": [
+        "Corporate Finance",
+        "Investment",
+        "Accounting"
+      ],
+      "batch": "Faculty",
+      "location": "Dhaka, BD",
+      "followers": "980",
+      "blood": "O-",
+      "verified": true,
+      "about": "Passionate about teaching financial literacy and corporate investment strategies.",
+      "experience": [
+        {
+          "title": "Lecturer",
+          "company": "NSU",
+          "duration": "2021 - Present"
+        }
+      ],
+      "identity": "Faculty"
+    },
+    {
+      "id": 105,
+      "name": "Dr. Tanzima Hashem",
+      "role": "Associate Professor",
+      "company": "North South University",
+      "dept": "CSE",
+      "skills": [
+        "Databases",
+        "Spatial Computing",
+        "Privacy"
+      ],
+      "batch": "Faculty",
+      "location": "Dhaka, BD",
+      "followers": "1.3k",
+      "blood": "B+",
+      "verified": true,
+      "about": "Researching privacy-preserving location services and spatial query processing.",
+      "experience": [
+        {
+          "title": "Assoc. Professor",
+          "company": "NSU",
+          "duration": "2016 - Present"
+        }
+      ],
+      "identity": "Faculty"
+    },
+    {
+      "id": 106,
+      "name": "Mr. Rashedul Karim",
+      "role": "Senior Lecturer",
+      "company": "North South University",
+      "dept": "CSE",
+      "skills": [
+        "Software Engineering",
+        "Web Systems",
+        "DevOps"
+      ],
+      "batch": "Faculty",
+      "location": "Dhaka, BD",
+      "followers": "870",
+      "blood": "O+",
+      "verified": true,
+      "about": "Teaching software engineering and web systems. Coordinator for the CSE industry internship programme.",
+      "experience": [
+        {
+          "title": "Senior Lecturer",
+          "company": "NSU",
+          "duration": "2018 - Present"
+        }
+      ],
+      "identity": "Faculty"
+    },
+    {
+      "id": 107,
+      "name": "Dr. Farhana Sarker",
+      "role": "Assistant Professor",
+      "company": "North South University",
+      "dept": "CSE",
+      "skills": [
+        "Health Informatics",
+        "Data Mining",
+        "R"
+      ],
+      "batch": "Faculty",
+      "location": "Dhaka, BD",
+      "followers": "1.1k",
+      "blood": "A+",
+      "verified": true,
+      "about": "Working at the intersection of health informatics and applied data mining.",
+      "experience": [
+        {
+          "title": "Asst. Professor",
+          "company": "NSU",
+          "duration": "2019 - Present"
+        }
+      ],
+      "identity": "Faculty"
+    },
+    {
+      "id": 108,
+      "name": "Dr. Shamim Ahsan",
+      "role": "Professor",
+      "company": "North South University",
+      "dept": "BBA",
+      "skills": [
+        "Strategic Management",
+        "Corporate Governance",
+        "Finance"
+      ],
+      "batch": "Faculty",
+      "location": "Dhaka, BD",
+      "followers": "1.7k",
+      "blood": "B+",
+      "verified": true,
+      "about": "Chair of the Department of Accounting & Finance. 20 years in corporate governance research.",
+      "experience": [
+        {
+          "title": "Professor & Chair",
+          "company": "NSU",
+          "duration": "2012 - Present"
+        }
+      ],
+      "identity": "Faculty"
+    },
+    {
+      "id": 109,
+      "name": "Ar. Nusrat Farzana",
+      "role": "Associate Professor",
+      "company": "North South University",
+      "dept": "Architecture",
+      "skills": [
+        "Heritage Conservation",
+        "Climate Design",
+        "Studio Pedagogy"
+      ],
+      "batch": "Faculty",
+      "location": "Dhaka, BD",
+      "followers": "1.2k",
+      "blood": "O+",
+      "verified": true,
+      "about": "Chair of the Department of Architecture. Leads the delta-housing research studio.",
+      "experience": [
+        {
+          "title": "Assoc. Professor & Chair",
+          "company": "NSU",
+          "duration": "2014 - Present"
+        }
+      ],
+      "identity": "Faculty"
+    },
+    {
+      "id": 110,
+      "name": "Dr. Mahfuza Begum",
+      "role": "Assistant Professor",
+      "company": "North South University",
+      "dept": "ECE",
+      "skills": [
+        "Signal Processing",
+        "Wireless Communication",
+        "MATLAB"
+      ],
+      "batch": "Faculty",
+      "location": "Dhaka, BD",
+      "followers": "760",
+      "blood": "A+",
+      "verified": true,
+      "about": "Researching energy-efficient wireless sensor networks.",
+      "experience": [
+        {
+          "title": "Asst. Professor",
+          "company": "NSU",
+          "duration": "2019 - Present"
+        }
+      ],
+      "identity": "Faculty"
+    },
+    {
+      "id": 111,
+      "name": "Mr. Imran Hossain",
+      "role": "Lecturer",
+      "company": "North South University",
+      "dept": "CSE",
+      "skills": [
+        "Data Structures",
+        "Competitive Programming",
+        "C++"
+      ],
+      "batch": "Faculty",
+      "location": "Dhaka, BD",
+      "followers": "640",
+      "blood": "O+",
+      "verified": true,
+      "about": "Coach of the NSU ACM ICPC teams. Teaches CSE 225 and CSE 373.",
+      "experience": [
+        {
+          "title": "Lecturer",
+          "company": "NSU",
+          "duration": "2021 - Present"
+        }
+      ],
+      "identity": "Faculty"
+    },
+    {
+      "id": 112,
+      "name": "Ms. Farzana Yasmin",
+      "role": "Senior Lecturer",
+      "company": "North South University",
+      "dept": "BBA",
+      "skills": [
+        "Marketing Analytics",
+        "Consumer Behaviour",
+        "Research Methods"
+      ],
+      "batch": "Faculty",
+      "location": "Dhaka, BD",
+      "followers": "820",
+      "blood": "AB-",
+      "verified": true,
+      "about": "Teaching marketing analytics and advising the NSU Marketing Club.",
+      "experience": [
+        {
+          "title": "Senior Lecturer",
+          "company": "NSU",
+          "duration": "2017 - Present"
+        }
+      ],
+      "identity": "Faculty"
+    },
+    {
+      "id": 113,
+      "name": "Ar. Kazi Tanvir Ahmed",
+      "role": "Assistant Professor",
+      "company": "North South University",
+      "dept": "Architecture",
+      "skills": [
+        "Parametric Design",
+        "Rhino",
+        "Fabrication"
+      ],
+      "batch": "Faculty",
+      "location": "Dhaka, BD",
+      "followers": "590",
+      "blood": "B+",
+      "verified": true,
+      "about": "Runs the digital fabrication workshop and the annual thesis exhibition.",
+      "experience": [
+        {
+          "title": "Asst. Professor",
+          "company": "NSU",
+          "duration": "2018 - Present"
+        }
+      ],
+      "identity": "Faculty"
+    },
+    {
+      "id": 114,
+      "name": "Dr. Rubaiyat Chowdhury",
+      "role": "Associate Professor",
+      "company": "North South University",
+      "dept": "ECE",
+      "skills": [
+        "Power Systems",
+        "Renewable Energy",
+        "Smart Grid"
+      ],
+      "batch": "Faculty",
+      "location": "Dhaka, BD",
+      "followers": "910",
+      "blood": "O-",
+      "verified": true,
+      "about": "Working on grid integration of rooftop solar across Bangladesh.",
+      "experience": [
+        {
+          "title": "Assoc. Professor",
+          "company": "NSU",
+          "duration": "2013 - Present"
+        }
+      ],
+      "identity": "Faculty"
+    },
+    {
+      "id": 115,
+      "name": "Ms. Sumaiya Tabassum",
+      "role": "Lecturer",
+      "company": "North South University",
+      "dept": "Architecture",
+      "skills": [
+        "Architectural Drawing",
+        "Theory",
+        "History"
+      ],
+      "batch": "Faculty",
+      "location": "Dhaka, BD",
+      "followers": "430",
+      "blood": "A+",
+      "verified": true,
+      "about": "Teaches first-year design studio and architectural history.",
+      "experience": [
+        {
+          "title": "Lecturer",
+          "company": "NSU",
+          "duration": "2022 - Present"
+        }
+      ],
+      "identity": "Faculty"
+    },
+    {
+      "id": 201,
+      "name": "Rayan Hossain",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "BBA",
+      "skills": [
+        "Marketing",
+        "Public Speaking",
+        "Leadership"
+      ],
+      "batch": "Batch 231",
+      "location": "Dhaka, BD",
+      "followers": "340",
+      "blood": "B+",
+      "verified": true,
+      "about": "Current BBA student focusing on digital marketing.",
+      "experience": [
+        {
+          "title": "Marketing Intern",
+          "company": "Unilever",
+          "duration": "Summer 2024"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 202,
+      "name": "Tanisha Chowdhury",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "Architecture",
+      "skills": [
+        "AutoCAD",
+        "3D Modeling",
+        "Design"
+      ],
+      "batch": "Batch 222",
+      "location": "Dhaka, BD",
+      "followers": "512",
+      "blood": "AB+",
+      "verified": true,
+      "about": "Architecture enthusiast, currently working on a thesis regarding sustainable housing.",
+      "experience": [
+        {
+          "title": "Junior Architect",
+          "company": "Design Lab",
+          "duration": "2023 - Present"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 203,
+      "name": "Abrar Fahim",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "CSE",
+      "skills": [
+        "C++",
+        "React",
+        "Algorithms"
+      ],
+      "batch": "Batch 232",
+      "location": "Dhaka, BD",
+      "followers": "120",
+      "blood": "A+",
+      "verified": false,
+      "about": "Sophomore studying CS. Active competitive programmer and open source contributor.",
+      "experience": [
+        {
+          "title": "Executive Member",
+          "company": "NSU ACM SC",
+          "duration": "2024 - Present"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 204,
+      "name": "Mehzabin Oishee",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "ECE",
+      "skills": [
+        "IoT",
+        "Arduino",
+        "C"
+      ],
+      "batch": "Batch 221",
+      "location": "Dhaka, BD",
+      "followers": "250",
+      "blood": "O+",
+      "verified": true,
+      "about": "Robotics enthusiast. Building smart home solutions for my final year project.",
+      "experience": [
+        {
+          "title": "Project Lead",
+          "company": "NSU Robotics Club",
+          "duration": "2023 - Present"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 205,
+      "name": "Zayed Khan",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "BBA",
+      "skills": [
+        "Marketing",
+        "Communication",
+        "Sales"
+      ],
+      "batch": "Batch 241",
+      "location": "Dhaka, BD",
+      "followers": "85",
+      "blood": "B-",
+      "verified": false,
+      "about": "Freshman majoring in BBA. Looking to explore the world of digital marketing.",
+      "experience": [
+        {
+          "title": "Volunteer",
+          "company": "NSU YES",
+          "duration": "2025 - Present"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 206,
+      "name": "Nafis Anwar",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "CSE",
+      "skills": [
+        "Java",
+        "Spring Boot",
+        "SQL"
+      ],
+      "batch": "Batch 233",
+      "location": "Dhaka, BD",
+      "followers": "96",
+      "blood": "O+",
+      "verified": true,
+      "about": "Backend-leaning CS student. Interested in distributed systems and clean architecture.",
+      "experience": [
+        {
+          "title": "Backend Intern",
+          "company": "Brain Station 23",
+          "duration": "Summer 2025"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 207,
+      "name": "Samira Haque",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "CSE",
+      "skills": [
+        "Flutter",
+        "UI Engineering",
+        "Firebase"
+      ],
+      "batch": "Batch 222",
+      "location": "Dhaka, BD",
+      "followers": "318",
+      "blood": "AB+",
+      "verified": true,
+      "about": "Final year CS student building cross-platform apps. TA for CSE 115 lab sections.",
+      "experience": [
+        {
+          "title": "Teaching Assistant",
+          "company": "NSU CSE",
+          "duration": "2025 - Present"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 208,
+      "name": "Tasnim Ara",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "CSE",
+      "skills": [
+        "Python",
+        "Machine Learning",
+        "PyTorch"
+      ],
+      "batch": "Batch 231",
+      "location": "Dhaka, BD",
+      "followers": "210",
+      "blood": "A+",
+      "verified": true,
+      "about": "ML enthusiast working on Bangla NLP for my capstone.",
+      "experience": [
+        {
+          "title": "Research Assistant",
+          "company": "NSU CSE NLP Lab",
+          "duration": "2025 - Present"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 209,
+      "name": "Rakib Hasan",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "CSE",
+      "skills": [
+        "C",
+        "Problem Solving",
+        "Git"
+      ],
+      "batch": "Batch 241",
+      "location": "Dhaka, BD",
+      "followers": "64",
+      "blood": "O+",
+      "verified": false,
+      "about": "First-year CS student. Learning the ropes of competitive programming.",
+      "experience": [
+        {
+          "title": "Member",
+          "company": "NSU ACM SC",
+          "duration": "2025 - Present"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 210,
+      "name": "Nusaiba Karim",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "CSE",
+      "skills": [
+        "Figma",
+        "React",
+        "UI Design"
+      ],
+      "batch": "Batch 223",
+      "location": "Dhaka, BD",
+      "followers": "290",
+      "blood": "B+",
+      "verified": true,
+      "about": "Design-minded frontend developer. I love turning messy flows into simple ones.",
+      "experience": [
+        {
+          "title": "Frontend Intern",
+          "company": "Brain Station 23",
+          "duration": "Summer 2025"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 211,
+      "name": "Fardin Islam",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "CSE",
+      "skills": [
+        "Cybersecurity",
+        "Linux",
+        "Networking"
+      ],
+      "batch": "Batch 221",
+      "location": "Dhaka, BD",
+      "followers": "180",
+      "blood": "AB+",
+      "verified": true,
+      "about": "CTF player and security club lead. Interested in blue-team operations.",
+      "experience": [
+        {
+          "title": "Security Intern",
+          "company": "Grameenphone",
+          "duration": "Summer 2025"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 212,
+      "name": "Adiba Rahman",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "ECE",
+      "skills": [
+        "Signal Processing",
+        "MATLAB",
+        "Python"
+      ],
+      "batch": "Batch 232",
+      "location": "Dhaka, BD",
+      "followers": "140",
+      "blood": "B+",
+      "verified": true,
+      "about": "Working on ECG signal denoising for my junior design project.",
+      "experience": [
+        {
+          "title": "Lab Volunteer",
+          "company": "NSU ECE",
+          "duration": "2025 - Present"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 213,
+      "name": "Shafin Chowdhury",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "ECE",
+      "skills": [
+        "PCB Design",
+        "Verilog",
+        "VLSI"
+      ],
+      "batch": "Batch 222",
+      "location": "Dhaka, BD",
+      "followers": "230",
+      "blood": "O-",
+      "verified": true,
+      "about": "Final-year ECE student taping out a small RISC-V core.",
+      "experience": [
+        {
+          "title": "Hardware Intern",
+          "company": "Samsung R&D",
+          "duration": "Summer 2025"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 214,
+      "name": "Lamia Hoque",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "ECE",
+      "skills": [
+        "Arduino",
+        "C",
+        "Robotics"
+      ],
+      "batch": "Batch 241",
+      "location": "Dhaka, BD",
+      "followers": "75",
+      "blood": "A-",
+      "verified": false,
+      "about": "Freshman, robotics club rookie, building my first line follower.",
+      "experience": [
+        {
+          "title": "Member",
+          "company": "NSU Robotics Club",
+          "duration": "2025 - Present"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 215,
+      "name": "Ishmam Kabir",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "BBA",
+      "skills": [
+        "Financial Modeling",
+        "Excel",
+        "Valuation"
+      ],
+      "batch": "Batch 222",
+      "location": "Dhaka, BD",
+      "followers": "260",
+      "blood": "B+",
+      "verified": true,
+      "about": "Finance major, CFA Level I candidate and case-competition regular.",
+      "experience": [
+        {
+          "title": "Finance Intern",
+          "company": "IDLC Finance",
+          "duration": "Summer 2025"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 216,
+      "name": "Raisa Tabassum",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "BBA",
+      "skills": [
+        "HR",
+        "Communication",
+        "Event Management"
+      ],
+      "batch": "Batch 231",
+      "location": "Dhaka, BD",
+      "followers": "190",
+      "blood": "O+",
+      "verified": true,
+      "about": "HR major and events lead at the NSU Business Club.",
+      "experience": [
+        {
+          "title": "Events Lead",
+          "company": "NSU Business Club",
+          "duration": "2024 - Present"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 217,
+      "name": "Tahsin Alam",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "BBA",
+      "skills": [
+        "Supply Chain",
+        "Data Analysis",
+        "Power BI"
+      ],
+      "batch": "Batch 223",
+      "location": "Dhaka, BD",
+      "followers": "110",
+      "blood": "A+",
+      "verified": true,
+      "about": "Supply chain major. Interested in analytics for retail logistics.",
+      "experience": [
+        {
+          "title": "Operations Intern",
+          "company": "Daraz",
+          "duration": "Summer 2025"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 218,
+      "name": "Maliha Rahman",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "Architecture",
+      "skills": [
+        "Revit",
+        "Rhino",
+        "Sketching"
+      ],
+      "batch": "Batch 231",
+      "location": "Dhaka, BD",
+      "followers": "205",
+      "blood": "B+",
+      "verified": true,
+      "about": "Third-year architecture student exploring bamboo as a structural material.",
+      "experience": [
+        {
+          "title": "Studio Assistant",
+          "company": "NSU Architecture",
+          "duration": "2025 - Present"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 219,
+      "name": "Arnob Das",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "Architecture",
+      "skills": [
+        "AutoCAD",
+        "Model Making",
+        "Photography"
+      ],
+      "batch": "Batch 241",
+      "location": "Dhaka, BD",
+      "followers": "58",
+      "blood": "O+",
+      "verified": false,
+      "about": "First-year design student. Photographing old Dhaka on weekends.",
+      "experience": [
+        {
+          "title": "Member",
+          "company": "NSU Photography Club",
+          "duration": "2025 - Present"
+        }
+      ],
+      "identity": "Student"
+    },
+    {
+      "id": 220,
+      "name": "Zarin Tasnim",
+      "role": "Student",
+      "company": "North South University",
+      "dept": "Architecture",
+      "skills": [
+        "Urban Design",
+        "GIS",
+        "Research"
+      ],
+      "batch": "Batch 213",
+      "location": "Dhaka, BD",
+      "followers": "330",
+      "blood": "A-",
+      "verified": true,
+      "about": "Thesis on flood-adaptive neighbourhoods in Sylhet.",
+      "experience": [
+        {
+          "title": "Research Intern",
+          "company": "Dhaka Urban Lab",
+          "duration": "2025 - Present"
+        }
+      ],
+      "identity": "Student"
+    }
+  ],
+  "departments": [
+    {
+      "id": "cse",
+      "code": "CSE",
+      "short": "CSE",
+      "name": "Computer Science & Engineering",
+      "school": "School of Engineering & Physical Sciences",
+      "departmentId": "NSU-DEPT-CSE-01",
+      "verified": true,
+      "established": "1993",
+      "about": "The Department of Computer Science & Engineering at North South University is the country's first private-university CSE programme, accredited by IEB and BAETE. We run 14 research labs across AI, HCI, networks and systems, and place over 400 graduates into industry every year. This hub is the department's official channel for notices, office hours, opportunities and student support.",
+      "office": "SAC 1042, NSU Campus, Bashundhara",
+      "email": "cse@northsouth.edu",
+      "phone": "+880 2 55668200 Ext. 1502",
+      "website": "northsouth.edu/cse",
+      "officeHours": "Sun – Thu · 9:00 AM – 5:00 PM",
+      "stats": {
+        "students": 3120,
+        "alumni": 8940,
+        "faculty": 62
+      },
+      "chairId": 101,
+      "officialId": 101,
+      "adminIds": [
+        106
+      ],
+      "broadcastChannelId": "dept-cse-broadcast",
+      "helpDeskId": "dept-cse-helpdesk",
+      "memberCount": 12122,
+      "emailReach": 11840
+    },
+    {
+      "id": "ece",
+      "code": "ECE",
+      "short": "ECE",
+      "name": "Electrical & Computer Engineering",
+      "school": "School of Engineering & Physical Sciences",
+      "departmentId": "NSU-DEPT-ECE-01",
+      "verified": true,
+      "established": "1998",
+      "about": "The Department of Electrical & Computer Engineering combines power, electronics, embedded systems and communication engineering under one roof. Our VLSI and IoT labs support both undergraduate capstone projects and funded research collaborations with industry partners across Bangladesh.",
+      "office": "SAC 0915, NSU Campus, Bashundhara",
+      "email": "ece@northsouth.edu",
+      "phone": "+880 2 55668200 Ext. 1611",
+      "website": "northsouth.edu/ece",
+      "officeHours": "Sun – Thu · 9:00 AM – 4:30 PM",
+      "stats": {
+        "students": 1840,
+        "alumni": 4210,
+        "faculty": 38
+      },
+      "chairId": 103,
+      "officialId": 103,
+      "adminIds": [],
+      "broadcastChannelId": "dept-ece-broadcast",
+      "helpDeskId": "dept-ece-helpdesk",
+      "memberCount": 6088,
+      "emailReach": 5920
+    },
+    {
+      "id": "bba",
+      "code": "BBA",
+      "short": "BBA",
+      "name": "Department of Accounting & Finance",
+      "school": "School of Business & Economics",
+      "departmentId": "NSU-DEPT-BBA-01",
+      "verified": true,
+      "established": "1993",
+      "about": "The School of Business & Economics runs the largest undergraduate programme at NSU. The department maintains an active corporate advisory board, a CFA-aligned finance track and a placement pipeline into every major bank and MNC operating in Bangladesh.",
+      "office": "NAC 812, NSU Campus, Bashundhara",
+      "email": "sbe@northsouth.edu",
+      "phone": "+880 2 55668200 Ext. 1720",
+      "website": "northsouth.edu/sbe",
+      "officeHours": "Sun – Thu · 8:30 AM – 5:00 PM",
+      "stats": {
+        "students": 4380,
+        "alumni": 11260,
+        "faculty": 74
+      },
+      "chairId": 108,
+      "officialId": 104,
+      "adminIds": [],
+      "broadcastChannelId": "dept-bba-broadcast",
+      "helpDeskId": "dept-bba-helpdesk",
+      "memberCount": 15714,
+      "emailReach": 15020
+    },
+    {
+      "id": "architecture",
+      "code": "Architecture",
+      "short": "ARC",
+      "name": "Department of Architecture",
+      "school": "School of Humanities & Social Sciences",
+      "departmentId": "NSU-DEPT-ARC-01",
+      "verified": true,
+      "established": "2006",
+      "about": "The Department of Architecture trains designers who build for a delta. Studio work runs from climate-responsive housing to heritage conservation, supported by a fabrication workshop and an annual thesis exhibition open to the whole campus.",
+      "office": "NAC 405, NSU Campus, Bashundhara",
+      "email": "architecture@northsouth.edu",
+      "phone": "+880 2 55668200 Ext. 1805",
+      "website": "northsouth.edu/architecture",
+      "officeHours": "Sun – Thu · 9:00 AM – 5:00 PM",
+      "stats": {
+        "students": 620,
+        "alumni": 1140,
+        "faculty": 21
+      },
+      "chairId": 109,
+      "officialId": null,
+      "adminIds": [],
+      "broadcastChannelId": "dept-architecture-broadcast",
+      "helpDeskId": "dept-architecture-helpdesk",
+      "memberCount": 1781,
+      "emailReach": 1702
+    }
+  ],
+  "seeking": [
+    {
+      "id": "talent-001",
+      "category": "Internship",
+      "headline": "Seeking Marketing Internship",
+      "student": {
+        "id": 201,
+        "name": "Rayan Hossain",
+        "department": "BBA",
+        "batch": "231",
+        "verified": true,
+        "avatar": null
+      },
+      "bioPreview": "Digital marketing student experienced in campaign planning, social media and public speaking.",
+      "fullBio": "Third-year BBA student majoring in Marketing. I have run social media for two campus clubs, planned a 3-week awareness campaign that reached 40k accounts organically, and completed a summer internship at Unilever Bangladesh. I am comfortable with Canva, Meta Business Suite and basic analytics reporting, and I am looking for a structured marketing internship where I can own a channel end to end.",
+      "skills": [
+        "Digital Marketing",
+        "Canva",
+        "Copywriting",
+        "Public Speaking",
+        "Meta Ads"
+      ],
+      "workMode": [
+        "On-site",
+        "Hybrid"
+      ],
+      "location": "Dhaka, BD",
+      "availability": "Available immediately",
+      "commitment": "Internship",
+      "preferredDuration": "3–6 months",
+      "compensation": "Open to discussion",
+      "portfolioUrl": "#",
+      "resumeUrl": "#",
+      "linkedInUrl": "#",
+      "githubUrl": null,
+      "posted": "2h ago",
+      "postedTimestamp": "2026-07-29T09:00:00",
+      "expiresIn": "28 days",
+      "status": "active",
+      "relevant": true,
+      "visibility": "Verified university network"
+    },
+    {
+      "id": "talent-002",
+      "category": "Freelance / Project",
+      "headline": "Available for 3D Visualisation & Rendering Projects",
+      "student": {
+        "id": 202,
+        "name": "Tanisha Chowdhury",
+        "department": "Architecture",
+        "batch": "222",
+        "verified": true,
+        "avatar": null
+      },
+      "bioPreview": "Architecture student offering photorealistic 3D renders, walkthroughs and presentation boards.",
+      "fullBio": "Final-year Architecture student currently working on a thesis about sustainable low-cost housing. I take on freelance visualisation work for small studios and independent clients: exterior and interior renders, animated walkthroughs and competition boards. I work in AutoCAD, SketchUp, Lumion and Photoshop and I always deliver a revision round within the quoted timeline.",
+      "skills": [
+        "AutoCAD",
+        "SketchUp",
+        "Lumion",
+        "3D Modeling",
+        "Photoshop"
+      ],
+      "workMode": [
+        "Remote"
+      ],
+      "location": "Dhaka, BD",
+      "availability": "Flexible",
+      "commitment": "Project based",
+      "preferredDuration": "2–8 weeks per project",
+      "compensation": "Hourly rate",
+      "portfolioUrl": "#",
+      "resumeUrl": "#",
+      "linkedInUrl": "#",
+      "githubUrl": null,
+      "posted": "6h ago",
+      "postedTimestamp": "2026-07-29T05:00:00",
+      "expiresIn": "25 days",
+      "status": "active",
+      "relevant": false,
+      "visibility": "Verified university network"
+    },
+    {
+      "id": "talent-003",
+      "category": "Part-Time",
+      "headline": "Looking for Part-Time Frontend Developer Role",
+      "student": {
+        "id": 203,
+        "name": "Abrar Fahim",
+        "department": "CSE",
+        "batch": "232",
+        "verified": false,
+        "avatar": null
+      },
+      "bioPreview": "Sophomore CSE student building React interfaces and contributing to open source in my spare time.",
+      "fullBio": "Second-year CSE student and active competitive programmer. I have shipped three React projects, two of them with real users from campus clubs, and I contribute small fixes to open source component libraries. I am looking for a part-time frontend role of around 20 hours a week that fits around my class schedule. I have no formal industry experience yet, so mentorship matters more to me than pay.",
+      "skills": [
+        "React",
+        "JavaScript",
+        "Tailwind CSS",
+        "Git",
+        "C++"
+      ],
+      "workMode": [
+        "Remote",
+        "Hybrid"
+      ],
+      "location": "Dhaka, BD",
+      "availability": "Weekdays",
+      "commitment": "Part-Time",
+      "preferredDuration": "6+ months",
+      "compensation": "Open to discussion",
+      "portfolioUrl": null,
+      "resumeUrl": "#",
+      "linkedInUrl": null,
+      "githubUrl": "#",
+      "posted": "1d ago",
+      "postedTimestamp": "2026-07-28T11:00:00",
+      "expiresIn": "29 days",
+      "status": "active",
+      "relevant": false,
+      "visibility": "Verified university network"
+    },
+    {
+      "id": "talent-004",
+      "category": "RA",
+      "headline": "Seeking Research Assistant Role in IoT / Embedded Systems",
+      "student": {
+        "id": 204,
+        "name": "Mehzabin Oishee",
+        "department": "ECE",
+        "batch": "221",
+        "verified": true,
+        "avatar": null
+      },
+      "bioPreview": "Final-year ECE student with hands-on experience in sensor networks and embedded firmware.",
+      "fullBio": "Final-year ECE student working on a smart home energy monitoring system as my capstone project. I have built and deployed sensor networks using ESP32 and Arduino, written firmware in C, and handled data logging pipelines to Firebase. I would like to assist a faculty member on an ongoing IoT or embedded systems research project and eventually co-author a conference paper.",
+      "skills": [
+        "IoT",
+        "Arduino",
+        "ESP32",
+        "Embedded C",
+        "MATLAB"
+      ],
+      "workMode": [
+        "On-site"
+      ],
+      "location": "Dhaka, BD",
+      "availability": "Weekdays",
+      "commitment": "Part-Time",
+      "preferredDuration": "6–12 months",
+      "compensation": "Open to discussion",
+      "portfolioUrl": "#",
+      "resumeUrl": "#",
+      "linkedInUrl": "#",
+      "githubUrl": "#",
+      "posted": "1d ago",
+      "postedTimestamp": "2026-07-28T08:30:00",
+      "expiresIn": "27 days",
+      "status": "active",
+      "relevant": true,
+      "visibility": "Verified university network"
+    },
+    {
+      "id": "talent-005",
+      "category": "Campus Ambassador",
+      "headline": "Open to Campus Ambassador Opportunities",
+      "student": {
+        "id": 205,
+        "name": "Zayed Khan",
+        "department": "BBA",
+        "batch": "241",
+        "verified": false,
+        "avatar": null
+      },
+      "bioPreview": "First-year BBA student, active club volunteer and comfortable speaking in front of large groups.",
+      "fullBio": "Freshman BBA student and volunteer with NSU YES. I helped coordinate registration for a 600-person career session last semester and regularly host club orientation sessions. I know the campus community well and I am looking for a campus ambassador role with a brand that actually wants on-ground activity, not just social posts.",
+      "skills": [
+        "Event Coordination",
+        "Public Speaking",
+        "Social Media",
+        "Sales"
+      ],
+      "workMode": [
+        "On-site"
+      ],
+      "location": "Dhaka, BD",
+      "availability": "Flexible",
+      "commitment": "Part-Time",
+      "preferredDuration": "1 semester",
+      "compensation": "Open to discussion",
+      "portfolioUrl": null,
+      "resumeUrl": null,
+      "linkedInUrl": "#",
+      "githubUrl": null,
+      "posted": "2d ago",
+      "postedTimestamp": "2026-07-27T14:00:00",
+      "expiresIn": "26 days",
+      "status": "active",
+      "relevant": false,
+      "visibility": "Verified university network"
+    },
+    {
+      "id": "talent-006",
+      "category": "Full-Time",
+      "headline": "Graduating CSE Student Seeking Backend Engineer Role",
+      "student": {
+        "id": 206,
+        "name": "Nafisa Anjum",
+        "department": "CSE",
+        "batch": "213",
+        "verified": true,
+        "avatar": null
+      },
+      "bioPreview": "Graduating in December with two backend internships and production experience in Node.js and Go.",
+      "fullBio": "I graduate in December 2026 and I am looking for a full-time backend engineering role starting January. I interned at Brain Station 23 and then at a fintech startup where I owned a payment reconciliation service handling around 20k transactions a day. I work mainly in Node.js and Go, with PostgreSQL and Redis, and I am comfortable owning deployments on AWS.",
+      "skills": [
+        "Node.js",
+        "Go",
+        "PostgreSQL",
+        "Redis",
+        "AWS",
+        "Docker"
+      ],
+      "workMode": [
+        "On-site",
+        "Hybrid"
+      ],
+      "location": "Dhaka, BD",
+      "availability": "Available immediately",
+      "commitment": "Full-Time",
+      "preferredDuration": "Long term",
+      "compensation": "Paid only",
+      "portfolioUrl": "#",
+      "resumeUrl": "#",
+      "linkedInUrl": "#",
+      "githubUrl": "#",
+      "posted": "2d ago",
+      "postedTimestamp": "2026-07-27T10:15:00",
+      "expiresIn": "24 days",
+      "status": "active",
+      "relevant": true,
+      "visibility": "Verified university network"
+    },
+    {
+      "id": "talent-007",
+      "category": "Tuition",
+      "headline": "Available for HSC Physics & Higher Math Tuition",
+      "student": {
+        "id": 207,
+        "name": "Sadman Sakib",
+        "department": "CSE",
+        "batch": "223",
+        "verified": true,
+        "avatar": null
+      },
+      "bioPreview": "Three years of tuition experience with HSC students, currently teaching two batches in Bashundhara.",
+      "fullBio": "CSE student who has been teaching HSC Physics and Higher Mathematics since my first year. I currently run two small batches in Bashundhara R/A and prefer teaching in person so I can work through problems on paper. I follow the board syllabus closely, set weekly practice tests, and share written solutions after every session. Happy to take one or two more students.",
+      "skills": [
+        "Physics",
+        "Higher Math",
+        "HSC Syllabus",
+        "Problem Solving"
+      ],
+      "workMode": [
+        "On-site"
+      ],
+      "location": "Bashundhara, Dhaka",
+      "availability": "Weekends",
+      "commitment": "Part-Time",
+      "preferredDuration": "1 academic year",
+      "compensation": "Hourly rate",
+      "portfolioUrl": null,
+      "resumeUrl": "#",
+      "linkedInUrl": null,
+      "githubUrl": null,
+      "posted": "3d ago",
+      "postedTimestamp": "2026-07-26T17:00:00",
+      "expiresIn": "22 days",
+      "status": "active",
+      "relevant": false,
+      "visibility": "Verified university network"
+    },
+    {
+      "id": "talent-008",
+      "category": "Internship",
+      "headline": "Seeking Data Analyst Internship",
+      "student": {
+        "id": 208,
+        "name": "Ishrat Jahan",
+        "department": "Economics",
+        "batch": "224",
+        "verified": true,
+        "avatar": null
+      },
+      "bioPreview": "Economics student comfortable with SQL, Python and building dashboards from messy survey data.",
+      "fullBio": "Third-year Economics student with a strong quantitative focus. I cleaned and analysed a 12,000-response household survey for a faculty research project and built the dashboard the team still uses. Comfortable with SQL, pandas, and Power BI. I am looking for a data analyst internship where I can work with real business data rather than tutorial datasets.",
+      "skills": [
+        "SQL",
+        "Python",
+        "Power BI",
+        "Excel",
+        "Statistics"
+      ],
+      "workMode": [
+        "Hybrid",
+        "Remote"
+      ],
+      "location": "Dhaka, BD",
+      "availability": "Weekdays",
+      "commitment": "Internship",
+      "preferredDuration": "3–6 months",
+      "compensation": "Open to discussion",
+      "portfolioUrl": "#",
+      "resumeUrl": "#",
+      "linkedInUrl": "#",
+      "githubUrl": null,
+      "posted": "4d ago",
+      "postedTimestamp": "2026-07-25T12:00:00",
+      "expiresIn": "21 days",
+      "status": "active",
+      "relevant": true,
+      "visibility": "Verified university network"
+    },
+    {
+      "id": "talent-009",
+      "category": "TA",
+      "headline": "Applying for Teaching Assistant — Programming Language I",
+      "student": {
+        "id": 209,
+        "name": "Ridwan Karim",
+        "department": "CSE",
+        "batch": "212",
+        "verified": true,
+        "avatar": null
+      },
+      "bioPreview": "CGPA 3.89 in CSE, previously assisted two lab sections and ran weekly doubt-solving hours.",
+      "fullBio": "Senior CSE student with a 3.89 CGPA. I have informally assisted two CSE 115 lab sections, prepared practice problem sets, and run weekly doubt-solving sessions that regularly draw 30+ juniors. I am applying to be a formal teaching assistant for Programming Language I or Data Structures for the upcoming semester.",
+      "skills": [
+        "C",
+        "Python",
+        "Data Structures",
+        "Mentoring",
+        "Lab Instruction"
+      ],
+      "workMode": [
+        "On-site"
+      ],
+      "location": "NSU Campus, Dhaka",
+      "availability": "Weekdays",
+      "commitment": "Part-Time",
+      "preferredDuration": "1 semester",
+      "compensation": "Open to discussion",
+      "portfolioUrl": null,
+      "resumeUrl": "#",
+      "linkedInUrl": "#",
+      "githubUrl": "#",
+      "posted": "5d ago",
+      "postedTimestamp": "2026-07-24T09:45:00",
+      "expiresIn": "19 days",
+      "status": "active",
+      "relevant": true,
+      "visibility": "Alumni and faculty only"
+    },
+    {
+      "id": "talent-010",
+      "category": "Part-Time",
+      "headline": "Seeking Part-Time Role in Pharmaceutical QA",
+      "student": {
+        "id": 210,
+        "name": "Farhana Islam",
+        "department": "Pharmacy",
+        "batch": "222",
+        "verified": true,
+        "avatar": null
+      },
+      "bioPreview": "Pharmacy student with laboratory experience in quality control testing and documentation.",
+      "fullBio": "Fourth-year Pharmacy student. I completed a supervised placement in a quality control laboratory where I handled dissolution and assay testing and maintained batch documentation to GMP standards. I am looking for a part-time or weekend role with a pharmaceutical or diagnostics company while I finish my final year.",
+      "skills": [
+        "Quality Control",
+        "GMP Documentation",
+        "HPLC",
+        "Lab Safety"
+      ],
+      "workMode": [
+        "On-site"
+      ],
+      "location": "Gazipur, BD",
+      "availability": "Weekends",
+      "commitment": "Part-Time",
+      "preferredDuration": "6+ months",
+      "compensation": "Paid only",
+      "portfolioUrl": null,
+      "resumeUrl": "#",
+      "linkedInUrl": "#",
+      "githubUrl": null,
+      "posted": "6d ago",
+      "postedTimestamp": "2026-07-23T15:20:00",
+      "expiresIn": "17 days",
+      "status": "active",
+      "relevant": false,
+      "visibility": "Verified university network"
+    },
+    {
+      "id": "talent-011",
+      "category": "Freelance / Project",
+      "headline": "Taking Flutter App Development Projects",
+      "student": {
+        "id": 211,
+        "name": "Tahsin Rahman",
+        "department": "CSE",
+        "batch": "231",
+        "verified": true,
+        "avatar": null
+      },
+      "bioPreview": "Built and published four Flutter apps, two of them for local businesses with live users.",
+      "fullBio": "CSE student and mobile developer. I have published four Flutter applications, including a delivery tracking app for a local grocery chain that is still in production. I handle the full cycle: UI build, Firebase integration, Play Store release and a month of post-launch fixes. Currently paused while I finish my summer semester finals.",
+      "skills": [
+        "Flutter",
+        "Dart",
+        "Firebase",
+        "REST APIs",
+        "UI Implementation"
+      ],
+      "workMode": [
+        "Remote"
+      ],
+      "location": "Dhaka, BD",
+      "availability": "Flexible",
+      "commitment": "Project based",
+      "preferredDuration": "4–10 weeks per project",
+      "compensation": "Hourly rate",
+      "portfolioUrl": "#",
+      "resumeUrl": "#",
+      "linkedInUrl": "#",
+      "githubUrl": "#",
+      "posted": "1w ago",
+      "postedTimestamp": "2026-07-22T11:00:00",
+      "expiresIn": "15 days",
+      "status": "paused",
+      "relevant": true,
+      "visibility": "Verified university network"
+    },
+    {
+      "id": "talent-012",
+      "category": "Tuition",
+      "headline": "English & IELTS Speaking Tuition Available",
+      "student": {
+        "id": 212,
+        "name": "Nusaiba Haque",
+        "department": "English",
+        "batch": "233",
+        "verified": true,
+        "avatar": null
+      },
+      "bioPreview": "English major with an 8.0 IELTS band, previously coached six students through their speaking module.",
+      "fullBio": "English literature student with an overall IELTS band of 8.0 and 8.5 in speaking. I have coached six students through the speaking and writing modules, with a focus on fluency drills and structured answer frameworks rather than memorised templates. This post has expired while I focus on my final semester.",
+      "skills": [
+        "IELTS Speaking",
+        "Academic Writing",
+        "Grammar",
+        "Pronunciation"
+      ],
+      "workMode": [
+        "Remote",
+        "On-site"
+      ],
+      "location": "Dhaka, BD",
+      "availability": "Weekends",
+      "commitment": "Part-Time",
+      "preferredDuration": "2–3 months",
+      "compensation": "Hourly rate",
+      "portfolioUrl": null,
+      "resumeUrl": "#",
+      "linkedInUrl": "#",
+      "githubUrl": null,
+      "posted": "5w ago",
+      "postedTimestamp": "2026-06-22T10:00:00",
+      "expiresIn": "Expired",
+      "status": "expired",
+      "relevant": false,
+      "visibility": "Verified university network"
+    },
+    {
+      "id": "talent-013",
+      "category": "Full-Time",
+      "headline": "Seeking Full-Time Hardware Design Engineer Role",
+      "student": {
+        "id": 213,
+        "name": "Arif Mahmud",
+        "department": "ECE",
+        "batch": "214",
+        "verified": true,
+        "avatar": null
+      },
+      "bioPreview": "Recent ECE graduate with PCB design experience and two completed industrial automation projects.",
+      "fullBio": "I completed my ECE degree this summer. My final year project was a modular motor controller board that is now used in a small production line in Tongi. I design in Altium, handle component sourcing, and I am comfortable debugging with an oscilloscope and logic analyser. Looking for a full-time hardware or embedded design role in Dhaka.",
+      "skills": [
+        "PCB Design",
+        "Altium",
+        "Embedded C",
+        "Circuit Debugging",
+        "Industrial Automation"
+      ],
+      "workMode": [
+        "On-site"
+      ],
+      "location": "Dhaka, BD",
+      "availability": "Available immediately",
+      "commitment": "Full-Time",
+      "preferredDuration": "Long term",
+      "compensation": "Paid only",
+      "portfolioUrl": "#",
+      "resumeUrl": "#",
+      "linkedInUrl": "#",
+      "githubUrl": null,
+      "posted": "1w ago",
+      "postedTimestamp": "2026-07-21T13:30:00",
+      "expiresIn": "14 days",
+      "status": "active",
+      "relevant": false,
+      "visibility": "Verified university network"
+    },
+    {
+      "id": "talent-014",
+      "category": "Internship",
+      "headline": "Seeking Product Design Internship",
+      "student": {
+        "id": 214,
+        "name": "Samira Noor",
+        "department": "CSE",
+        "batch": "226",
+        "verified": true,
+        "avatar": null
+      },
+      "bioPreview": "Interface designer with a case-study portfolio covering research, wireframes and shipped screens.",
+      "fullBio": "CSE student who moved into product design after two hackathons. My portfolio has three full case studies, each covering user interviews, wireframes, a design system and the final shipped screens. I run usability sessions with real students rather than guessing, and I can hand off cleanly to developers because I still write frontend code.",
+      "skills": [
+        "Figma",
+        "User Research",
+        "Prototyping",
+        "Design Systems",
+        "Usability Testing"
+      ],
+      "workMode": [
+        "Hybrid",
+        "Remote"
+      ],
+      "location": "Dhaka, BD",
+      "availability": "Available immediately",
+      "commitment": "Internship",
+      "preferredDuration": "3–6 months",
+      "compensation": "Open to discussion",
+      "portfolioUrl": "#",
+      "resumeUrl": "#",
+      "linkedInUrl": "#",
+      "githubUrl": "#",
+      "posted": "9d ago",
+      "postedTimestamp": "2026-07-20T16:00:00",
+      "expiresIn": "12 days",
+      "status": "active",
+      "relevant": true,
+      "visibility": "Verified university network"
+    }
+  ],
+  "events": [
+    {
+      "id": "event-career-fair",
+      "title": "NSU Career Fair Summer 2026",
+      "shortDescription": "Meet leading employers and explore graduate opportunities directly on campus.",
+      "description": "The official NSU Career Fair connects students with over 50 top national and multinational companies. Bring your resumes, participate in on-the-spot interviews, and discover your next internship or full-time role. Registration is mandatory for entry.",
+      "category": "Career",
+      "organizer": {
+        "id": "org-1",
+        "name": "Career and Placement Center (CPC)",
+        "type": "University Office",
+        "verified": true,
+        "description": "Official career support office of North South University."
+      },
+      "postedBy": {
+        "name": "Tahsina Rahman",
+        "role": "Career and Placement Center"
+      },
+      "date": "2026-07-22",
+      "endDate": "2026-07-22",
+      "time": "10:00 AM",
+      "endTime": "5:00 PM",
+      "venue": "NSU Plaza",
+      "venueDetails": "Level 1 and Level 2, North South University campus.",
+      "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop",
+      "registrationStatus": "Closing Soon",
+      "registrationDeadline": "2026-07-20T23:59:00",
+      "capacity": 1200,
+      "goingCount": 430,
+      "interestedCount": 780,
+      "featured": true,
+      "popular": true,
+      "recommendationReason": "Trending at NSU",
+      "schedule": [
+        {
+          "time": "10:00 AM",
+          "title": "Opening Ceremony"
+        },
+        {
+          "time": "10:30 AM",
+          "title": "Employer Booths Open"
+        },
+        {
+          "time": "2:00 PM",
+          "title": "Panel: How to Crack Interviews"
+        }
+      ],
+      "registrationInfo": "Registration is free for verified NSU students. Alumni must show verified ID.",
+      "tags": [
+        "Career",
+        "Internship",
+        "Graduate Jobs"
+      ],
+      "notificationType": "deadline",
+      "notificationMessage": "Registration closes in 48 hours!"
+    },
+    {
+      "id": "event-ai-talk",
+      "title": "Responsible AI Research Talk",
+      "shortDescription": "Exploring ethical considerations in deploying LLMs in healthcare.",
+      "description": "Join Dr. Aminul Islam as he discusses the ethical deployment of large language models in healthcare settings, addressing bias, privacy, and regulatory compliance.",
+      "category": "Research",
+      "deptId": "cse",
+      "organizer": {
+        "id": "org-2",
+        "name": "CSE Department",
+        "type": "Department",
+        "verified": true,
+        "description": "Department of Computer Science & Engineering."
+      },
+      "postedBy": {
+        "name": "CSE Department",
+        "role": "Department account"
+      },
+      "date": "2026-07-14",
+      "endDate": "2026-07-14",
+      "time": "3:00 PM",
+      "endTime": "4:30 PM",
+      "venue": "AUDI 801",
+      "venueDetails": "Admin Building, Level 8.",
+      "image": "https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=800&auto=format&fit=crop",
+      "registrationStatus": "Closed",
+      "registrationDeadline": "2026-07-13T23:59:00",
+      "capacity": 150,
+      "goingCount": 145,
+      "interestedCount": 300,
+      "featured": false,
+      "popular": false,
+      "recommendationReason": "Recommended for CSE",
+      "schedule": [],
+      "registrationInfo": "Seats are strictly limited to 150 due to venue capacity.",
+      "tags": [
+        "AI",
+        "Ethics",
+        "Research"
+      ],
+      "notificationType": null,
+      "notificationMessage": null
+    },
+    {
+      "id": "event-uiux-bootcamp",
+      "title": "UI/UX Design Bootcamp",
+      "shortDescription": "A 2-day intensive bootcamp on Figma, prototyping, and user research.",
+      "description": "Kickstart your journey in product design. Learn wireframing, high-fidelity prototyping, and foundational user research principles from industry experts.",
+      "category": "Workshop",
+      "organizer": {
+        "id": "organizer-acm",
+        "name": "NSU ACM Student Chapter",
+        "type": "Club",
+        "verified": true,
+        "description": "The premier computer science student community at NSU."
+      },
+      "coOrganizers": [
+        {
+          "name": "NSU Design Lab",
+          "type": "Club"
+        }
+      ],
+      "postedBy": {
+        "name": "Abrar Fahim",
+        "role": "Student · CSE"
+      },
+      "date": "2026-07-25",
+      "endDate": "2026-07-26",
+      "time": "9:00 AM",
+      "endTime": "4:00 PM",
+      "venue": "SAC 312",
+      "venueDetails": "South Academic Building, Level 3.",
+      "image": "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&auto=format&fit=crop",
+      "registrationStatus": "Open",
+      "registrationDeadline": "2026-07-23T23:59:00",
+      "capacity": 60,
+      "goingCount": 45,
+      "interestedCount": 120,
+      "featured": false,
+      "popular": true,
+      "recommendationReason": "From a followed club",
+      "schedule": [
+        {
+          "time": "Day 1 - 9:00 AM",
+          "title": "Intro to Design Thinking"
+        },
+        {
+          "time": "Day 1 - 2:00 PM",
+          "title": "Figma Basics"
+        },
+        {
+          "time": "Day 2 - 10:00 AM",
+          "title": "Prototyping & Handoff"
+        }
+      ],
+      "registrationInfo": "Workshop fee: 500 BDT. Includes lunch and digital certificate.",
+      "tags": [
+        "Design",
+        "Figma",
+        "UI/UX"
+      ],
+      "notificationType": null,
+      "notificationMessage": null
+    },
+    {
+      "id": "event-orientation",
+      "title": "Freshers’ Orientation Summer 2026",
+      "shortDescription": "Welcome to North South University! Mandatory for all incoming students.",
+      "description": "The official orientation program for the Summer 2026 incoming batch. Get to know campus facilities, academic rules, clubs, and meet your faculty members.",
+      "category": "Academic",
+      "organizer": {
+        "id": "org-3",
+        "name": "NSU Admissions Office",
+        "type": "University Office",
+        "verified": true,
+        "description": "Official admissions and registrar office."
+      },
+      "postedBy": {
+        "name": "NSU Admissions Office",
+        "role": "University office account"
+      },
+      "date": "2026-07-15",
+      "endDate": "2026-07-15",
+      "time": "9:00 AM",
+      "endTime": "1:00 PM",
+      "venue": "Open Air Theater (OAT)",
+      "venueDetails": "Main campus center.",
+      "image": "https://images.unsplash.com/photo-1523580494112-071d4574024e?w=800&auto=format&fit=crop",
+      "registrationStatus": "Free Entry",
+      "registrationDeadline": null,
+      "capacity": 2000,
+      "goingCount": 1500,
+      "interestedCount": 2000,
+      "featured": true,
+      "popular": true,
+      "recommendationReason": null,
+      "schedule": [
+        {
+          "time": "9:00 AM",
+          "title": "Arrival and Seating"
+        },
+        {
+          "time": "10:00 AM",
+          "title": "Vice Chancellor’s Address"
+        },
+        {
+          "time": "11:30 AM",
+          "title": "Campus Tour"
+        }
+      ],
+      "registrationInfo": "No prior registration required. Bring your provisional ID slip.",
+      "tags": [
+        "Freshers",
+        "Orientation",
+        "Campus"
+      ],
+      "notificationType": null,
+      "notificationMessage": null
+    },
+    {
+      "id": "event-ambassador",
+      "title": "Campus Ambassador Hiring Session",
+      "shortDescription": "Become the face of Grameenphone on campus.",
+      "description": "Grameenphone is looking for energetic students to join their campus ambassador program. Discover the perks and apply on-site.",
+      "category": "Recruitment",
+      "organizer": {
+        "id": "org-10",
+        "name": "Grameenphone Ltd.",
+        "type": "External Partner",
+        "verified": true,
+        "description": "Leading telecommunications provider."
+      },
+      "postedBy": {
+        "name": "Career and Placement Center (CPC)",
+        "role": "University office account"
+      },
+      "date": "2026-07-16",
+      "endDate": "2026-07-16",
+      "time": "2:00 PM",
+      "endTime": "4:00 PM",
+      "venue": "Career Center",
+      "venueDetails": "Admin Building, Level 4.",
+      "image": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop",
+      "registrationStatus": "Cancelled",
+      "registrationDeadline": "2026-07-15T23:59:00",
+      "capacity": 100,
+      "goingCount": 0,
+      "interestedCount": 250,
+      "featured": false,
+      "popular": false,
+      "recommendationReason": null,
+      "schedule": [],
+      "registrationInfo": "Event cancelled due to unavoidable circumstances.",
+      "tags": [
+        "Ambassador",
+        "Jobs",
+        "Networking"
+      ],
+      "notificationType": "cancelled",
+      "notificationMessage": "Event has been cancelled by the organizer."
+    },
+    {
+      "id": "event-cse-hackathon",
+      "title": "CSE Project Showcase & Hackathon",
+      "shortDescription": "Thirty-six hours, 60 teams, and the best capstone projects of the semester on show.",
+      "description": "The CSE Department’s flagship end-of-semester event. Capstone teams demo their projects to faculty and industry judges on day one; day two is an open hackathon on the theme “Tech for Bangladesh”. Prizes for the top three teams and internship interviews with partner companies.",
+      "category": "Competition",
+      "deptId": "cse",
+      "organizer": {
+        "id": "org-2",
+        "name": "CSE Department",
+        "type": "Department",
+        "verified": true,
+        "description": "Department of Computer Science & Engineering."
+      },
+      "coOrganizers": [
+        {
+          "name": "NSU ACM Student Chapter",
+          "type": "Club"
+        }
+      ],
+      "postedBy": {
+        "name": "CSE Department",
+        "role": "Department account"
+      },
+      "date": "2026-07-30",
+      "endDate": "2026-07-31",
+      "time": "9:00 AM",
+      "endTime": "9:00 PM",
+      "venue": "SAC Atrium",
+      "venueDetails": "South Academic Building, Ground Floor.",
+      "image": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&auto=format&fit=crop",
+      "registrationStatus": "Open",
+      "registrationDeadline": "2026-07-26T23:59:00",
+      "capacity": 300,
+      "goingCount": 184,
+      "interestedCount": 410,
+      "featured": false,
+      "popular": true,
+      "recommendationReason": "From your department",
+      "schedule": [
+        {
+          "time": "Day 1 - 9:00 AM",
+          "title": "Capstone Showcase"
+        },
+        {
+          "time": "Day 1 - 3:00 PM",
+          "title": "Hackathon Kick-off"
+        },
+        {
+          "time": "Day 2 - 6:00 PM",
+          "title": "Judging & Awards"
+        }
+      ],
+      "registrationInfo": "Teams of 2–4. At least one member must be a current CSE student.",
+      "tags": [
+        "Hackathon",
+        "Capstone",
+        "CSE"
+      ],
+      "notificationType": null,
+      "notificationMessage": null
+    },
+    {
+      "id": "event-cse-alumni-talk",
+      "title": "Alumni Tech Talk: Careers in Cloud",
+      "shortDescription": "Tanvir Hasan (AWS, Batch 15) on building a cloud career from Dhaka.",
+      "description": "CSE alumnus Tanvir Hasan, Cloud Solutions Architect at AWS Singapore, talks about certifications, remote roles and what hiring managers look for. Followed by an open Q&A and CV clinic with the CSE industry internship coordinator.",
+      "category": "Career",
+      "deptId": "cse",
+      "organizer": {
+        "id": "org-2",
+        "name": "CSE Department",
+        "type": "Department",
+        "verified": true,
+        "description": "Department of Computer Science & Engineering."
+      },
+      "coOrganizers": [
+        {
+          "name": "Tanvir Hasan",
+          "type": "Individual"
+        }
+      ],
+      "postedBy": {
+        "name": "CSE Department",
+        "role": "Department account"
+      },
+      "date": "2026-08-05",
+      "endDate": "2026-08-05",
+      "time": "2:30 PM",
+      "endTime": "4:30 PM",
+      "venue": "SAC 1042 Seminar Room",
+      "venueDetails": "South Academic Building, Level 10.",
+      "image": "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&auto=format&fit=crop",
+      "registrationStatus": "Open",
+      "registrationDeadline": "2026-08-04T23:59:00",
+      "capacity": 120,
+      "goingCount": 62,
+      "interestedCount": 140,
+      "featured": false,
+      "popular": false,
+      "recommendationReason": "From your department",
+      "schedule": [
+        {
+          "time": "2:30 PM",
+          "title": "Talk: Careers in Cloud"
+        },
+        {
+          "time": "3:30 PM",
+          "title": "Q&A and CV Clinic"
+        }
+      ],
+      "registrationInfo": "Free for NSU students and alumni. Seats are first come, first served.",
+      "tags": [
+        "Alumni",
+        "Cloud",
+        "Career"
+      ],
+      "notificationType": null,
+      "notificationMessage": null
+    },
+    {
+      "id": "event-ece-iot-expo",
+      "title": "ECE IoT & Robotics Expo",
+      "shortDescription": "Live demos from the VLSI, IoT and robotics labs — open to the whole campus.",
+      "description": "The ECE Department opens its labs for a day of live demos: smart-farming sensors, line-following robots, a RISC-V core on FPGA and more. Industry partners from Samsung R&D and Robi Axiata judge the student project track.",
+      "category": "Research",
+      "deptId": "ece",
+      "organizer": {
+        "id": "org-dept-ece",
+        "name": "ECE Department",
+        "type": "Department",
+        "verified": true,
+        "description": "Department of Electrical & Computer Engineering."
+      },
+      "coOrganizers": [
+        {
+          "name": "NSU Robotics Club",
+          "type": "Club"
+        }
+      ],
+      "postedBy": {
+        "name": "ECE Department",
+        "role": "Department account"
+      },
+      "date": "2026-07-28",
+      "endDate": "2026-07-28",
+      "time": "10:00 AM",
+      "endTime": "4:00 PM",
+      "venue": "SAC 0915 Lab Wing",
+      "venueDetails": "South Academic Building, Level 9.",
+      "image": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop",
+      "registrationStatus": "Free Entry",
+      "registrationDeadline": null,
+      "capacity": 400,
+      "goingCount": 96,
+      "interestedCount": 220,
+      "featured": false,
+      "popular": false,
+      "recommendationReason": null,
+      "schedule": [
+        {
+          "time": "10:00 AM",
+          "title": "Labs Open"
+        },
+        {
+          "time": "1:00 PM",
+          "title": "Student Project Judging"
+        }
+      ],
+      "registrationInfo": "No registration needed. Bring your NSU ID.",
+      "tags": [
+        "IoT",
+        "Robotics",
+        "ECE"
+      ],
+      "notificationType": null,
+      "notificationMessage": null
+    },
+    {
+      "id": "event-bba-case-competition",
+      "title": "SBE Case Competition 2026",
+      "shortDescription": "Crack a live business case from a partner bank in 48 hours.",
+      "description": "Teams of four receive a live case from a partner bank and present their recommendation to a panel of senior bankers and faculty. Winners receive a cash prize and fast-track interviews for the partner’s management-trainee programme.",
+      "category": "Competition",
+      "deptId": "bba",
+      "organizer": {
+        "id": "org-dept-bba",
+        "name": "Accounting & Finance Department",
+        "type": "Department",
+        "verified": true,
+        "description": "Department of Accounting & Finance, School of Business & Economics."
+      },
+      "postedBy": {
+        "name": "Accounting & Finance Department",
+        "role": "Department account"
+      },
+      "date": "2026-08-02",
+      "endDate": "2026-08-02",
+      "time": "10:00 AM",
+      "endTime": "5:00 PM",
+      "venue": "NAC Auditorium",
+      "venueDetails": "North Academic Building, Level 2.",
+      "image": "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&auto=format&fit=crop",
+      "registrationStatus": "Closing Soon",
+      "registrationDeadline": "2026-07-18T23:59:00",
+      "capacity": 160,
+      "goingCount": 128,
+      "interestedCount": 260,
+      "featured": false,
+      "popular": true,
+      "recommendationReason": null,
+      "schedule": [
+        {
+          "time": "10:00 AM",
+          "title": "Case Release"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "Final Presentations"
+        }
+      ],
+      "registrationInfo": "Teams of four. Open to all SBE students.",
+      "tags": [
+        "Case Competition",
+        "Finance",
+        "Business"
+      ],
+      "notificationType": null,
+      "notificationMessage": null
+    },
+    {
+      "id": "event-arc-thesis-exhibition",
+      "title": "Architecture Thesis Exhibition 2026",
+      "shortDescription": "Final-year thesis projects on building for a delta — models, drawings and juries.",
+      "description": "The annual thesis exhibition of the Department of Architecture. Twenty-four final-year projects on climate-responsive housing, heritage and waterfront design, with public juries every afternoon. Open to the whole campus.",
+      "category": "Cultural",
+      "deptId": "architecture",
+      "organizer": {
+        "id": "org-dept-architecture",
+        "name": "Architecture Department",
+        "type": "Department",
+        "verified": true,
+        "description": "Department of Architecture."
+      },
+      "postedBy": {
+        "name": "Architecture Department",
+        "role": "Department account"
+      },
+      "date": "2026-07-20",
+      "endDate": "2026-07-24",
+      "time": "11:00 AM",
+      "endTime": "6:00 PM",
+      "venue": "NAC Gallery",
+      "venueDetails": "North Academic Building, Level 4.",
+      "image": "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&auto=format&fit=crop",
+      "registrationStatus": "Free Entry",
+      "registrationDeadline": null,
+      "capacity": 600,
+      "goingCount": 210,
+      "interestedCount": 380,
+      "featured": false,
+      "popular": false,
+      "recommendationReason": null,
+      "schedule": [
+        {
+          "time": "11:00 AM",
+          "title": "Gallery Opens"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "Public Thesis Jury"
+        }
+      ],
+      "registrationInfo": "Free entry for everyone with a campus ID.",
+      "tags": [
+        "Architecture",
+        "Exhibition",
+        "Thesis"
+      ],
+      "notificationType": null,
+      "notificationMessage": null
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "hospital": "Apollo Hospital",
+      "location": "Bashundhara, Dhaka",
+      "bg": "B+",
+      "distance": "2.3km",
+      "urgency": "Critical",
+      "units": 2,
+      "match": "Perfect Match",
+      "time": "10m ago",
+      "description": "Patient is undergoing open heart surgery. Blood is required immediately.",
+      "contact": "01711223344",
+      "patientName": "Rahim Uddin"
+    },
+    {
+      "id": 2,
+      "hospital": "Square Hospital",
+      "location": "Panthapath, Dhaka",
+      "bg": "O+",
+      "distance": "5.1km",
+      "urgency": "Needed Today",
+      "units": 1,
+      "match": "Compatible",
+      "time": "1h ago",
+      "description": "Accident patient in ICU. Need O+ blood by tonight.",
+      "contact": "01811223344",
+      "patientName": "Karim Hasan"
+    }
+  ],
+  "hiring": [
+    {
+      "id": 1,
+      "title": "UI/UX Designer Intern",
+      "company": "Brain Station 23",
+      "type": "Internship",
+      "location": "Remote",
+      "salary": "Paid stipend",
+      "deadline": "2 days left",
+      "posted": "2h ago",
+      "preview": "We are looking for a passionate UI/UX design intern to help build intuitive user interfaces for our upcoming fintech products. You will work closely with the product team.",
+      "match": true,
+      "urgent": true,
+      "reqs": [
+        "Figma",
+        "Prototyping",
+        "Design Systems"
+      ],
+      "postedBy": {
+        "userId": 4,
+        "name": "Fahim Shahriar",
+        "role": "Senior Product Designer",
+        "verified": true,
+        "type": "Alumni"
+      }
+    },
+    {
+      "id": 2,
+      "title": "Frontend Developer",
+      "company": "Pathao",
+      "type": "Full-Time",
+      "location": "Dhaka, BD",
+      "salary": "Negotiable",
+      "deadline": "12 days left",
+      "posted": "1d ago",
+      "preview": "Join our core engineering team to build high-performance web applications using React and Next.js. Minimum 1 year experience required.",
+      "match": true,
+      "urgent": false,
+      "reqs": [
+        "React",
+        "Next.js",
+        "Tailwind CSS"
+      ],
+      "postedBy": {
+        "userId": 2,
+        "name": "Tahmid Hasan",
+        "role": "Product Lead",
+        "verified": true,
+        "type": "Alumni"
+      }
+    },
+    {
+      "id": 3,
+      "title": "Product Marketing Manager",
+      "company": "10 Minute School",
+      "type": "Full-Time",
+      "location": "Dhaka, BD",
+      "salary": "Competitive",
+      "deadline": "5 days left",
+      "posted": "3d ago",
+      "preview": "Drive the go-to-market strategy for our new flagship educational courses. Work closely with product and sales teams to ensure successful launches.",
+      "match": false,
+      "urgent": false,
+      "reqs": [
+        "Marketing",
+        "Strategy",
+        "Copywriting"
+      ],
+      "postedBy": {
+        "userId": 3,
+        "name": "Ayman Sadiq",
+        "role": "CEO & Founder",
+        "verified": true,
+        "type": "Alumni"
+      }
+    }
+  ]
+}

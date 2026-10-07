@@ -1,3 +1,4 @@
+import { BloodRequestForm } from '../../../../src/shared/BloodRequestForm.jsx';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Info, Droplet, Phone } from 'lucide-react';
@@ -16,7 +17,7 @@ import { useAppState } from '../../context/AppStateContext';
 
 export default function EmergencyPage() {
   const { t, isDark } = useTheme();
-  const { isDonorAvailable, setIsDonorAvailable } = useAppState();
+  const { authRole, isDonorAvailable, setIsDonorAvailable } = useAppState();
   const navigate = useNavigate();
   const [isFlowOpen, setIsFlowOpen] = useState(false);
 
@@ -86,7 +87,7 @@ export default function EmergencyPage() {
             <div className={`rounded-xl p-5 ${isDark ? 'bg-[#1A1A1A] border-white/10' : 'bg-white border-gray-200'} border`}>
               <div className="flex flex-col items-start text-left">
                 <h3 className={`text-lg font-semibold ${t.text}`}>Need Blood?</h3>
-                <p className={`text-sm font-medium ${t.textMuted} mt-1 mb-5`}>Create a request to notify nearby NSU donors.</p>
+                <p className={`text-sm font-medium ${t.textMuted} mt-1 mb-5`}>Create a request to reach the campus donor directory.</p>
                 <Button variant="danger" size="md" full onClick={() => setIsFlowOpen(true)}>
                   Create Blood Request
                 </Button>
@@ -98,6 +99,7 @@ export default function EmergencyPage() {
         {/* --------------------------------------------- requests near you */}
         <section className="lg:col-span-2 min-w-0">
           <MicroHeading>Requests Near You</MicroHeading>
+          {!globalEmergencyRequests.length && <p className={`text-sm ${t.textMuted} py-6`}>No open requests right now.</p>}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {globalEmergencyRequests.map(req => (
               <div key={req.id} className={`rounded-xl p-4 ${isDark ? 'bg-[#1A1A1A] border-white/10' : 'bg-white border-gray-200'} border`}>
@@ -110,7 +112,7 @@ export default function EmergencyPage() {
                 <div className="mb-4">
                   <h4 className={`font-semibold ${t.text} text-base leading-tight`}>{req.hospital}</h4>
                   <p className={`text-sm font-medium ${t.textMuted} mt-1`}>{req.units} units needed</p>
-                  <p className={`text-sm font-medium ${t.textMuted}`}>{req.distance} away</p>
+                  <p className={`text-sm font-medium ${t.textMuted}`}>{req.location}</p>
                   <p className={`flex items-center gap-2 mt-3 text-xs font-bold ${t.text}`}><Phone size={14} className={t.textMuted} aria-hidden="true" /><span>Family contact: <span className="select-all">{req.contact}</span></span></p>
                 </div>
                 <button
@@ -128,19 +130,7 @@ export default function EmergencyPage() {
       {/* Create request — the EmergencyFlowOverlay placeholder as a Modal. */}
       {isFlowOpen && (
         <Modal onClose={() => setIsFlowOpen(false)} size="sm" showClose={false}>
-          <div className="flex flex-col items-center pt-4 pb-1">
-            <div className="w-16 h-16 bg-red-100 dark:bg-red-500/20 rounded-full flex items-center justify-center mb-4">
-              <Droplet className="w-8 h-8 text-red-500" strokeWidth={2} />
-            </div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2 text-center">Emergency Flow Placeholder</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">This feature flow is under development.</p>
-            <button
-              onClick={() => setIsFlowOpen(false)}
-              className="w-full py-3 bg-red-500 hover:bg-red-600 transition-colors text-white font-bold rounded-xl active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-red-500/60"
-            >
-              Close
-            </button>
-          </div>
+          <BloodRequestForm authRole={authRole} isDark={isDark} onClose={() => setIsFlowOpen(false)} />
         </Modal>
       )}
     </PageContainer>

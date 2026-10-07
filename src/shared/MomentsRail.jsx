@@ -1,3 +1,5 @@
+import { publicState, restricted } from './adminBridge.js';
+import { useAdminBridge } from './useAdminBridge.js';
 import { useRef, useState } from "react";
 import { BadgeCheck, Plus, User } from "lucide-react";
 import { InstantDialog, InstantEntry } from "./InstantExperience";
@@ -5,6 +7,8 @@ import { momentsForAuthor } from "./instantModel";
 import { useInstantClock, useInstantState } from "./instantStore";
 
 export function MomentsRail({ moments, t, isDark, onCreateClick, onOpenNote }) {
+  useAdminBridge();
+  const admin = publicState();
   const [author, setAuthor] = useState(null);
   const drag = useRef(null);
   const dragged = useRef(false);
@@ -57,7 +61,7 @@ export function MomentsRail({ moments, t, isDark, onCreateClick, onOpenNote }) {
         </button>
         <InstantEntry t={t} />
         {moments.map((group) => {
-          const note = group.items.find((item) => item.type === "note");
+          const note = group.items.find((item) => item.type === "note" && !restricted(admin, "note", item.id));
           const photos = momentsForAuthor(snapshot, now, group.id);
           const count = photos.filter((item) => !snapshot.opened[item.id]).length;
           return (
@@ -67,7 +71,7 @@ export function MomentsRail({ moments, t, isDark, onCreateClick, onOpenNote }) {
                   <button
                     className="moment-rail-note"
                     aria-label={`Read ${group.user.name}'s note`}
-                    onClick={() => onOpenNote(group)}
+                    onClick={() => onOpenNote({ ...group, items: group.items.filter(item => !restricted(admin, "note", item.id)) })}
                   >
                     {note.content}
                   </button>

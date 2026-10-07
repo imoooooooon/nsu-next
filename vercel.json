@@ -1,9 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "npm install && npm install --prefix webapp",
-  "buildCommand": "npm run build && npm run build --prefix webapp",
+  "installCommand": "npm install && npm install --prefix webapp && npm install --prefix nsunext-admin",
+  "buildCommand": "npm run build:all",
   "outputDirectory": "dist",
   "rewrites": [
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/admin/:path*", "destination": "/admin/index.html" },
     { "source": "/webapp", "destination": "/webapp/index.html" },
     { "source": "/webapp/:path*", "destination": "/webapp/index.html" }
   ]

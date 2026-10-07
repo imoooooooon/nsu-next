@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Recoverable history of the imported standalone admin (not part of this repo).
+output/admin/legacy-repository.git/

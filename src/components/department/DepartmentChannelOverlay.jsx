@@ -1,3 +1,5 @@
+import { publicState, restricted } from '../../shared/adminBridge';
+import { useAdminBridge } from '../../shared/useAdminBridge';
 import { useDepartmentState, updateDepartmentState } from '../../shared/departmentStore';
 import { useState } from 'react';
 import {
@@ -72,6 +74,7 @@ export const DepartmentChannelOverlay = ({
   sentBroadcasts, onSendBroadcast, isMuted, onToggleMute,
   onBack, onOpenHub, onManage, onToast,
 }) => {
+  useAdminBridge();
   const [text, setText] = useState('');
   const [emailArmed, setEmailArmed] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -86,8 +89,8 @@ export const DepartmentChannelOverlay = ({
   const isAdminThread = channelKind === 'helpdesk-thread';
   const canWrite = isBroadcast ? access.canBroadcast : !isAdminThread || access.canHelpDesk;
 
-  const history = departmentBroadcasts[dept.id] || [];
-  const sessionBroadcasts = sentBroadcasts || [];
+  const history = (departmentBroadcasts[dept.id] || []).filter(m => !restricted(publicState(), 'broadcast', m.id));
+  const sessionBroadcasts = (sentBroadcasts || []).filter(m => !restricted(publicState(), 'broadcast', m.id));
 
   /* The email toggle is deliberately not sticky: it resets after every send,
      so urgency is opted into per message rather than left switched on. */

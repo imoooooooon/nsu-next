@@ -110,7 +110,7 @@ export default function MySeekingPostsPage() {
                       {post.category}
                     </span>
                     <span className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold border ${getSeekingStatusStyle(post.status, isDark)}`}>
-                      {SEEKING_STATUS_LABEL[post.status]}
+                      {post.reviewStatus && !['active','paused','pending','draft','expired'].includes(post.reviewStatus) ? post.reviewStatus.replaceAll('_', ' ') : SEEKING_STATUS_LABEL[post.status]}
                     </span>
                   </div>
                   <button
