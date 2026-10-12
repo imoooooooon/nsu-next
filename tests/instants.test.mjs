@@ -79,9 +79,9 @@ test("Stories are disabled and active rail metadata contains no Story media", ()
 test("an instant is consumed once, independently of other photos", () => {
   const state = initialInstantState(now);
   const opened = consumeInstant(state, "maliha", now);
-  assert.equal(availableInstants(opened, now).length, 8);
+  assert.equal(availableInstants(opened, now).length, 15);
   assert.equal(consumeInstant(opened, "maliha", now + 1), opened);
-  assert.equal(availableInstants(state, now).length, 9);
+  assert.equal(availableInstants(state, now).length, 16);
 });
 test("unopened instants expire exactly at 24 hours and cannot be consumed", () => {
   const state = initialInstantState(now);
@@ -102,7 +102,7 @@ test("future dated and unknown instants cannot be opened", () => {
 test("one-view receipts survive serialization and reload", () => {
   const consumed = consumeInstant(initialInstantState(now), "maliha", now);
   const restored = JSON.parse(JSON.stringify(consumed));
-  assert.equal(availableInstants(restored, now + 1000).length, 8);
+  assert.equal(availableInstants(restored, now + 1000).length, 15);
 });
 test("capture accepts only camera JPEG data and the two allowed audiences", () => {
   const photo = "data:image/jpeg;base64,dGVzdA==";
@@ -176,7 +176,7 @@ test("demo expansion preserves captures and receipts and runs only once", () => 
     sent: [{ id: "mine" }],
   };
   const migrated = refreshInstantDemo(old, now);
-  assert.equal(migrated.received.length, 9);
+  assert.equal(migrated.received.length, 16);
   assert.deepEqual(migrated.opened, old.opened);
   assert.deepEqual(migrated.sent, old.sent);
   assert.equal(refreshInstantDemo(migrated, now + INSTANT_TTL), migrated);

@@ -324,7 +324,7 @@ they are expressed as ratios, not fixed heights:
 | Surface | Mobile geometry | Web class |
 |---|---|---|
 | Featured carousel | 390 × 240 | `aspect-[13/8]` |
-| Home ad carousel | 390 × 130 | `aspect-[3/1]`, capped `max-w-3xl`; slide content sized in `cqw` of the 390px design so it scales with the slot |
+| Home ad carousel | 390 × 130 | Every card keeps `3 / 1`; one card below 1000px of available column width, two above, with a 16px gutter. Type scales with each card. |
 | Event card (standard) | 390 × 144 | `aspect-[65/24]` |
 | Event card (recommended/rail) | 260 × 112 | `aspect-[65/28]` |
 | Event details hero | 430 × 260 | `aspect-[43/26]` |
@@ -574,6 +574,8 @@ phone details remain full width above them.
 
 Use the shared `AlumniVerification` components for alumni enrollment and status. Retain Plus Jakarta Sans, the existing light/dark theme tokens, Ugrads blue selected outlines, rounded surfaces and 44px primary actions. Verification method is a labelled radio group; responsibility acknowledgment is a separate unchecked checkbox, never implicit consent. Pending access uses one focused status screen with a reason/retry when applicable.
 
-`PromotionCarousel` replaces separate mobile/web banner renderers: `aspect-ratio: 3 / 1`, container-relative type and spacing, maximum width 768px, placement immediately after Moments. Published admin campaigns remain the content authority. Autoplay pauses for hover/focus, has a manual pause control, and respects reduced motion. Desktop Home's right rail toggle is independent from the main navigation toggle and communicates expanded state.
+`PromotionCarousel` replaces separate mobile/web banner renderers. Each card keeps `aspect-ratio: 3 / 1` with card-relative type and spacing. Home uses the full available column width, showing two cards at 1000px and above and one below; the standalone mobile prototype retains its 768px cap. The seamless loop supports previous/next, dots, arrow keys and touch swipes. Autoplay pauses for hover/focus, has a manual pause control, and respects reduced motion. Published admin campaigns remain the content authority, including the two added demo campaigns.
+
+Home has a fluid frame up to 1600px and a 280–320px campus rail. Moments, promotions and quick features share the same column edges; collapsed navigation releases space automatically. With both sidebars minimized and at least 1000px of content width, quick features expand from six to nine (Calendar, My Events, My Profile). Moments includes fourteen demo people and remains horizontally scrollable. The campus toggle is icon-only with a tooltip, accessible name and expanded state.
 
 My Connections is a directory scope, preserving search and card/list controls. Messaging has three stable tabs (All Chats, Archived, Help Desk), with Requests among filters. New public components follow the public design language; administrator evidence/provenance uses the existing neutral Geist components.

@@ -89,7 +89,7 @@ export function MomentsRail({ moments, t, isDark, onCreateClick, onOpenNote }) {
                 onClick={() => setAuthor(group)}
                 aria-label={`View ${group.user.name}'s moments`}
               >
-                <span>{group.user.name.split(" ")[0]}</span>
+                <span>{group.user.shortName || group.user.name.split(" ")[0]}</span>
                 {group.user.verified && (
                   <BadgeCheck size={12} className="text-[#1D9BF0]" />
                 )}

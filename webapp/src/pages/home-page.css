@@ -1,0 +1,24 @@
+/* One fluid column owns the width of Home's hero, Moments, promotions and shortcuts. */
+.home-page.home-page { max-width: 1600px; }
+.home-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; }
+.home-main { container: home-content / inline-size; }
+.home-main .promotion { max-width: none; }
+.home-main .moments-rail { gap: clamp(14px, 1.5cqw, 24px); }
+.home-main .moment-rail-person { flex-grow: 1; }
+.home-quick-actions { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: clamp(2px, .8cqw, 8px); width: 100%; }
+.home-quick-action > span { font-size: clamp(10px, 2.8cqw, 12px); }
+.home-quick-action { min-width: 0; padding: 10px 0; border-radius: 14px; }
+.home-quick-action:hover { background: #1d9bf00a; }
+.home-quick-action:focus-visible { outline: 2px solid #1d9bf0; outline-offset: 2px; }
+.home-quick-action.home-quick-extra { display: none; }
+@media (min-width: 1280px) {
+  .home-grid { grid-template-columns: minmax(0, 1fr) minmax(280px, 320px); }
+  .home-grid-rail-hidden { grid-template-columns: minmax(0, 1fr); }
+}
+@container home-content (min-width: 1000px) {
+  .home-page-expanded .home-quick-actions { grid-template-columns: repeat(9, minmax(0, 1fr)); }
+  .home-page-expanded .home-quick-extra { display: flex; }
+}
+@container home-content (min-width: 1200px) {
+  .home-people-rail > * { flex: 1 1 0; min-width: 0; }
+}

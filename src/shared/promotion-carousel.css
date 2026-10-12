@@ -1,1 +1,27 @@
-.promotion{width:100%;max-width:768px;margin:8px auto 16px;container-type:inline-size}.promotion-slide{display:flex;align-items:center;position:relative;isolation:isolate;overflow:hidden;aspect-ratio:3 / 1;border-radius:14px;padding:5cqw 6cqw;color:#fff;text-decoration:none;background:linear-gradient(120deg,#b45309,#ea8c14);box-shadow:inset 0 0 0 1px #ffffff26}.promotion-color-1{background:linear-gradient(120deg,#065f46,#0d9488)}.promotion-color-2{background:linear-gradient(120deg,#9a3412,#e0523a)}.promotion-slide:after{content:"";position:absolute;width:50cqw;height:50cqw;border:6cqw solid #ffffff12;border-radius:50%;right:-14cqw;top:-22cqw;z-index:-1}.promotion-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.16;z-index:-1;mix-blend-mode:luminosity}.promotion-copy{flex:1;min-width:0;padding-right:4cqw}.promotion-label{display:inline-block;font-size:2.25cqw;line-height:1.5;text-transform:uppercase;letter-spacing:.05em;font-weight:800;border:1px solid #ffffff30;background:#00000020;padding:.4cqw 1.6cqw;border-radius:1cqw;margin-bottom:1.8cqw}.promotion-copy strong{display:block;font-size:4.5cqw;line-height:1.15;font-weight:800;letter-spacing:-.025em}.promotion-copy p{font-size:2.75cqw;line-height:1.4;margin:1.5cqw 0 0;color:#fff}.promotion-arrow{width:10cqw;height:10cqw;border:1px solid #ffffff50;padding:2cqw;border-radius:50%;flex-shrink:0;background:#ffffff15}.promotion-controls{display:flex;align-items:center;justify-content:center;gap:10px}.promotion-controls>div{display:flex}.promotion-controls button{display:flex;align-items:center;justify-content:center;width:28px;height:32px;color:inherit}.promotion-controls span{width:6px;height:6px;border-radius:9px;background:#9ca3af}.promotion-controls [aria-current=true] span{width:16px;background:#1D9BF0}.promotion :focus-visible{outline:2px solid #1D9BF0;outline-offset:3px}
+.promotion{width:100%;max-width:768px;margin:8px auto 16px;container-type:inline-size}
+.promotion-viewport{overflow:hidden;border-radius:16px;touch-action:pan-y}
+.promotion-track{display:flex;width:100%;will-change:transform}
+.promotion-track.is-moving{transition:transform 540ms cubic-bezier(.22,.61,.36,1)}
+.promotion-item{flex:0 0 100%;min-width:0;container-type:inline-size}
+.promotion-two-up .promotion-track{width:calc(100% + 16px)}
+.promotion-two-up .promotion-item{flex-basis:50%;padding-right:16px}
+.promotion-two-up .promotion-slide{border-radius:16px}
+.promotion-slide{display:flex;align-items:center;position:relative;isolation:isolate;overflow:hidden;aspect-ratio:3 / 1;padding:5cqw 6cqw;color:#fff;text-decoration:none;background:linear-gradient(120deg,#b45309,#ea8c14);box-shadow:inset 0 0 0 1px #ffffff26}
+.promotion-color-1{background:linear-gradient(120deg,#065f46,#0d9488)}
+.promotion-color-2{background:linear-gradient(120deg,#9a3412,#e0523a)}
+.promotion-slide:after{content:"";position:absolute;width:50cqw;height:50cqw;border:6cqw solid #ffffff12;border-radius:50%;right:-14cqw;top:-22cqw;z-index:-1}
+.promotion-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.16;z-index:-1;mix-blend-mode:luminosity}
+.promotion-copy{flex:1;min-width:0;padding-right:4cqw}
+.promotion-label{display:inline-block;font-size:clamp(8px,2.25cqw,16px);line-height:1.5;text-transform:uppercase;letter-spacing:.05em;font-weight:800;border:1px solid #ffffff30;background:#00000020;padding:.4cqw 1.6cqw;border-radius:1cqw;margin-bottom:1.8cqw}
+.promotion-copy strong{display:block;font-size:clamp(15px,4.5cqw,48px);line-height:1.15;font-weight:800;letter-spacing:-.025em}
+.promotion-copy p{font-size:clamp(10px,2.75cqw,24px);line-height:1.4;margin:1.5cqw 0 0;color:#fff}
+.promotion-arrow{width:clamp(30px,10cqw,96px);height:clamp(30px,10cqw,96px);border:1px solid #ffffff50;padding:clamp(6px,2cqw,20px);border-radius:50%;flex-shrink:0;background:#ffffff15}
+.promotion-controls{display:flex;align-items:center;justify-content:center;gap:4px;padding-top:4px;color:inherit}
+.promotion-controls>div{display:flex}
+.dark .promotion-controls{color:#e7e9ea}
+.promotion-controls button{display:flex;align-items:center;justify-content:center;width:32px;height:32px;color:inherit;border-radius:50%;cursor:pointer}
+.promotion-controls button:hover{background:#1d9bf012}
+.promotion-controls span{width:6px;height:6px;border-radius:9px;background:#9ca3af;transition:width 150ms}
+.promotion-controls [aria-current=true] span{width:16px;background:#1D9BF0}
+.promotion :focus-visible{outline:2px solid #1D9BF0;outline-offset:-3px}
+@media(prefers-reduced-motion:reduce){.promotion-track.is-moving,.promotion-controls span{transition:none}}
