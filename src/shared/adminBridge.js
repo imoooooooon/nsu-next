@@ -7,7 +7,7 @@ export const bridgeSnapshot = () => tick;
 export function bridgeNotify() { tick = Math.max(Date.now(), tick + 1); listeners.forEach(fn => fn()); }
 export function subscribeBridge(fn) { listeners.add(fn); return () => listeners.delete(fn); }
 if (typeof window !== 'undefined') {
-  window.addEventListener('storage', e => { if ([ADMIN_KEY, SUBMISSIONS_KEY, null].includes(e.key)) bridgeNotify(); });
+  window.addEventListener('storage', e => { if ([ADMIN_KEY, SUBMISSIONS_KEY, null].includes(e.key) || e.key?.startsWith('ugrads-archived-chats-') || e.key?.startsWith('ugrads-connections-')) bridgeNotify(); });
   // Time-derived availability refreshes while an app is open; no background service.
   setInterval(bridgeNotify, 60000);
 }
@@ -131,4 +131,8 @@ export function recordParticipation(event, memberId, kind, enabled) {
   const entries = (current.participation || []).filter(r => !(r.memberId === String(memberId) && r.kind === kind));
   if (enabled) entries.push({ memberId:String(memberId), kind, at:new Date().toISOString() });
   submitPublic('events', { ...current, status:current.status || 'published', participation:entries, registrations:entries.filter(r => r.kind === 'registered'), goingCount:Math.max(0, (current.goingCount || 0) + (kind === 'going' ? enabled ? 1 : -1 : 0)), interestedCount:Math.max(0, (current.interestedCount || 0) + (kind === 'interested' ? enabled ? 1 : -1 : 0)) });
+}
+
+export function currentApplicant() {
+  try { const id=sessionStorage.getItem('ugrads-alumni-applicant'); return id ? publicState()?.members.find(m=>m.id===id) : null; } catch { return null; }
 }

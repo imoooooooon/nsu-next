@@ -1,3 +1,7 @@
+import { useState } from 'react';
+import { PanelRightClose, PanelRightOpen } from 'lucide-react';
+import { PeerVerificationInbox } from '../../../src/shared/AlumniVerification.jsx';
+import { currentViewer } from '../../../src/shared/departmentStore';
 import { HomeCareerSections } from '../../../src/shared/HomeCareerSections';
 import { globalSeekingData } from '../features/seeking/data';
 import { StaffHome } from '../../../src/shared/DepartmentExperience';
@@ -13,7 +17,7 @@ import {
 } from '../components/icons/CustomIcons';
 import { SectionHeading } from '../components/ui';
 import { MomentsRow } from '../features/moments/MomentsRow';
-import { AdCarousel, useDemoAds } from '../features/home/AdCarousel';
+import { PromotionCarousel } from '../../../src/shared/PromotionCarousel.jsx';
 import { NotificationStack } from '../features/home/NotificationStack';
 import { EmergencySnippet } from '../features/home/EmergencySnippet';
 import { JobSlider } from '../features/jobs/JobSlider';
@@ -32,7 +36,8 @@ export default function HomePage() {
   const { t, isDark, toggleTheme } = useTheme();
   const { authRole, savedTalentIds, handleToggleSavedTalent } = useAppState();
   const navigate = useNavigate();
-  const demoAds = useDemoAds();
+  const [railHidden,setRailHidden] = useState(() => { try { return localStorage.getItem('ugrads-home-rail-hidden') === 'true'; } catch { return false; } });
+  const toggleRail = () => setRailHidden(v => { try { localStorage.setItem('ugrads-home-rail-hidden',String(!v)); } catch { /* session preference remains usable */ } return !v; });
   const viewer = getViewerIdentity(authRole);
 
   /* Seeking left this row (as it left the sidebar): it is a mode of Jobs,
@@ -54,9 +59,10 @@ export default function HomePage() {
 
   return (
     <PageContainer className="animate-fade-in">
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+      <div className="hidden xl:flex justify-end mb-2"><button onClick={toggleRail} aria-expanded={!railHidden} aria-controls="home-right-rail" className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold ${t.card} ${t.text} border ${t.border}`}>{railHidden ? <PanelRightOpen size={16}/> : <PanelRightClose size={16}/>} {railHidden ? 'Show campus sidebar' : 'Hide campus sidebar'}</button></div>
+      <div className={`grid grid-cols-1 ${railHidden ? '' : 'xl:grid-cols-3'} gap-8`}>
         {/* ------------------------------------------------ main column */}
-        <div className="xl:col-span-2 min-w-0">
+        <div className={`${railHidden ? "" : "xl:col-span-2"} min-w-0`}>
           {/* Greeting banner with the NSU building line art */}
           <div className="relative -mx-5 lg:mx-0 px-5 lg:px-8 pt-10 lg:pt-6 pb-4 lg:rounded-b-none rounded-b-[2.5rem] overflow-hidden">
             {/* The NSU line art is authored for a phone-width banner. On a wide
@@ -110,7 +116,8 @@ export default function HomePage() {
             <MomentsRow moments={globalMomentsData} />
           </div>
 
-          <AdCarousel ads={demoAds} />
+          <PromotionCarousel authRole={authRole} />
+          <PeerVerificationInbox t={t} viewerId={currentViewer(authRole).personId} />
 
           {/* Quick actions */}
           <div className="w-full pt-4 pb-2 relative z-10">
@@ -197,7 +204,7 @@ export default function HomePage() {
         </div>
 
         {/* ------------------------------------------------ right rail */}
-        <aside className="hidden xl:block pt-8">
+        <aside id="home-right-rail" className={`${railHidden ? "hidden" : "hidden xl:block"} pt-8`}>
           <div className="sticky top-20 space-y-5">
             <NotificationStack />
             <EmergencySnippet />

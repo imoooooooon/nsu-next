@@ -1,3 +1,5 @@
+import { PeerVerificationInbox } from '../../../src/shared/AlumniVerification.jsx';
+import { currentViewer } from '../../../src/shared/departmentStore';
 import { ArrowLeft, CheckCheck } from 'lucide-react';
 import { PageContainer, PageHeader, FormColumn } from '../components/layout/AppShell';
 import { IconButton } from '../components/ui';
@@ -12,7 +14,7 @@ import { useCloseTo } from '../lib/navigation';
 
 export default function NotificationsPage() {
   const { t, isDark } = useTheme();
-  const { showToast } = useAppState();
+  const { showToast, authRole } = useAppState();
   const close = useCloseTo('/home');
 
   return (
@@ -26,6 +28,7 @@ export default function NotificationsPage() {
         <IconButton icon={CheckCheck} label="Mark all as read" onClick={() => showToast('All caught up')} />
       </PageHeader>
 
+      <PeerVerificationInbox t={t} viewerId={currentViewer(authRole).personId} />
       <div className="space-y-2 pb-6">
         {globalNotifications.map(notif => (
           <div

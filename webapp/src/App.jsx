@@ -1,3 +1,4 @@
+import { clearApplicant } from '../../src/shared/verificationService';
 import { startTransition } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PrototypePanel } from '../../src/shared/DepartmentExperience';
@@ -114,7 +115,7 @@ export default function App() {
       <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
     <PrototypePanel t={t} isDark={isDark} authRole={authRole} onTheme={toggleTheme}
-      onSwitch={role => { setAuthRole(role); login(); navigate('/home'); }}
+      onSwitch={role => { clearApplicant(); setAuthRole(role); login(); navigate('/home'); }}
       onHome={() => { login(); navigate('/home'); }}
       onDepartment={id => { login(); navigate(id ? `/departments/${id}` : "/network?segment=Departments"); }}
       onSignup={() => startTransition(() => { logout(); setAuthRole('staff'); setAuthMode('signup'); navigate('/auth/signup'); })} />

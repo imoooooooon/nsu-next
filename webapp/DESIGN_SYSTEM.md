@@ -568,3 +568,12 @@ Sidebar main links have a non-shrinking 48px height, with compact 36px departmen
 subnavigation. The menu scrolls independently above the fixed footer. Donor card
 actions use two equal columns with an 8px gap and 40px buttons in both states;
 phone details remain full width above them.
+
+
+## October alumni and community revisions
+
+Use the shared `AlumniVerification` components for alumni enrollment and status. Retain Plus Jakarta Sans, the existing light/dark theme tokens, Ugrads blue selected outlines, rounded surfaces and 44px primary actions. Verification method is a labelled radio group; responsibility acknowledgment is a separate unchecked checkbox, never implicit consent. Pending access uses one focused status screen with a reason/retry when applicable.
+
+`PromotionCarousel` replaces separate mobile/web banner renderers: `aspect-ratio: 3 / 1`, container-relative type and spacing, maximum width 768px, placement immediately after Moments. Published admin campaigns remain the content authority. Autoplay pauses for hover/focus, has a manual pause control, and respects reduced motion. Desktop Home's right rail toggle is independent from the main navigation toggle and communicates expanded state.
+
+My Connections is a directory scope, preserving search and card/list controls. Messaging has three stable tabs (All Chats, Archived, Help Desk), with Requests among filters. New public components follow the public design language; administrator evidence/provenance uses the existing neutral Geist components.

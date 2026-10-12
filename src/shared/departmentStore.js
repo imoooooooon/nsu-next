@@ -1,4 +1,4 @@
-import { publicState, publicPerson, submitPublic, subscribeBridge } from './adminBridge.js';
+import { currentApplicant, publicState, publicPerson, submitPublic, subscribeBridge } from './adminBridge.js';
 import { useSyncExternalStore } from "react";
 import {
   initialDepartmentState,
@@ -25,7 +25,7 @@ export function updateDepartmentState(next) {
   listeners.forEach((listener) => listener());
 }
 export const liveDepartment = (dept) => departmentWithState(dept, state);
-export const currentViewer = (role) => { const viewer = viewerFor(role, state); const person = publicPerson({ id: viewer.personId }); return { ...viewer, verified: person.verified ?? viewer.verified, accountStatus: person.accountStatus }; };
+export const currentViewer = (role) => { const applicant = role === 'alumni' ? currentApplicant() : null; if (applicant) return { personId:applicant.id, role:'alumni', name:applicant.name, dept:applicant.department, verified:applicant.verified, accountStatus:applicant.status }; const viewer = viewerFor(role, state); const person = publicPerson({ id: viewer.personId }); return { ...viewer, verified: person.verified ?? viewer.verified, accountStatus: person.accountStatus }; };
 export const viewerDepartmentId = (role) =>
   affiliationDepartmentId(currentViewer(role).dept);
 export const currentAccess = (dept, role) =>

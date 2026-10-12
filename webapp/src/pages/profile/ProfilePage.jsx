@@ -1,3 +1,5 @@
+import { connectedIds } from '../../../../src/shared/communityPreferences';
+import { currentViewer } from '../../../../src/shared/departmentStore';
 import { StaffProfile } from '../../../../src/shared/DepartmentExperience';
 import { currentStaff } from '../../../../src/shared/departmentStore';
 import { useEffect, useRef, useState } from 'react';
@@ -60,9 +62,8 @@ export default function ProfilePage() {
   const stats = [
     { label: identity.stat1Label, count: identity.stat1Count, icon: Briefcase, color: 'text-blue-500', bg: 'bg-blue-500/10' },
     { label: identity.stat2Label, count: identity.stat2Count, icon: BookmarkIcon, color: 'text-purple-500', bg: 'bg-purple-500/10' },
-    { label: 'Connections', count: '124', icon: Users, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-    { label: 'Profile Views', count: '89', icon: Eye, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-  ];
+    { label: 'Connections', count: connectedIds(currentViewer(authRole).personId).size, icon: Users, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+  ].filter(stat => stat.label !== 'Applications');
 
   if (authRole === 'staff') return <PageContainer><StaffProfile t={t} person={currentStaff(authRole)} onDepartment={() => navigate(viewerDept ? `/departments/${viewerDept.id}` : '/network?segment=Departments')} /><button className="text-sm text-red-500 font-bold mt-4" onClick={() => { logout(); navigate('/welcome'); }}>Log out</button></PageContainer>;
 
@@ -133,10 +134,14 @@ export default function ProfilePage() {
         <div className="space-y-6 animate-fade-in">
           <div>
             <MicroHeading className="px-1">Activity</MicroHeading>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               {stats.map((stat) => (
                 <div
                   key={stat.label}
+                  role={stat.label === 'Connections' ? 'link' : undefined}
+                  tabIndex={stat.label === 'Connections' ? 0 : undefined}
+                  onClick={() => stat.label === 'Connections' && navigate('/network?scope=connections')}
+                  onKeyDown={e => { if(e.key === 'Enter' && stat.label === 'Connections') navigate('/network?scope=connections'); }}
                   className={`p-4 rounded-xl ${t.card} border ${t.border} ${t.cardShadow} flex flex-col cursor-pointer hover:border-[#1D9BF0]/30 transition-colors`}
                 >
                   <div className="flex items-center justify-between mb-3">
@@ -150,21 +155,6 @@ export default function ProfilePage() {
               ))}
             </div>
           </div>
-
-          <Card className="relative overflow-hidden group cursor-pointer">
-            <CardGlow />
-            <div className="relative z-10 flex items-start space-x-4">
-              <div className="w-10 h-10 rounded-full bg-[#1D9BF0]/10 border border-[#1D9BF0]/20 flex items-center justify-center shrink-0">
-                <Lightbulb className="w-5 h-5 text-[#1D9BF0]" strokeWidth={2.5} />
-              </div>
-              <div>
-                <h4 className={`text-sm font-extrabold ${t.text} mb-1`}>Profile Insight</h4>
-                <p className={`text-xs font-bold ${t.textMuted} leading-relaxed`}>
-                  Your profile is getting <span className="text-[#1D9BF0]">23% more views</span> this week. Recruiters searched your skill 'React' 5 times.
-                </p>
-              </div>
-            </div>
-          </Card>
 
           {/* My Department — the one-tap path to the hub for every member.
               A department is where a student's registration, advising and

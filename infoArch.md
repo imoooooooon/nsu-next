@@ -444,3 +444,16 @@ Implementation refinements approved within the user's IA/design discretion: use 
 No payments, fees, transcripts, grades, attendance tracking, course administration, unrestricted private-inbox surveillance or multi-university tenancy are inferred from this community product. No automatic Story reactivation. No deployment is performed merely to review a frontend phase.
 
 **Frontend handoff:** the three planned phases are implemented. Review `/admin` with `npm run build:all` and `npm run preview:all`. Read `ADMIN_PHASE3.md` for the connected local state, fixture boundaries and QA evidence. Production authentication, database transactions, media storage, delivery and durable audit require a separate backend implementation; the local bridge is not a security boundary. Preserve the existing user changes and original-source backups.
+
+
+## 11. New revision addendum — 12 October 2026
+
+Source: `Ugrads New Revisions.pdf`, internally labelled Oct 17. This addendum supersedes the earlier alumni onboarding/evidence assumptions only; existing admin permissions and scope boundaries remain in force.
+
+Alumni onboarding → identity details → choose Document review or Peer endorsement → locked pending account. Document review accepts certificate, RDS screenshot or RFID; administrator actions are Approve, Request information, Reject. A rejected/incomplete submission can be replaced by a new request while preserving the old review. Peer endorsement selects one active verified member; Home/Notifications → review applicant → explicit responsibility agreement → approve/decline. Only the selected voucher may decide a peer request. Approved active applicants unlock immediately; a verified but suspended account stays restricted.
+
+Admin Community → Verification retains both paths with clear method/status. Peer details show the selected voucher and awaiting-endorsement state rather than admin approval controls. Community → Members → Verification provenance prominently exposes Verified By: name / ID, links to the voucher, and lists all endorsements involving either person with agreement and timestamp. Suspend/Reactivate acts on the chosen member only. Reviewers investigate each party independently; there is no cascading restriction. Endorsement records are append-only through the interface.
+
+Public IA: Directory → My connections (accepted only); Profile → Connections shortcut. Profile removes Applications/Profile Views and their unsupported insight. Messages → All Chats / Archived / Help Desk; Requests is a filter, with archive/restore on the row menu. Home keeps promotions after Moments in a shared 3:1 slot, and the desktop campus rail has an independent collapse preference.
+
+The local adapter stores evidence bytes in IndexedDB, metadata/endorsements in the admin repository, applicant selection per tab, and chat preferences per member. These are reviewable frontend behaviors; secure server authentication, file storage and permanent audit remain production adapter requirements. See `REVISIONS_OCT12.md` for the implementation map and validation scope.

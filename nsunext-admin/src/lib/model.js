@@ -50,6 +50,7 @@ export function transition(state, actorId, command, now = Date.now()) {
     row = operate(s, actor, command, row, now);
   } else if (collection === 'members') {
     if (action === 'edit') {
+      requireValue(actor.role !== 'moderator', 'Only operations administrators can edit member profiles.');
       const fields = pick(values, ['name', 'department', 'designation', 'office', 'phone']);
       requireValue(fields.name.length >= 2, 'Enter the member’s full name.');
       requireValue(fields.department.length > 0, 'Department or office affiliation is required.');
@@ -71,10 +72,11 @@ export function transition(state, actorId, command, now = Date.now()) {
     requireValue(['approve', 'reject', 'information'].includes(action), 'Unsupported verification decision.');
     const member = getById(s, 'members', row.memberId);
     requireValue(member, 'Applicant not found.');
+    requireValue(row.path !== 'peer', 'Peer requests must be decided by their selected voucher.');
     if (action === 'approve') {
       requireValue(row.evidence === 'available' && values.reviewed === true, 'Review the available evidence before approving.');
       if (member.identity === 'Staff') requireValue(officialEmail(member.email), 'Staff verification requires the exact northsouth.edu email domain.');
-      member.verified = true; member.revision += 1;
+      member.verified = true; member.verificationPath = row.path || 'document'; member.verifiedAt = timestamp; member.revision += 1;
     }
     decide(({ approve: 'approved', reject: 'rejected', information: 'needs_information' })[action]);
   } else if (collection === 'claims') {

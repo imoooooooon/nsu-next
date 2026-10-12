@@ -1,7 +1,10 @@
+import { archivedIds, toggleArchive, selectConversations } from '../../../../src/shared/communityPreferences';
+import { currentViewer } from '../../../../src/shared/departmentStore';
+import { useAdminBridge } from '../../../../src/shared/useAdminBridge';
 import { useState } from 'react';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import {
-  Filter, Settings, X, MessageSquare, User, Pin as PinIcon, Megaphone, LifeBuoy,
+  MoreVertical, Filter, Settings, X, MessageSquare, User, Pin as PinIcon, Megaphone, LifeBuoy,
   Archive, VolumeX, Volume2, Pin, MailOpen, Trash2, AlertTriangle, Info, FileText
 } from 'lucide-react';
 import { PageContainer } from '../../components/layout/AppShell';
@@ -27,7 +30,7 @@ import { useAppState } from '../../context/AppStateContext';
    holding the incoming student threads, kept out of their personal DMs.
 --------------------------------------------------------------------------- */
 
-const MessageSettingsModal = ({ onClose }) => {
+const MessageSettingsModal = ({ onClose, onArchived }) => {
   const [soundEnabled, setSoundEnabled] = useState(true);
   return (
     <Modal onClose={onClose} title="Message Settings" size="sm">
@@ -40,7 +43,7 @@ const MessageSettingsModal = ({ onClose }) => {
             toggleState={soundEnabled}
             onToggle={() => setSoundEnabled(v => !v)}
           />
-          <SettingsRow icon={Archive} label="Archived Chats" />
+          <SettingsRow icon={Archive} label="Archived Chats" onClick={onArchived} />
         </Card>
 
         <div>
@@ -110,11 +113,13 @@ const ConversationRow = ({ chat, isActive, onOpen, onContextMenu }) => {
           <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mt-1 truncate`}>{chat.subtitle}</p>
         )}
       </div>
+      <IconButton icon={MoreVertical} label={`Options for ${chat.name}`} size="sm" onClick={e => { e.stopPropagation();onContextMenu(chat); }} />
     </div>
   );
 };
 
 export default function MessagesPage() {
+  useAdminBridge();
   const { t, isDark } = useTheme();
   const { showToast, setChatContext, authRole, toggleChannelMute, mutedChannelIds } = useAppState();
   const navigate = useNavigate();
@@ -135,28 +140,10 @@ export default function MessagesPage() {
   const helpDeskThreads = access.canHelpDesk ? getHelpDeskThreads(getViewerDepartmentId(authRole)) : [];
   const waitingCount = helpDeskThreads.filter(x => x.unread).length;
 
-  const segments = access.canHelpDesk
-    ? ['All Chats', { id: 'Requests', label: 'Requests', badge: 1 }, { id: 'Help Desk', label: 'Help Desk', badge: waitingCount || undefined }]
-    : ['All Chats', { id: 'Requests', label: 'Requests', badge: 1 }];
-
-  let displayedChats;
-  if (segment === 'Help Desk') {
-    displayedChats = helpDeskThreads;
-  } else if (segment === 'Requests') {
-    displayedChats = globalConversations.filter(c => c.isRequest);
-  } else {
-    displayedChats = [...deptChannels, ...globalConversations.filter(c => !c.isRequest)];
-  }
-
-  if (chatFilter && segment !== 'Help Desk') {
-    if (chatFilter === 'Unread') displayedChats = displayedChats.filter(c => c.unread);
-    else if (chatFilter === 'Departments') displayedChats = displayedChats.filter(c => c.deptId);
-    else displayedChats = displayedChats.filter(c => c.role === chatFilter);
-  }
-  if (search.trim()) {
-    const q = search.toLowerCase();
-    displayedChats = displayedChats.filter(c => c.name.toLowerCase().includes(q) || c.msg.toLowerCase().includes(q));
-  }
+  const viewerId=currentViewer(authRole).personId;
+  const archived=archivedIds(viewerId);
+  const segments = ['All Chats', 'Archived', {id:'Help Desk',label:'Help Desk',badge:waitingCount || undefined}];
+  const displayedChats=selectConversations({conversations:globalConversations,channels:deptChannels,helpdesk:helpDeskThreads,archived,segment,filter:chatFilter,search});
 
   const openChat = (chat) => {
     setChatContext(null);
@@ -175,7 +162,7 @@ export default function MessagesPage() {
         { icon: Info, label: 'View Department Hub', onClick: () => { const id = contextMenuChat.deptId; setContextMenuChat(null); navigate(`/departments/${id}`); } },
       ]
     : [
-        { icon: Archive, label: 'Archive', onClick: () => { setContextMenuChat(null); showToast('Chat archived'); } },
+        { icon: Archive, label: archived.has(String(contextMenuChat.id)) ? 'Unarchive' : 'Archive', onClick: () => { try { const archivedNow=toggleArchive(viewerId,contextMenuChat.id);setContextMenuChat(null);showToast(archivedNow ? 'Chat archived' : 'Chat returned to inbox'); } catch { showToast('Could not save archive state.'); } } },
         { icon: VolumeX, label: 'Mute Notifications', onClick: () => { setContextMenuChat(null); showToast('Notifications muted'); } },
         { icon: Pin, label: 'Pin Chat', onClick: () => { setContextMenuChat(null); showToast('Chat pinned'); } },
         { icon: MailOpen, label: contextMenuChat.unread ? 'Mark as Read' : 'Mark as Unread', onClick: () => { setContextMenuChat(null); showToast('Conversation updated'); } },
@@ -215,12 +202,12 @@ export default function MessagesPage() {
                   {isFilterOpen && (
                     <DropdownPanel onClose={() => setIsFilterOpen(false)}>
                       <DropdownHeading>Filter By</DropdownHeading>
-                      {['Unread', 'Departments', 'Student', 'Alumni', 'Faculty'].map(f => (
+                      {['Requests', 'Unread', 'Departments', 'Student', 'Alumni', 'Faculty'].map(f => (
                         <DropdownItem
                           key={f}
                           label={f}
                           selected={chatFilter === f}
-                          onClick={() => { setChatFilter(f); setIsFilterOpen(false); }}
+                          onClick={() => { setChatFilter(f); if(f==='Requests') setSegment('All Chats'); setIsFilterOpen(false); }}
                         />
                       ))}
                       <DropdownDivider />
@@ -240,7 +227,7 @@ export default function MessagesPage() {
               className="mb-4"
             />
 
-            <SegmentedControl options={segments} value={segment} onChange={setSegment} />
+            <SegmentedControl options={segments} value={segment} onChange={s => { setSegment(s); setChatFilter(null); }} />
           </div>
 
           <div className="flex-1 overflow-y-auto px-3 py-3 min-h-0">
@@ -278,7 +265,7 @@ export default function MessagesPage() {
         </Card>
       </div>
 
-      {isSettingsOpen && <MessageSettingsModal onClose={() => setIsSettingsOpen(false)} />}
+      {isSettingsOpen && <MessageSettingsModal onClose={() => setIsSettingsOpen(false)} onArchived={() => { setSegment('Archived');setChatFilter(null);setIsSettingsOpen(false); }} />}
       {contextMenuChat && (
         <ActionSheetModal
           title={contextMenuChat.name}

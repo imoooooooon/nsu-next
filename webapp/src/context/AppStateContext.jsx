@@ -1,3 +1,4 @@
+import { applicantId, clearApplicant } from '../../../src/shared/verificationService.js';
 import { useAdminBridge } from '../../../src/shared/useAdminBridge.js';
 import { authorSeekingAction, ownSeekingPosts, publicState, readSubmissions, seekingSubmission, submitPublic } from '../../../src/shared/adminBridge.js';
 import { useDepartmentState } from '../../../src/shared/departmentStore';
@@ -41,9 +42,9 @@ export const AppStateProvider = ({ children }) => {
   const departmentState = useDepartmentState();
   const bridgeVersion = useAdminBridge();
   /* Auth (demo) — seeded from the persisted session. */
-  const [authRole, setAuthRole] = useState(() => readSession()?.authRole || 'student'); // 'student' | 'alumni' | 'faculty'
+  const [authRole, setAuthRole] = useState(() => applicantId() ? 'alumni' : readSession()?.authRole || 'student'); // 'student' | 'alumni' | 'faculty'
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
-  const [isAuthed, setIsAuthed] = useState(() => readSession()?.isAuthed === true);
+  const [isAuthed, setIsAuthed] = useState(() => !!applicantId() || readSession()?.isAuthed === true);
 
   useEffect(() => {
     try {
@@ -225,7 +226,7 @@ export const AppStateProvider = ({ children }) => {
   }, [showToast, mySeekingPosts]);
 
   const login = useCallback(() => setIsAuthed(true), []);
-  const logout = useCallback(() => setIsAuthed(false), []);
+  const logout = useCallback(() => { clearApplicant();setIsAuthed(false); }, []);
 
   const value = useMemo(() => ({
     bridgeVersion, departmentState, authRole, setAuthRole, authMode, setAuthMode, isAuthed, login, logout,

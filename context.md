@@ -636,3 +636,16 @@ only untracked `.claude/`: the implementation was already committed externally
 between turns. Preserve that directory and all existing work. This turn appends
 only this handoff to `context.md`; implementation tests are historical results,
 not tests rerun for a Markdown edit. No requested implementation remains pending.
+
+
+## New PDF revisions — 12 October 2026
+
+Implemented the four-page `D:/Downloads/New folder (5)/Ugrads New Revisions.pdf` (source label Oct 17) across mobile, web and admin. See `REVISIONS_OCT12.md` and infoArch.md §11 before continuing. This is a new revision batch after the completed three-phase dashboard, not unfinished Phase 3 work.
+
+Shared alumni signup now has document review and accountable peer endorsement; pending applicants are gated, rejected ones can retry, and both identities retain the endorsement trail. Admin member pages show Verified By and manual individual restrictions. Removed Control Center Applications/Profile Views, added My Connections, changed messages to All Chats/Archived/Help Desk with Requests in filters and saved archive/restore, consolidated Home ads to a shared 3:1 component and added a persistent desktop right-rail toggle.
+
+The code still uses local prototype storage. Do not claim production authentication, permanent backend storage or delivered external notifications. Uploaded evidence bytes are in same-origin IndexedDB; backup JSON carries metadata only. A synthetic QA Alumni Revision record was created for browser verification; no real identity documents or external messages were used. Preserve unrelated user changes and existing admin archive backups. No commit or deployment was requested.
+
+59 model/adapter tests and all three builds pass. Web/admin and new shared-component lint pass; mobile retains unrelated lint debt. Browser proof and detailed scope are in REVISIONS_OCT12.md. The preview uses the existing combined server on port 5182.
+
+Final mobile verification passed archive/restore and Requests filtering from Archived. Messaging transient state now lives in App and the hook-free view is rendered directly, preserving focus and menus across background bridge refreshes. Proof screenshots: `output/revisions-oct12/admin-endorsement.png` and `mobile-messages.png`. Comparing mobile lint against HEAD confirms no new findings (one old unused variable removed).

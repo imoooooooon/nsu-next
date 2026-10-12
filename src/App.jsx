@@ -1,6 +1,10 @@
+import { PromotionCarousel } from './shared/PromotionCarousel.jsx';
+import { connectedIds, archivedIds, toggleArchive, selectConversations } from './shared/communityPreferences';
+import { AlumniSignup, AlumniAccessGate, PeerVerificationInbox } from './shared/AlumniVerification.jsx';
+import { applicantId, applicantMember, clearApplicant, resumeApplicant } from './shared/verificationService';
 import { BloodRequestForm } from './shared/BloodRequestForm.jsx';
 import { useAdminBridge } from './shared/useAdminBridge.js';
-import { authorSeekingAction, ownSeekingPosts, publicRows, publicState, publicPerson, donorListed, submitPublic, seekingSubmission, subscribeBridge } from './shared/adminBridge.js';
+import { authorSeekingAction, ownSeekingPosts, publicRows, publicPerson, donorListed, submitPublic, seekingSubmission, subscribeBridge } from './shared/adminBridge.js';
 import { HomeCareerSections } from './shared/HomeCareerSections';
 import { momentPeople } from './shared/momentPeople';
 import { InstantDialog, MomentTypePicker } from './shared/InstantExperience';
@@ -124,7 +128,7 @@ const getEventOrganizers = (event) => [event.organizer, ...(event.coOrganizers |
 
 /* The signed-in demo identity's name — the default host of an event. */
 const viewerFullName = (authRole) =>
-  authRole === 'student' ? 'Hasan Tarik' : authRole === 'alumni' ? 'Nusrat Jahan' : authRole === 'staff' ? currentStaff(authRole).name : ({ 101: 'Dr. Aminul Islam', 105: 'Dr. Tanzima Hashem', 109: 'Ar. Nusrat Farzana' }[currentViewer(authRole).personId] || 'Faculty member');
+  authRole === 'student' ? 'Hasan Tarik' : authRole === 'alumni' ? 'Sarah Rahman' : authRole === 'staff' ? currentStaff(authRole).name : ({ 101: 'Dr. Aminul Islam', 105: 'Dr. Tanzima Hashem', 109: 'Ar. Nusrat Farzana' }[currentViewer(authRole).personId] || 'Faculty member');
 
 const seedEventsData = [
   {
@@ -573,89 +577,6 @@ const JobSlider = ({ jobs, isDark, t, onSelectJob }) => {
   );
 };
 
-const AdCarousel = ({ ads: fallbackAds, isDark, authRole }) => {
-  useAdminBridge();
-  const admin = publicState();
-  const ads = admin?.campaigns ? publicRows('campaigns', [], admin).filter(c => c.audience === 'all' || c.audience === authRole).sort((a,b) => a.priority - b.priority).map(c => ({ id:c.id, content:<a href={c.destination} className="relative w-full h-full block text-white"><img src={c.image} alt={c.alt} className="absolute inset-0 w-full h-full object-cover" /><div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/20 flex flex-col justify-center px-6"><strong className="text-lg leading-tight">{c.title}</strong><span className="text-xs mt-2">{c.copy}</span></div></a> })) : fallbackAds;
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [dragStartX, setDragStartX] = useState(null);
-  const [dragOffset, setDragOffset] = useState(0);
-
-  useEffect(() => {
-    if (isPaused || dragStartX !== null || !ads || ads.length === 0) return;
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % ads.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [isPaused, dragStartX, ads]);
-
-  if (!ads || ads.length === 0) return null;
-
-  const handleDragStart = (clientX) => {
-    setIsPaused(true);
-    setDragStartX(clientX);
-  };
-
-  const handleDragMove = (clientX) => {
-    if (dragStartX === null) return;
-    setDragOffset(clientX - dragStartX);
-  };
-
-  const handleDragEnd = () => {
-    if (dragStartX === null) return;
-    setIsPaused(false);
-    const threshold = 50;
-    if (dragOffset < -threshold) {
-      setCurrentIndex((prev) => (prev + 1) % ads.length);
-    } else if (dragOffset > threshold) {
-      setCurrentIndex((prev) => (prev - 1 + ads.length) % ads.length);
-    }
-    setDragStartX(null);
-    setDragOffset(0);
-  };
-
-  return (
-    <div className="w-full mt-2 mb-2 animate-fade-in relative z-10">
-      <div 
-        className={`relative w-full rounded-xl overflow-hidden border ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-white/80'} backdrop-blur-sm touch-pan-y select-none`}
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => { setIsPaused(false); if (dragStartX !== null) handleDragEnd(); }}
-        onMouseDown={(e) => handleDragStart(e.clientX)}
-        onMouseMove={(e) => handleDragMove(e.clientX)}
-        onMouseUp={handleDragEnd}
-        onTouchStart={(e) => handleDragStart(e.touches[0].clientX)}
-        onTouchMove={(e) => handleDragMove(e.touches[0].clientX)}
-        onTouchEnd={handleDragEnd}
-      >
-        <div 
-          className="flex transition-transform duration-500 ease-out h-[130px]"
-          style={{ transform: `translateX(calc(-${(currentIndex % ads.length) * 100}% + ${dragOffset}px))` }}
-        >
-          {ads.map((ad, idx) => (
-            <div 
-              key={idx} 
-              className="w-full h-full shrink-0 cursor-pointer flex items-center justify-center bg-cover bg-center"
-              onClick={() => console.log('Ad Clicked:', ad.link)}
-            >
-              {ad.content}
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="flex justify-center space-x-1.5 mt-3">
-         {ads.map((_, idx) => (
-           <button
-             key={idx}
-             onClick={() => setCurrentIndex(idx)}
-             className={`h-1.5 rounded-full transition-all duration-300 ${currentIndex === idx ? 'w-4 bg-[#1D9BF0]' : 'w-1.5 bg-gray-300 dark:bg-gray-600'}`}
-           />
-         ))}
-      </div>
-    </div>
-  );
-};
-
 const SettingsItem = ({ icon: Icon, label, value, isToggle, toggleState, onToggle, isDestructive, onClick, t, isDark }) => (
   <div onClick={onClick} className={`flex items-center justify-between p-4 border-b ${t.borderSoft} last:border-0 hover:${isDark ? 'bg-white/5' : 'bg-black/5'} transition-colors cursor-pointer group`}>
     <div className="flex items-center">
@@ -682,7 +603,7 @@ const SettingsItem = ({ icon: Icon, label, value, isToggle, toggleState, onToggl
   </div>
 );
 
-const ProfileTab = ({ authRole, t, isDark, profileSegment, setProfileSegment, setSettingsOverlay, setCurrentView, pushEnabled, handlePushToggle, toggleTheme, appLanguage, twoFactorEnabled, handle2FAToggle, profileVisibility, activeSessionsCount }) => {
+const ProfileTab = ({ onConnections, authRole, t, isDark, profileSegment, setProfileSegment, setSettingsOverlay, setCurrentView, pushEnabled, handlePushToggle, toggleTheme, appLanguage, twoFactorEnabled, handle2FAToggle, profileVisibility, activeSessionsCount }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopyID = () => {
@@ -690,14 +611,13 @@ const ProfileTab = ({ authRole, t, isDark, profileSegment, setProfileSegment, se
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const fullName = authRole === 'student' ? 'Hasan Tarik' : authRole === 'alumni' ? 'Nusrat Jahan' : 'Dr. Hasan Mahmud';
-  const firstName = authRole === 'student' ? 'Hasan' : authRole === 'alumni' ? 'Nusrat' : 'Dr. Hasan';
+  const fullName = applicantMember()?.name || (authRole === 'student' ? 'Hasan Tarik' : authRole === 'alumni' ? 'Sarah Rahman' : 'Dr. Hasan Mahmud');
 
-  const roleSub = authRole === 'alumni' ? 'Software Engineer @ Google' : authRole === 'faculty' ? 'Professor @ CSE' : 'Final Year CS Student';
+  const roleSub = applicantMember() ? 'NSU Alumnus' : authRole === 'alumni' ? 'Software Engineer @ Google' : authRole === 'faculty' ? 'Professor @ CSE' : 'Final Year CS Student';
   const idTitle = authRole === 'alumni' ? 'Alumni Access ID' : authRole === 'faculty' ? 'Faculty Access ID' : 'Student Access ID';
-  const idPrefix = authRole === 'student' ? '2024CS1021' : authRole === 'alumni' ? '151XXXXX' : 'FAC-0012';
+  const idPrefix = applicantId() || (authRole === 'student' ? '2024CS1021' : authRole === 'alumni' ? '151XXXXX' : 'FAC-0012');
   const termLabel = authRole === 'student' ? 'Valid Thru' : authRole === 'alumni' ? 'Class Of' : 'Joined';
-  const termValue = authRole === 'student' ? '12/26' : authRole === 'alumni' ? '2019' : '2012';
+  const termValue = applicantMember()?.batch || (authRole === 'student' ? '12/26' : authRole === 'alumni' ? '2019' : '2012');
   
   const stat1Label = authRole === 'student' ? 'Applications' : 'Jobs Posted';
   const stat1Count = authRole === 'student' ? '12' : '5';
@@ -776,10 +696,9 @@ const ProfileTab = ({ authRole, t, isDark, profileSegment, setProfileSegment, se
                 {[
                   { label: stat1Label, count: stat1Count, icon: Briefcase, color: 'text-blue-500', bg: 'bg-blue-500/10' },
                   { label: stat2Label, count: stat2Count, icon: BookmarkIcon, color: 'text-purple-500', bg: 'bg-purple-500/10' },
-                  { label: 'Connections', count: '124', icon: Users, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-                  { label: 'Profile Views', count: '89', icon: Eye, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-                ].map((stat, i) => (
-                  <div key={i} className={`p-4 rounded-xl ${t.card} border ${t.border} ${t.cardShadow} flex flex-col cursor-pointer hover:border-[#1D9BF0]/30 transition-colors`}>
+                  { label: 'Connections', count: connectedIds(currentViewer(authRole).personId).size, icon: Users, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+                ].filter(stat => stat.label !== 'Applications').map((stat, i) => (
+                  <div key={i} role={stat.label === 'Connections' ? 'link' : undefined} tabIndex={stat.label === 'Connections' ? 0 : undefined} onClick={stat.label === 'Connections' ? onConnections : undefined} onKeyDown={e => { if(stat.label === 'Connections' && e.key === 'Enter') onConnections(); }} className={`p-4 rounded-xl ${t.card} border ${t.border} ${t.cardShadow} flex flex-col cursor-pointer hover:border-[#1D9BF0]/30 transition-colors`}>
                     <div className="flex items-center justify-between mb-3">
                       <div className={`w-8 h-8 rounded-lg ${stat.bg} flex items-center justify-center`}>
                         <stat.icon className={`w-4 h-4 ${stat.color}`} strokeWidth={2.5} />
@@ -789,19 +708,6 @@ const ProfileTab = ({ authRole, t, isDark, profileSegment, setProfileSegment, se
                     <span className={`text-xs font-bold ${t.textMuted}`}>{stat.label}</span>
                   </div>
                 ))}
-              </div>
-            </div>
-
-            <div className={`p-5 rounded-2xl ${t.card} border ${t.border} ${t.cardShadow} relative overflow-hidden group cursor-pointer`}>
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#1D9BF0]/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
-              <div className="relative z-10 flex items-start space-x-4">
-                <div className={`w-10 h-10 rounded-full bg-[#1D9BF0]/10 border border-[#1D9BF0]/20 flex items-center justify-center shrink-0`}>
-                  <Lightbulb className="w-5 h-5 text-[#1D9BF0]" strokeWidth={2.5} />
-                </div>
-                <div>
-                  <h4 className={`text-sm font-extrabold ${t.text} mb-1`}>Profile Insight</h4>
-                  <p className={`text-xs font-bold ${t.textMuted} leading-relaxed`}>Your profile is getting <span className={`text-[#1D9BF0]`}>23% more views</span> this week. Recruiters searched your skill 'React' 5 times.</p>
-                </div>
               </div>
             </div>
 
@@ -865,7 +771,7 @@ const ProfileTab = ({ authRole, t, isDark, profileSegment, setProfileSegment, se
 
             <div className="pt-2">
               <div className={`rounded-2xl ${t.card} border ${t.border} overflow-hidden ${t.cardShadow}`}>
-                <SettingsItem icon={LogOut} label="Log Out" isDestructive={true} onClick={() => setCurrentView('welcome')} t={t} isDark={isDark} />
+                <SettingsItem icon={LogOut} label="Log Out" isDestructive={true} onClick={() => { clearApplicant();setCurrentView('welcome'); }} t={t} isDark={isDark} />
               </div>
             </div>
           </div>
@@ -915,7 +821,7 @@ const SettingsFlowOverlay = ({ type, onClose, t, isDark, authRole, appLanguage, 
               <label className={`text-[11px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 block`}>Full Name</label>
               <div className="relative">
                 <User className={`absolute left-3 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4`} strokeWidth={2.5} />
-                <input type="text" defaultValue={authRole === 'student' ? 'Hasan Tarik' : authRole === 'alumni' ? 'Nusrat Jahan' : 'Dr. Hasan Mahmud'} className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 pl-8 pr-3 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
+                <input type="text" defaultValue={authRole === 'student' ? 'Hasan Tarik' : authRole === 'alumni' ? 'Sarah Rahman' : 'Dr. Hasan Mahmud'} className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 pl-8 pr-3 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm`} />
               </div>
             </div>
             <div>
@@ -3193,8 +3099,9 @@ export default function App() {
   const [reminderEventIds, setReminderEventIds] = useState(new Set());
   const [followedOrganizerIds, setFollowedOrganizerIds] = useState(new Set(['organizer-acm']));
 
-  const [currentView, setCurrentView] = useState('splash');
-  const [authRole, setAuthRole] = useState('student'); // 'student' | 'faculty' | 'alumni'
+  const [currentView, setCurrentView] = useState(() => applicantId() ? 'main' : 'splash');
+  const [authRole, setAuthRole] = useState(() => applicantId() ? 'alumni' : 'student'); // 'student' | 'faculty' | 'alumni'
+  const [loginEmail,setLoginEmail] = useState('');
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
   const [activeTab, setActiveTab] = useState('home'); 
   const [activeOverlay, setActiveOverlay] = useState(null); 
@@ -3223,6 +3130,15 @@ export default function App() {
 
   const [profileSegment, setProfileSegment] = useState('Account');
   const [chatSegment, setChatSegment] = useState('All Chats');
+  const [chatFilter, setChatFilter] = useState(null);
+  const [chatSearch, setChatSearch] = useState('');
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [contextMenuChat, setContextMenuChat] = useState(null);
+    const timerRef = React.useRef(null);
+    const isLongPress = React.useRef(false);
+
+  const [directoryScope, setDirectoryScope] = useState('all');
+  const [directorySearch, setDirectorySearch] = useState('');
   const [directorySegment, setDirectorySegment] = useState('Alumni');
   /* Card ⇄ list, remembered per kind of object: people lenses share one
      mode (cards by default), Departments keep their own (list by default). */
@@ -3485,6 +3401,7 @@ export default function App() {
 
   const handleConnectClick = (e, id) => {
     e.stopPropagation();
+    if(connectedIds(currentViewer(authRole).personId).has(String(id))) return;
     setRequestedSet(prev => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); 
@@ -3680,6 +3597,7 @@ export default function App() {
 
     const handleAction = () => {
       if (authMode === 'login') {
+        if(resumeApplicant(loginEmail)) setAuthRole('alumni');
         setCurrentView('main');
       } else {
         setCurrentView('otp');
@@ -3719,7 +3637,7 @@ export default function App() {
                     <Mail className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4 transition-colors`} strokeWidth={2.5} />
                     <input 
                       type="email" 
-                      placeholder="yourname@northsouth.edu" 
+                      placeholder="yourname@northsouth.edu" value={loginEmail} onChange={e => setLoginEmail(e.target.value)}
                       className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl h-12 pl-10 pr-4 text-sm font-bold ${t.text} transition-all outline-none focus:ring-2 focus:ring-[#1D9BF0]/30 shadow-sm`}
                     />
                   </div>
@@ -3916,61 +3834,7 @@ export default function App() {
       { id: 4, type: 'system', icon: ShieldCheck, color: 'text-purple-500', bg: 'bg-purple-500/10', title: 'Profile Strength', msg: 'Your profile strength is at 80%. Add a resume to reach 100%.', time: '1d ago' },
     ];
 
-    const demoAds = React.useMemo(() => [
-      {
-        id: 1,
-        link: '#bootcamp',
-        content: (
-          <div className="w-full h-full bg-gradient-to-br from-yellow-500 to-amber-600 flex items-center px-6 relative overflow-hidden">
-            <div className="absolute -right-6 -top-6 w-32 h-32 bg-black/10 rounded-full blur-2xl pointer-events-none"></div>
-            <div className="z-10 flex-1 pr-4">
-              <span className="px-2 py-0.5 rounded text-[9px] font-black bg-black/20 text-white uppercase tracking-wider mb-2 inline-block backdrop-blur-md">Workshop</span>
-              <h3 className="text-white font-extrabold text-lg leading-tight mb-1">Tech Bootcamp 2024</h3>
-              <p className="text-white/90 text-[11px] font-semibold">Master UI/UX & React. Limited seats!</p>
-            </div>
-            <div className="z-10 w-11 h-11 bg-black/10 border border-black/20 rounded-full flex items-center justify-center text-lg shadow-lg backdrop-blur-md shrink-0">
-              🚀
-            </div>
-          </div>
-        )
-      },
-      {
-        id: 2,
-        link: '#internship',
-        content: (
-          <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center px-6 relative overflow-hidden">
-            <div className="absolute -right-6 -top-6 w-32 h-32 bg-black/10 rounded-full blur-2xl pointer-events-none"></div>
-            <div className="z-10 flex-1 pr-4">
-              <span className="px-2 py-0.5 rounded text-[9px] font-black bg-black/20 text-white uppercase tracking-wider mb-2 inline-block backdrop-blur-md">Hiring Now</span>
-              <h3 className="text-white font-extrabold text-lg leading-tight mb-1">Startup Internship</h3>
-              <p className="text-white/90 text-[11px] font-semibold">Kickstart your career at top startups.</p>
-            </div>
-            <div className="z-10 w-11 h-11 bg-black/10 border border-black/20 rounded-full flex items-center justify-center text-lg shadow-lg backdrop-blur-md shrink-0">
-              💼
-            </div>
-          </div>
-        )
-      },
-      {
-        id: 3,
-        link: '#careerfair',
-        content: (
-          <div className="w-full h-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center px-6 relative overflow-hidden">
-            <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
-            <div className="z-10 flex-1 pr-4">
-              <span className="px-2 py-0.5 rounded text-[9px] font-black bg-white/20 text-white uppercase tracking-wider mb-2 inline-block backdrop-blur-md">Event</span>
-              <h3 className="text-white font-extrabold text-lg leading-tight mb-1">Campus Career Fair</h3>
-              <p className="text-white/90 text-[11px] font-semibold">Meet 50+ employers on campus.</p>
-            </div>
-            <div className="z-10 w-11 h-11 bg-white/10 border border-white/20 rounded-full flex items-center justify-center text-lg shadow-lg backdrop-blur-md shrink-0">
-              🎓
-            </div>
-          </div>
-        )
-      }
-    ], []);
-
-    useEffect(() => {
+      useEffect(() => {
       const interval = setInterval(() => {
         setNotifIndex((prev) => (prev + 1) % previewNotifications.length);
       }, 4000);
@@ -4003,7 +3867,7 @@ export default function App() {
                   </span>
                 </div>
                 <h1 className={`text-3xl font-extrabold ${t.text} tracking-tight leading-tight drop-shadow-sm`}>
-                  Hi, {authRole === 'student' ? 'Hasan' : authRole === 'alumni' ? 'Nusrat' : 'Dr. Hasan'} <span className="text-2xl inline-block origin-bottom-right animate-wave">👋</span>
+                  Hi, {applicantMember()?.name.split(' ')[0] || (authRole === 'student' ? 'Hasan' : authRole === 'alumni' ? 'Sarah' : 'Dr. Hasan')} <span className="text-2xl inline-block origin-bottom-right animate-wave">👋</span>
                 </h1>
                 <p className={`${t.textMuted} text-xs font-bold mt-1 drop-shadow-sm`}>
                   {authRole === 'student' ? 'CSE • Batch 221' : authRole === 'alumni' ? 'Software Eng • Batch 19' : 'Professor • CSE'}
@@ -4044,7 +3908,8 @@ export default function App() {
         </div>
         {/* --- END MOMENTS FEATURE --- */}
 
-        <AdCarousel ads={demoAds} isDark={isDark} authRole={authRole} />
+        <PromotionCarousel authRole={authRole} onOpen={destination => { if(destination === '/webapp/events') setIsEventsModuleOpen(true); else if(destination === '/webapp/jobs') setActiveTab('jobs'); else if(destination === '/webapp/network') setActiveTab('directory'); else return false; return true; }} />
+        <PeerVerificationInbox viewerId={currentViewer(authRole).personId} t={t}/>
 
         {/* Redesigned Quick Actions: Custom Layered Icons + Label */}
         <div className="w-full pt-0 pb-2 relative z-10">
@@ -4507,32 +4372,37 @@ export default function App() {
     const canBrowseStaff = globalDepartments.some(dept => getDepartmentAccess(dept, authRole).isOfficial);
     const availableTabs = ['Alumni', 'Student', 'Faculty', ...(canBrowseStaff ? ['Staff'] : []), 'Departments'];
     const segment = availableTabs.includes(directorySegment) ? directorySegment : 'Alumni';
-    const isDepartments = segment === 'Departments';
-    const isStaff = segment === 'Staff';
+    const mine = directoryScope === 'connections';
+    const connections = connectedIds(currentViewer(authRole).personId);
+    const isDepartments = !mine && segment === 'Departments';
+    const isStaff = !mine && segment === 'Staff';
 
     const viewKind = isDepartments ? 'departments' : 'people';
     const view = directoryView[viewKind];
 
-    let displayData = isDepartments ? globalDepartments : isStaff ? allStaff() :
+    let displayData = mine ? [...globalAlumniData,...globalStudentData,...globalFacultyData].filter(p => connections.has(String(p.id))) : isDepartments ? globalDepartments : isStaff ? allStaff() :
                       segment === 'Alumni' ? globalAlumniData :
                       segment === 'Faculty' ? globalFacultyData :
                       globalStudentData;
 
+    const query = directorySearch.trim().toLowerCase();
+    displayData = displayData.filter(p => !query || `${p.name} ${p.company || ''} ${p.dept || ''}`.toLowerCase().includes(query));
     return (
       <div className={`flex flex-col h-full relative animate-fade-in z-10`}>
         <div className={`px-5 pt-8 pb-3 relative z-20 ${t.glass} border-b`}>
           <div className="flex justify-between items-end mb-3">
             <div>
-              <h2 className={`text-2xl font-extrabold ${t.text} tracking-tight leading-tight`}>Directory</h2>
-              <p className={`${t.textMuted} text-[11px] font-bold tracking-wide mt-0.5`}>Connect with the NSU Network</p>
+              <h2 className={`text-2xl font-extrabold ${t.text} tracking-tight leading-tight`}>{mine ? 'My connections' : 'Directory'}</h2>
+              <p className={`${t.textMuted} text-[11px] font-bold tracking-wide mt-0.5`}>{mine ? 'Your accepted connections' : 'Connect with the NSU Network'}</p>
             </div>
           </div>
           
+          <button onClick={() => setDirectoryScope(mine ? 'all' : 'connections')} aria-pressed={mine} className={`mb-3 px-3 py-2 rounded-lg border ${t.border} ${t.text} text-xs font-bold`}>{mine ? 'Browse directory' : 'My connections'}</button>
           <div className="flex space-x-3 mb-4">
             <div className="relative flex-1">
               <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4`} strokeWidth={2.5} />
               <input 
-                type="text" 
+                type="text" value={directorySearch} onChange={e => setDirectorySearch(e.target.value)}
                 placeholder={isDepartments ? "Search department, school..." : "Search name, company..."}
                 className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-lg h-11 pl-10 pr-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm placeholder:font-bold`}
               />
@@ -4542,7 +4412,7 @@ export default function App() {
             </button>
           </div>
 
-          <SegmentedPill
+          {!mine && <SegmentedPill
             options={availableTabs.map(seg => ({ id: seg, label: seg === 'Departments' ? 'Depts' : seg }))}
             value={segment}
             onChange={setDirectorySegment}
@@ -4551,13 +4421,13 @@ export default function App() {
             textSize="text-[11px]"
             ariaLabel="Directory lens"
             className="mb-2"
-          />
+          />}
           
           {/* The results line carries the view switch — it changes how these
               results are laid out, so it sits with them. */}
           <div className="flex items-center justify-between gap-3 mt-1">
             <p className="text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider">
-              Showing {displayData.length} results • {segment}
+              Showing {displayData.length} results • {mine ? 'Connections' : segment}
             </p>
             <ViewModeSwitch
               value={view}
@@ -4569,6 +4439,7 @@ export default function App() {
         </div>
 
         <div className="flex-1 overflow-y-auto pb-36 px-5 pt-6 relative z-10 space-y-5">
+          {displayData.length === 0 && <p className={`text-sm text-center py-10 ${t.textMuted}`}>{mine ? 'No connections match. Browse the directory to grow your network.' : 'No results match your search.'}</p>}
           {/* The viewer's own department leads, then every department
               grouped by school — as the register (list) or as tiles (card). */}
           {isDepartments && viewerDepartment && viewerDeptAccess.isMember && (
@@ -4622,7 +4493,7 @@ export default function App() {
                       <span className={`inline-block mt-1.5 px-2 py-0.5 rounded-md text-[10px] font-extrabold border ${getDeptStyle(person.dept)}`}>{person.dept}</span>
                     </div>
                     <div className="w-[6.5rem] shrink-0" onClick={(e) => handleConnectClick(e, person.id)}>
-                      {requestedSet.has(person.id) ? (
+                      {connections.has(String(person.id)) ? <span className={`flex items-center justify-center h-11 text-xs font-bold ${t.textMuted}`}>Connected</span> : requestedSet.has(person.id) ? (
                         <div className={`flex items-center justify-center h-9 rounded-lg font-bold text-xs ${isDark ? 'bg-white/10 text-white' : 'bg-white text-black shadow-sm'} border ${t.border}`}>
                           <CheckCircle2 className="w-3.5 h-3.5 mr-1.5 text-[#1D9BF0]" strokeWidth={2.5} /> Requested
                         </div>
@@ -4665,7 +4536,7 @@ export default function App() {
                   <span className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold border ${getDeptStyle(person.dept)}`}>
                     {person.dept}
                   </span>
-                  {person.skills.map(skill => (
+                  {(person.skills || []).map(skill => (
                     <span key={skill} className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold ${isDark ? 'bg-black/20 text-white/70 border border-white/10' : 'bg-white/60 text-black/60 shadow-sm border border-white'}`}>
                       {skill}
                     </span>
@@ -4693,7 +4564,7 @@ export default function App() {
 
                 <div className="flex space-x-3">
                   <div className="flex-1" onClick={(e) => handleConnectClick(e, person.id)}>
-                    {requestedSet.has(person.id) ? (
+                    {connections.has(String(person.id)) ? <span className={`flex items-center justify-center h-11 text-xs font-bold ${t.textMuted}`}>Connected</span> : requestedSet.has(person.id) ? (
                       <div className={`flex items-center justify-center h-11 rounded-lg font-bold text-sm ${isDark ? 'bg-white/10 text-white' : 'bg-white text-black shadow-sm'} border ${t.border} transition-all`}>
                         <CheckCircle2 className="w-4 h-4 mr-2 text-[#1D9BF0]" strokeWidth={2.5} /> Requested
                       </div>
@@ -4716,11 +4587,6 @@ export default function App() {
   };
 
   const MessagesTab = () => {
-    const [chatFilter, setChatFilter] = useState(null);
-    const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const [contextMenuChat, setContextMenuChat] = useState(null);
-    const timerRef = React.useRef(null);
-    const isLongPress = React.useRef(false);
 
     const handleTouchStart = (chat) => {
       isLongPress.current = false;
@@ -4823,24 +4689,10 @@ export default function App() {
       }
     };
 
-    let displayedChats;
-    if (chatSegment === 'Help Desk') {
-      displayedChats = helpDeskThreads;
-    } else if (chatSegment === 'Requests') {
-      displayedChats = conversations.filter(c => c.isRequest);
-    } else {
-      displayedChats = [...deptChannels, ...conversations.filter(c => !c.isRequest)];
-    }
-
-    if (chatFilter && chatSegment !== 'Help Desk') {
-      if (chatFilter === 'Unread') {
-        displayedChats = displayedChats.filter(c => c.unread);
-      } else if (chatFilter === 'Departments') {
-        displayedChats = displayedChats.filter(c => c.dept);
-      } else {
-        displayedChats = displayedChats.filter(c => c.role === chatFilter);
-      }
-    }
+    const viewerId = currentViewer(authRole).personId;
+    const archived = archivedIds(viewerId);
+    const displayedChats = selectConversations({conversations,channels:deptChannels,helpdesk:helpDeskThreads,archived,segment:chatSegment,filter:chatFilter,search:chatSearch});
+    const archiveChat = chat => { try { const archivedNow = toggleArchive(viewerId,chat.id); setToastMsg(archivedNow ? 'Chat archived' : 'Chat restored'); } catch { setToastMsg('Unable to save. Please try again.'); } };
 
     return (
       <div className={`flex flex-col h-full relative animate-fade-in z-10`}>
@@ -4857,7 +4709,7 @@ export default function App() {
                 </div>
               )}
               <button 
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                aria-label="Filter conversations" onClick={() => setIsFilterOpen(!isFilterOpen)}
                 className={`w-9 h-9 rounded-lg ${t.card} border ${t.border} flex items-center justify-center transition-colors shadow-sm hover:border-[#1D9BF0]/50 ${chatFilter || isFilterOpen ? 'border-[#1D9BF0]/50 text-[#1D9BF0]' : ''}`}
               >
                 <Filter className={`w-4 h-4 ${chatFilter || isFilterOpen ? 'text-[#1D9BF0]' : t.text}`} strokeWidth={2.5} />
@@ -4868,10 +4720,10 @@ export default function App() {
                   <div className="fixed inset-0 z-40" onClick={() => setIsFilterOpen(false)}></div>
                   <div className={`absolute top-11 right-11 w-44 rounded-xl ${isDark ? 'bg-[#1A1A1A] border-white/10' : 'bg-white border-gray-200'} shadow-2xl z-50 p-2 animate-fade-in`}>
                      <h4 className={`text-[10px] font-extrabold ${t.textMuted} uppercase tracking-wider mb-2 px-2 pt-1`}>Filter By</h4>
-                     {['Unread', 'Departments', 'Student', 'Alumni', 'Faculty'].map(f => (
+                     {['Requests', 'Unread', 'Departments', 'Student', 'Alumni', 'Faculty'].map(f => (
                        <button 
                          key={f} 
-                         onClick={() => { setChatFilter(f); setIsFilterOpen(false); }}
+                         onClick={() => { setChatFilter(f); if(f==='Requests') setChatSegment('All Chats'); setIsFilterOpen(false); }}
                          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-bold transition-colors ${chatFilter === f ? 'bg-[#1D9BF0] text-white' : `hover:${isDark ? 'bg-white/10' : 'bg-gray-100'} ${t.text}`}`}
                        >
                          <span>{f}</span>
@@ -4890,7 +4742,7 @@ export default function App() {
               )}
 
               <button 
-                onClick={() => setActiveOverlay('message_settings')}
+                aria-label="Message settings" onClick={() => setActiveOverlay('message_settings')}
                 className={`w-9 h-9 rounded-lg ${t.card} border ${t.border} flex items-center justify-center transition-colors shadow-sm hover:border-[#1D9BF0]/50`}
               >
                 <Settings className={`w-4 h-4 ${t.text}`} strokeWidth={2.5} />
@@ -4902,7 +4754,7 @@ export default function App() {
             <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${t.textMuted} w-4 h-4`} strokeWidth={2.5} />
             <input 
               type="text" 
-              placeholder="Search conversations..." 
+              placeholder="Search conversations..." value={chatSearch} onChange={e => setChatSearch(e.target.value)}
               className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-lg h-11 pl-10 pr-4 text-sm font-bold ${t.text} focus:outline-none transition-all shadow-sm placeholder:font-bold`}
             />
           </div>
@@ -4910,13 +4762,13 @@ export default function App() {
           {/* MessagesTab owns hooks, so it stays a component and remounts
               with <App/>; the memoryKey keeps its pill gliding anyway. */}
           <SegmentedPill
-            options={(viewerDeptAccess.canHelpDesk ? ['All Chats', 'Requests', 'Help Desk'] : ['All Chats', 'Requests']).map(seg => ({
+            options={['All Chats', 'Archived', 'Help Desk'].map(seg => ({
               id: seg,
               label: seg,
-              badge: seg === 'Requests' ? 1 : seg === 'Help Desk' ? waitingCount : 0,
+              badge: seg === 'Archived' ? archived.size : seg === 'Help Desk' ? waitingCount : 0,
             }))}
             value={chatSegment}
-            onChange={setChatSegment}
+            onChange={seg => { setChatSegment(seg); setChatFilter(null); }}
             t={t}
             isDark={isDark}
             textSize="text-[11px]"
@@ -4987,6 +4839,7 @@ export default function App() {
                     <p className={`text-[10px] font-extrabold uppercase tracking-wider ${t.textMuted} mt-1 truncate`}>{chat.subtitle}</p>
                   )}
                 </div>
+                <button aria-label={`Options for ${chat.name}`} className={`p-2 shrink-0 ${t.textMuted}`} onMouseDown={e=>e.stopPropagation()} onTouchStart={e=>e.stopPropagation()} onClick={e=>{e.stopPropagation();setContextMenuChat(chat);}}><MoreVertical size={18}/></button>
               </div>
             );
           }) : (
@@ -5025,7 +4878,7 @@ export default function App() {
                       { icon: Info, label: 'View Department Hub', onPick: () => handleOpenDepartment(contextMenuChat.dept) },
                     ]
                   : [
-                      { icon: Archive, label: 'Archive' },
+                      { icon: Archive, label: archived.has(String(contextMenuChat.id)) ? 'Unarchive' : 'Archive', onPick: () => archiveChat(contextMenuChat) },
                       { icon: VolumeX, label: 'Mute Notifications' },
                       { icon: Pin, label: 'Pin Chat' },
                       { icon: MailOpen, label: contextMenuChat.unread ? 'Mark as Read' : 'Mark as Unread' },
@@ -5494,6 +5347,7 @@ export default function App() {
         </div>
 
         <div className="flex-1 overflow-y-auto pb-32 relative z-10 px-4 pt-4 space-y-2">
+          <PeerVerificationInbox t={t} viewerId={currentViewer(authRole).personId}/>
           {notifications.map(notif => (
             <div key={notif.id} className={`p-4 rounded-2xl ${notif.unread ? (isDark ? 'bg-white/5' : 'bg-black/[0.03]') : 'bg-transparent'} border ${notif.unread ? t.borderSoft : 'border-transparent'} flex space-x-4 transition-all cursor-pointer hover:${isDark ? 'bg-white/10' : 'bg-black/5'} group`}>
               <div className="relative shrink-0">
@@ -5546,7 +5400,7 @@ export default function App() {
                 onToggle={() => setSoundEnabled(!soundEnabled)} 
                 t={t} isDark={isDark} 
               />
-              <SettingsItem icon={Archive} label="Archived Chats" t={t} isDark={isDark} />
+              <SettingsItem icon={Archive} label="Archived Chats" t={t} isDark={isDark} onClick={() => { setActiveOverlay(null);setActiveTab('messages');setChatSegment('Archived');setChatFilter(null); }} />
             </div>
           </div>
 
@@ -5631,9 +5485,10 @@ export default function App() {
             {currentView === 'splash' && SplashScreen()}
             {currentView === 'welcome' && WelcomeScreen()}
             {currentView === 'role_select' && RoleGatewayScreen()}
-            {currentView === 'auth_main' && (authRole === 'staff' && authMode === 'signup' ? <div className="absolute inset-0 overflow-y-auto"><StaffSignup t={t} isDark={isDark} onBack={() => setCurrentView('role_select')} onComplete={() => { setCurrentView('main'); setActiveTab('home'); }} /></div> : AuthScreen())}
+            {currentView === 'auth_main' && (authRole === 'alumni' && authMode === 'signup' ? <AlumniSignup t={t} onBack={() => setCurrentView('role_select')} onSubmitted={() => { setCurrentView('main'); setActiveTab('home'); }} /> : authRole === 'staff' && authMode === 'signup' ? <div className="absolute inset-0 overflow-y-auto"><StaffSignup t={t} isDark={isDark} onBack={() => setCurrentView('role_select')} onComplete={() => { setCurrentView('main'); setActiveTab('home'); }} /></div> : AuthScreen())}
             {currentView === 'otp' && OtpScreen()}
             
+            <AlumniAccessGate t={t} onExit={() => setCurrentView('welcome')}>
             {currentView === 'main' && (
               <div className="flex flex-col h-full relative z-10">
                 <div className="flex-1 overflow-hidden relative">
@@ -5671,10 +5526,10 @@ export default function App() {
                   />}
                   {activeTab === 'emergency' && EmergencyTab()}
                   {activeTab === 'emergency_directory' && <EmergencyDirectoryTab />}
-                  {activeTab === 'messages' && <MessagesTab />}
+                  {activeTab === 'messages' && MessagesTab()}
                   {activeTab === 'profile' && authRole === 'staff' && <div className="h-full overflow-y-auto px-5 pb-28"><StaffProfile person={currentStaff(authRole)} t={t} onDepartment={() => handleOpenDepartment(findDepartmentByCode(currentStaff(authRole).dept) || viewerDepartment)} /></div>}
                   {activeTab === 'profile' && authRole !== 'staff' && <ProfileTab
-                    authRole={authRole} t={t} isDark={isDark} 
+                    authRole={authRole} t={t} isDark={isDark} onConnections={() => { setDirectoryScope('connections');setActiveTab('directory'); }}
                     profileSegment={profileSegment} setProfileSegment={setProfileSegment}
                     setSettingsOverlay={setSettingsOverlay} setCurrentView={setCurrentView}
                     pushEnabled={pushEnabled} handlePushToggle={handlePushToggle}
@@ -5985,9 +5840,10 @@ export default function App() {
               <UserProfileView user={selectedUser} onBack={() => setSelectedUser(null)} />
             )}
 
+            </AlumniAccessGate>
             <PrototypePanel mobile t={t} isDark={isDark} authRole={authRole}
               onTheme={() => setIsDark(v => !v)}
-              onSwitch={role => { setAuthRole(role); setCurrentView('main'); setManageDepartment(null); setDepartmentChannel(null); setSelectedDepartment(null); setSelectedUser(null); setActiveOverlay(null); setCreateEventDept(null); setIsPostJobOpen(false); setIsEventsModuleOpen(false); setSelectedGlobalEvent(null); setBloodSheetDept(null); setSettingsOverlay(null); setActiveTab('home'); }}
+              onSwitch={role => { clearApplicant(); setAuthRole(role); setCurrentView('main'); setManageDepartment(null); setDepartmentChannel(null); setSelectedDepartment(null); setSelectedUser(null); setActiveOverlay(null); setCreateEventDept(null); setIsPostJobOpen(false); setIsEventsModuleOpen(false); setSelectedGlobalEvent(null); setBloodSheetDept(null); setSettingsOverlay(null); setActiveTab('home'); }}
               onHome={() => { setCurrentView('main'); setActiveTab('home'); setManageDepartment(null); setSelectedDepartment(null); setDepartmentChannel(null); setSelectedUser(null); setCreateEventDept(null); setIsPostJobOpen(false); setIsEventsModuleOpen(false); setSelectedGlobalEvent(null); setBloodSheetDept(null); setSettingsOverlay(null); }}
               onDepartment={id => { setCurrentView('main'); handleOpenDepartment(findDepartmentById(id)); setManageDepartment(null); setDepartmentChannel(null); setCreateEventDept(null); setIsPostJobOpen(false); setIsEventsModuleOpen(false); setSelectedGlobalEvent(null); setBloodSheetDept(null); setSettingsOverlay(null); }}
               onSignup={() => { setAuthRole('staff'); setAuthMode('signup'); setCurrentView('auth_main'); setManageDepartment(null); setSelectedDepartment(null); setDepartmentChannel(null); setSelectedUser(null); setCreateEventDept(null); setIsPostJobOpen(false); setIsEventsModuleOpen(false); setSelectedGlobalEvent(null); setBloodSheetDept(null); setSettingsOverlay(null); }} />

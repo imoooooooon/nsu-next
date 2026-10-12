@@ -1,3 +1,4 @@
+import { currentApplicant } from '../../../src/shared/adminBridge.js';
 import { publicPerson, subscribeBridge } from '../../../src/shared/adminBridge.js';
 import { allStaff, currentStaff, currentViewer } from '../../../src/shared/departmentStore';
 /* Directory demo data — identical records to the shipped mobile prototype. */
@@ -70,10 +71,12 @@ export const findUserById = (id) => [...allDirectoryUsers, ...allStaff()].find(u
 
 /* The signed-in demo identities per auth role. */
 export const getViewerIdentity = (authRole) => {
+  const a=authRole === 'alumni' ? currentApplicant() : null;
+  if(a) return { fullName:a.name, firstName:a.name.split(' ')[0], roleSub:'NSU Alumnus', subtitle:`${a.department} · Batch ${a.batch}`, idTitle:'Alumni Access ID',idPrefix:a.id,termLabel:'Batch',termValue:a.batch, stat1Label:'Jobs Posted',stat1Count:0,stat2Label:'Saved Jobs',stat2Count:0 };
   if (authRole === 'staff') { const p = currentStaff(authRole); return { fullName: p.name, firstName: p.name.split(' ')[0], roleSub: p.role, subtitle: `${p.role} · ${p.dept}`, email: p.email, idTitle: 'Staff Access ID', idPrefix: p.nsuId }; }
   if (authRole === 'alumni') {
     return {
-      fullName: 'Nusrat Jahan', firstName: 'Nusrat', roleSub: 'Software Engineer @ Google',
+      fullName: globalAlumniData.find(p=>String(p.id)===String(currentViewer(authRole).personId))?.name || 'Sarah Rahman', firstName: (globalAlumniData.find(p=>String(p.id)===String(currentViewer(authRole).personId))?.name || 'Sarah').split(' ')[0], roleSub: 'Software Engineer @ Google',
       idTitle: 'Alumni Access ID', idPrefix: '151XXXXX', termLabel: 'Class Of', termValue: '2019',
       subtitle: 'Software Eng • Batch 19',
       stat1Label: 'Jobs Posted', stat1Count: '5', stat2Label: 'Mentored', stat2Count: '18',

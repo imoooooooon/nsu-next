@@ -1,3 +1,4 @@
+import { AlumniAccessGate } from '../../../../src/shared/AlumniVerification.jsx';
 import { useEffect } from 'react';
 import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import { useTheme } from '../../theme/ThemeContext';
@@ -23,7 +24,7 @@ const ScrollToTop = () => {
 
 export const AppShell = () => {
   const { t, isSidebarCollapsed } = useTheme();
-  const { isAuthed } = useAppState();
+  const { isAuthed, logout } = useAppState();
   const location = useLocation();
 
   if (!isAuthed) {
@@ -38,7 +39,7 @@ export const AppShell = () => {
           own 64px of flow and the content below simply starts after it — no
           hand-maintained 100vh-minus-bar arithmetic, and nothing scrolls
           through a gap above it. */}
-      <TopBar />
+      <AlumniAccessGate t={t} onExit={logout}><TopBar />
       <Sidebar />
       <div
         className={`relative z-10 transition-[padding] duration-300 flex flex-col min-h-[calc(100vh-4rem)] ${
@@ -50,7 +51,7 @@ export const AppShell = () => {
         </main>
       </div>
       <MobileNav />
-      <Toast />
+      <Toast /></AlumniAccessGate>
     </div>
   );
 };

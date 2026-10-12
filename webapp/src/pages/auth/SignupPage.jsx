@@ -1,3 +1,4 @@
+import { AlumniSignup } from '../../../../src/shared/AlumniVerification.jsx';
 import { StaffSignup } from '../../../../src/shared/DepartmentExperience';
 import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, ArrowLeft, Lock, Mail, Upload, User } from 'lucide-react';
@@ -24,6 +25,7 @@ export default function SignupPage() {
   const { authRole, setAuthMode, login } = useAppState();
   const navigate = useNavigate();
 
+  if (authRole === 'alumni') return <AlumniSignup t={t} onBack={() => navigate('/auth/role')} onSubmitted={() => { login(); navigate('/home'); }} />;
   if (authRole === 'staff') return <div className="auth-staff h-full overflow-y-auto pb-10"><StaffSignup t={t} isDark={isDark} onBack={() => navigate('/auth/role')} onComplete={() => { login(); navigate('/home'); }} /></div>;
 
   const isStudent = authRole === 'student';

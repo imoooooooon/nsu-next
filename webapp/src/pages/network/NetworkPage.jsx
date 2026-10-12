@@ -1,3 +1,5 @@
+import { connectedIds } from '../../../../src/shared/communityPreferences';
+import { currentViewer } from '../../../../src/shared/departmentStore';
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Users, Building2 } from 'lucide-react';
@@ -41,7 +43,9 @@ export default function NetworkPage() {
   const navigate = useNavigate();
   const canBrowseStaff = globalDepartments.some(dept => getDepartmentAccess(dept, authRole).isOfficial);
   const segments = canBrowseStaff ? [...SEGMENTS.slice(0, 3), 'Staff', 'Departments'] : SEGMENTS;
-  const [searchParams] = useSearchParams();
+  const [searchParams,setSearchParams] = useSearchParams();
+  const mine = searchParams.get('scope') === 'connections';
+  const connections = connectedIds(currentViewer(authRole).personId);
   const q = searchParams.get('q') || '';
   const segmentParam = searchParams.get('segment');
   const [search, setSearch] = useState(q);
@@ -68,8 +72,8 @@ export default function NetworkPage() {
   }
 
   const segment = segments.includes(selectedSegment) ? selectedSegment : 'Alumni';
-  const isDepartments = segment === 'Departments';
-  const isStaff = segment === 'Staff';
+  const isDepartments = !mine && segment === 'Departments';
+  const isStaff = !mine && segment === 'Staff';
 
   /* The view mode is remembered per KIND of object (lib/directoryView.js):
      the people lenses share one mode with every department roster, and
@@ -96,7 +100,7 @@ export default function NetworkPage() {
       );
     }
 
-    const base = isStaff ? allStaff() : SEGMENT_DATA[segment] || [];
+    const base = mine ? [...globalAlumniData,...globalStudentData,...globalFacultyData,...(canBrowseStaff ? allStaff() : [])].filter(p=>connections.has(String(p.id))) : isStaff ? allStaff() : SEGMENT_DATA[segment] || [];
     if (!query) return base;
     return base.filter(p =>
       p.name.toLowerCase().includes(query) ||
@@ -109,7 +113,7 @@ export default function NetworkPage() {
 
   return (
     <PageContainer className="animate-fade-in">
-      <PageHeader title="Directory" subtitle="Connect with the NSU Network" />
+      <PageHeader title={mine ? 'My connections' : 'Directory'} subtitle={mine ? 'People in your accepted network. Pending requests appear separately.' : 'Connect with the NSU Network'}><button aria-pressed={mine} onClick={()=>{const p=new URLSearchParams(searchParams);if(mine)p.delete('scope');else p.set('scope','connections');setSearchParams(p);}} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm ${t.card} ${t.text} border ${t.border}`}><Users size={16}/>{mine ? 'Browse directory' : 'My connections'}</button></PageHeader>
       {isDepartments && <DepartmentOwnerNav />}
 
       <div className="flex flex-col xl:flex-row xl:items-center gap-3 mb-4">
@@ -121,14 +125,14 @@ export default function NetworkPage() {
           className="md:flex-1"
           aria-label="Search directory"
         />
-        <SegmentedControl options={segments} value={segment} onChange={setSegment} className={`${canBrowseStaff ? 'xl:w-[32rem]' : 'xl:w-[28rem]'} shrink-0`} />
+        {!mine && <SegmentedControl options={segments} value={segment} onChange={setSegment} className={`${canBrowseStaff ? 'xl:w-[32rem]' : 'xl:w-[28rem]'} shrink-0`} />}
       </div>
 
       {/* The results line carries the view switch: it changes how these
           results are laid out, so it sits with them, not with the filters. */}
       <div className="flex items-center justify-between gap-3 mb-5">
         <p className="text-[#1D9BF0] text-[10px] font-extrabold uppercase tracking-wider">
-          Showing {results.length} results • {segment}
+          Showing {results.length} results • {mine ? 'My connections' : segment}
         </p>
         <ViewModeToggle value={view} onChange={setView} />
       </div>

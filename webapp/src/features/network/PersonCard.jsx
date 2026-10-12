@@ -1,3 +1,5 @@
+import { connectedIds } from '../../../../src/shared/communityPreferences';
+import { currentViewer } from '../../../../src/shared/departmentStore';
 import { Link, useNavigate } from 'react-router-dom';
 import { CheckCircle2, Droplets, BookmarkIcon } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeContext';
@@ -33,8 +35,10 @@ const DeptChip = ({ dept, className }) => {
 
 export const ConnectButton = ({ personId, size = 'h-11 text-sm', accent = 'text-[#1D9BF0]', className = 'flex-1' }) => {
   const { t, isDark } = useTheme();
-  const { requestedSet, toggleRequested } = useAppState();
+  const { requestedSet, toggleRequested, authRole } = useAppState();
   const requested = requestedSet.has(personId);
+  const connected = connectedIds(currentViewer(authRole).personId).has(String(personId));
+  if(connected) return <span className={`flex items-center justify-center rounded-lg font-bold ${size} ${className} ${t.textMuted}`}><CheckCircle2 size={16} className="mr-2"/>Connected</span>;
 
   return (
     <div className={`relative z-10 ${className}`} onClick={(e) => { e.stopPropagation(); toggleRequested(personId); }}>

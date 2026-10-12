@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { resumeApplicant } from '../../../../src/shared/verificationService.js';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Lock, Mail } from 'lucide-react';
 import { useTheme } from '../../theme/ThemeContext';
@@ -19,8 +21,9 @@ const GoogleMark = () => (
 
 export default function LoginPage() {
   const { t } = useTheme();
-  const { login, setAuthMode } = useAppState();
+  const { login, setAuthMode, setAuthRole } = useAppState();
   const navigate = useNavigate();
+  const [email,setEmail]=useState('');
 
   return (
     <div className={`auth-login flex flex-col h-full relative z-10 animate-fade-in`}>
@@ -42,7 +45,7 @@ export default function LoginPage() {
           <div className="auth-fields space-y-4">
             <div>
               <FieldLabel>Email Address</FieldLabel>
-              <TextInput icon={Mail} type="email" placeholder="yourname@northsouth.edu" />
+              <TextInput value={email} onChange={e=>setEmail(e.target.value)} icon={Mail} type="email" placeholder="yourname@northsouth.edu" />
             </div>
 
             <div>
@@ -57,7 +60,7 @@ export default function LoginPage() {
           </div>
 
           <button
-            onClick={() => { login(); navigate('/home'); }}
+            onClick={() => { if(resumeApplicant(email))setAuthRole('alumni'); login(); navigate('/home'); }}
             className="auth-primary w-full h-14 rounded-xl font-extrabold text-[15px] transition-all active:scale-[0.98] bg-[#1D9BF0] text-white mt-8 shadow-sm hover:bg-[#1A8CD8] outline-none focus-visible:ring-2 focus-visible:ring-[#1D9BF0]"
           >
             Log In
