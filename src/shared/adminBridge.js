@@ -1,4 +1,3 @@
-import { withPromotionDemos } from './promotionModel.js';
 // Local, same-origin prototype transport. Contains no authentication or private media.
 export const ADMIN_KEY = 'ugrads-admin-data-v1';
 export const SUBMISSIONS_KEY = 'ugrads-public-submissions-v1';
@@ -13,7 +12,7 @@ if (typeof window !== 'undefined') {
   setInterval(bridgeNotify, 60000);
 }
 export function readBridge(storage = globalThis.localStorage) {
-  try { const value = JSON.parse(storage?.getItem(ADMIN_KEY) || 'null'); return value && [1, 2].includes(value.version) ? withPromotionDemos(value) : null; } catch { return null; }
+  try { const value = JSON.parse(storage?.getItem(ADMIN_KEY) || 'null'); return value && [1, 2].includes(value.version) ? value : null; } catch { return null; }
 }
 export function readSubmissions(storage = globalThis.localStorage) {
   const raw = storage?.getItem(SUBMISSIONS_KEY);

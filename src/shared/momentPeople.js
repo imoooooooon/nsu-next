@@ -7,7 +7,7 @@ export const momentPeople = [
   },
   {
     id: "user-2",
-    user: { name: "Dr. Aminul", shortName: "Aminul", role: "Faculty", verified: true },
+    user: { name: "Dr. Aminul", role: "Faculty", verified: true },
     items: [],
   },
   {
@@ -61,10 +61,4 @@ export const momentPeople = [
     user: { name: "Nabila", role: "Faculty", verified: true },
     items: [],
   },
-  { id: "user-9", user: { name: "Arif", role: "Student", verified: true }, items: [{ id: "note-arif", type: "note", content: "Anyone up for a coffee?", reactions: 3 }] },
-  { id: "user-10", user: { name: "Nusrat", role: "Alumni", verified: true }, items: [] },
-  { id: "user-11", user: { name: "Samiha", role: "Student", verified: false }, items: [{ id: "note-samiha", type: "note", content: "Design club, 4 pm ✨", reactions: 6 }] },
-  { id: "user-12", user: { name: "Rafi", role: "Student", verified: true }, items: [] },
-  { id: "user-13", user: { name: "Farhan", role: "Alumni", verified: true }, items: [{ id: "note-farhan", type: "note", content: "Happy to review portfolios", reactions: 12 }] },
-  { id: "user-14", user: { name: "Tania", role: "Faculty", verified: true }, items: [] },
 ];

@@ -1,7 +1,7 @@
 import { normalizePresentation } from "./momentFrames.js";
 export const INSTANT_TTL = 24 * 60 * 60 * 1000;
 export const ARCHIVE_TTL = INSTANT_TTL;
-export const INSTANT_DEMO_REVISION = 3;
+export const INSTANT_DEMO_REVISION = 2;
 
 export function isMomentLive(item, now) {
   return item.createdAt <= now && now < item.createdAt + INSTANT_TTL;
@@ -126,13 +126,6 @@ export function initialInstantState(now) {
       "photo-1523240795612-9a054b0db644",
       102,
     ],
-    ["aminul", "Aminul", "A quiet moment on campus", "photo-1507842217343-583bb7270b66", 12],
-    ["arif", "Arif", "Coffee before class", "photo-1495474472287-4d71bcdd2085", 15],
-    ["nusrat", "Nusrat", "Back on campus", "photo-1523240795612-9a054b0db644", 21],
-    ["samiha", "Samiha", "Made something today", "photo-1455390582262-044cdead277a", 26],
-    ["rafi", "Rafi", "The team is ready", "photo-1522202176988-66273c2fd55f", 33],
-    ["farhan", "Farhan", "A new perspective", "photo-1498050108023-c5249f4df085", 39],
-    ["tania", "Tania", "Between lectures", "photo-1441974231531-c6227db76b6e", 44],
   ];
   return {
     version: 1,
@@ -151,13 +144,6 @@ export function initialInstantState(now) {
         Nabila: "user-8",
         Fahim: "user-5",
         Ayman: "user-4",
-        Aminul: "user-2",
-        Arif: "user-9",
-        Nusrat: "user-10",
-        Samiha: "user-11",
-        Rafi: "user-12",
-        Farhan: "user-13",
-        Tania: "user-14",
       }[name],
       frame: ["squircle", "hexagon", "organic", "triangle"][index % 4],
       captionPosition: 81,

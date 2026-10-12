@@ -649,11 +649,3 @@ The code still uses local prototype storage. Do not claim production authenticat
 59 model/adapter tests and all three builds pass. Web/admin and new shared-component lint pass; mobile retains unrelated lint debt. Browser proof and detailed scope are in REVISIONS_OCT12.md. The preview uses the existing combined server on port 5182.
 
 Final mobile verification passed archive/restore and Requests filtering from Archived. Messaging transient state now lives in App and the hook-free view is rendered directly, preserving focus and menus across background bridge refreshes. Proof screenshots: `output/revisions-oct12/admin-endorsement.png` and `mobile-messages.png`. Comparing mobile lint against HEAD confirms no new findings (one old unused variable removed).
-
-## Home layout follow-up — 2026-10-12
-- Home now uses a fluid 1600px maximum frame; its campus rail is 280–320px. Moments, promotions and quick features align to the available main column width.
-- Promotions slide in an infinite loop with cloned boundary cards, previous/next, dots, pause, keyboard arrows and touch swipes. Each card stays 3:1; columns at least 1000px wide show two cards, narrower columns show one. Hover, focus and reduced-motion preferences stop autoplay.
-- Two demo campaigns are added through a one-time shared migration and remain governed by admin publishing, audience, scheduling and pause controls.
-- Both sidebars minimized exposes Calendar, My Events and My Profile when there is at least 1000px of content width. The campus sidebar button is icon-only, with accessible naming and a tooltip.
-- Moments now has fourteen demo profiles; seven additional photos include the previously empty faculty profile. Existing capture and view state is preserved by the demo migration.
-- Validation: 61 automated tests passed; webapp/admin and changed shared-module lint passed; production builds passed. Browser QA checked the sidebar combinations, forward/reverse carousel boundaries, desktop and 390px mobile proportions.

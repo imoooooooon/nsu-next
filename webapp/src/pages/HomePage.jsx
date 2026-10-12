@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { PanelRightClose, PanelRightOpen, CalendarDays, Compass, UserRound } from 'lucide-react';
-import './home-page.css';
+import { PanelRightClose, PanelRightOpen } from 'lucide-react';
 import { PeerVerificationInbox } from '../../../src/shared/AlumniVerification.jsx';
 import { currentViewer } from '../../../src/shared/departmentStore';
 import { HomeCareerSections } from '../../../src/shared/HomeCareerSections';
@@ -34,7 +33,7 @@ const HEADER_BG_LIGHT = 'https://res.cloudinary.com/ddgxqqe6t/image/upload/v1773
 const HEADER_BG_DARK = 'https://res.cloudinary.com/ddgxqqe6t/image/upload/v1773175855/NSU_BUILDING_LINE_ART_F_pk87bc.svg';
 
 export default function HomePage() {
-  const { t, isDark, toggleTheme, isSidebarCollapsed } = useTheme();
+  const { t, isDark, toggleTheme } = useTheme();
   const { authRole, savedTalentIds, handleToggleSavedTalent } = useAppState();
   const navigate = useNavigate();
   const [railHidden,setRailHidden] = useState(() => { try { return localStorage.getItem('ugrads-home-rail-hidden') === 'true'; } catch { return false; } });
@@ -52,9 +51,6 @@ export default function HomePage() {
     { icon: CustomEventsIcon, label: 'Events', to: '/events' },
     { icon: CustomMessagesIcon, label: 'Messages', to: '/messages' },
     { icon: CustomEmergencyIcon, label: 'Emergency', to: '/emergency' },
-    { icon: CalendarDays, label: 'Calendar', to: '/events/calendar', extra: true },
-    { icon: Compass, label: 'My Events', to: '/events/my', extra: true },
-    { icon: UserRound, label: 'My Profile', to: '/profile', extra: true },
   ];
 
   if (authRole === 'staff') return <PageContainer><StaffHome t={t} authRole={authRole} departments={globalDepartments} onManage={d => navigate(`/departments/${d.id}/manage`)} onDirectory={() => navigate('/network?segment=Departments')} onProfile={() => navigate('/profile')} /></PageContainer>;
@@ -62,13 +58,13 @@ export default function HomePage() {
   const canPostJobs = authRole === 'alumni' || authRole === 'faculty';
 
   return (
-    <PageContainer className={`home-page animate-fade-in ${railHidden && isSidebarCollapsed ? 'home-page-expanded' : ''}`}>
-      <div className="hidden xl:flex justify-end pt-3 mb-2"><button onClick={toggleRail} aria-label={railHidden ? 'Show campus sidebar' : 'Hide campus sidebar'} title={railHidden ? 'Show campus sidebar' : 'Hide campus sidebar'} aria-expanded={!railHidden} aria-controls="home-right-rail" className={`flex items-center justify-center rounded-xl w-10 h-10 ${t.card} ${t.text} border ${t.border} hover:text-[#1D9BF0] focus-visible:outline-2 focus-visible:outline-[#1D9BF0]`}>{railHidden ? <PanelRightOpen size={18}/> : <PanelRightClose size={18}/>}</button></div>
-      <div className={`home-grid ${railHidden ? 'home-grid-rail-hidden' : ''}`}>
+    <PageContainer className="animate-fade-in">
+      <div className="hidden xl:flex justify-end mb-2"><button onClick={toggleRail} aria-expanded={!railHidden} aria-controls="home-right-rail" className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold ${t.card} ${t.text} border ${t.border}`}>{railHidden ? <PanelRightOpen size={16}/> : <PanelRightClose size={16}/>} {railHidden ? 'Show campus sidebar' : 'Hide campus sidebar'}</button></div>
+      <div className={`grid grid-cols-1 ${railHidden ? '' : 'xl:grid-cols-3'} gap-8`}>
         {/* ------------------------------------------------ main column */}
-        <div className="home-main min-w-0">
+        <div className={`${railHidden ? "" : "xl:col-span-2"} min-w-0`}>
           {/* Greeting banner with the NSU building line art */}
-          <div className="relative -mx-5 lg:mx-0 px-5 lg:px-0 pt-10 lg:pt-6 pb-4 lg:rounded-b-none rounded-b-[2.5rem] overflow-hidden">
+          <div className="relative -mx-5 lg:mx-0 px-5 lg:px-8 pt-10 lg:pt-6 pb-4 lg:rounded-b-none rounded-b-[2.5rem] overflow-hidden">
             {/* The NSU line art is authored for a phone-width banner. On a wide
                 canvas `cover` blows it up and crops it, so above sm it is
                 pinned to the right at its natural height instead. */}
@@ -125,12 +121,12 @@ export default function HomePage() {
 
           {/* Quick actions */}
           <div className="w-full pt-4 pb-2 relative z-10">
-            <nav className="home-quick-actions" aria-label="Quick features">
+            <div className="flex flex-row items-start justify-between w-full gap-1 px-2 sm:px-4 max-w-2xl mx-auto">
               {quickActions.map((action, idx) => (
-                <button
+                <div
                   key={idx}
                   onClick={() => navigate(action.to)}
-                  className={`home-quick-action ${action.extra ? 'home-quick-extra' : ''} flex flex-col items-center justify-center min-h-[72px] cursor-pointer group transition-all duration-200 ease-out active:scale-90`}
+                  className="flex-1 flex flex-col items-center justify-center min-h-[72px] cursor-pointer group transition-all duration-200 ease-out active:scale-90"
                 >
                   <action.icon className={`w-[36px] h-[36px] mb-2 transition-colors duration-200 ${isDark ? 'text-white' : 'text-[#1C1C1E]'} group-hover:text-[#1D9BF0]`} />
                   <span className={`text-[12px] font-bold leading-tight text-center ${t.textMuted} group-hover:${isDark ? 'text-white' : 'text-black'} transition-colors duration-200`}>
@@ -143,15 +139,15 @@ export default function HomePage() {
                       </>
                     ) : action.label}
                   </span>
-                </button>
+                </div>
               ))}
-            </nav>
+            </div>
           </div>
 
           {/* People to connect with */}
           <div className="mt-6">
             <SectionHeading title="People to Connect With" action="See All" onAction={() => navigate('/network')} className="px-1 mb-1" />
-            <div className="home-people-rail flex space-x-4 overflow-x-auto hide-scrollbar rail-fade -mx-5 px-5 lg:-mx-1 lg:px-1 pt-4 pb-8 relative z-0">
+            <div className="flex space-x-4 overflow-x-auto hide-scrollbar rail-fade -mx-5 px-5 lg:-mx-1 lg:px-1 pt-4 pb-8 relative z-0">
               {globalAlumniData.slice(0, 4).map((person) => (
                 <PersonCard key={person.id} person={person} variant="connect" />
               ))}

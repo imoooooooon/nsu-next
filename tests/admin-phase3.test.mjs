@@ -64,8 +64,8 @@ test('campaign schedule, pause, resume and safe destinations govern public avail
   assert.equal(campaignStatus(campaign, now), 'draft');
   const published = command(s, 'campaigns', campaign.id, 'publish');
   assert.equal(campaignStatus(published.campaigns[1], now), 'scheduled');
-  assert.deepEqual(publicRows('campaigns', [], published, now).map(ad => ad.id), ['campus-careers', 'demo-campus-events', 'demo-campus-network']);
-  const paused = command(published, 'campaigns', 'campus-careers', 'pause'); assert.ok(!publicRows('campaigns', [], paused, now).some(ad => ad.id === 'campus-careers'));
+  assert.equal(publicRows('campaigns', [], published, now).length, 1);
+  const paused = command(published, 'campaigns', 'campus-careers', 'pause'); assert.equal(publicRows('campaigns', [], paused, now).length, 0);
   s.campaigns[1].destination = 'javascript:alert(1)'; assert.throws(() => command(s, 'campaigns', campaign.id, 'publish'), /destination/);
 });
 test('last owner and self protection also cover team demotion and revocation', () => {
